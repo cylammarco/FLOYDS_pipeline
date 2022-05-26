@@ -63,7 +63,7 @@ element_Zn_blue = ["Zn"] * len(atlas_Zn_blue)
 red_spatial_mask = np.arange(0, 330)
 blue_spatial_mask = np.arange(335, 512)
 red_spec_mask = np.arange(0, 1800)
-blue_spec_mask = np.arange(500, 2060)
+blue_spec_mask = np.arange(500, 2050)
 
 
 def flux_diff(ratio, a, b):

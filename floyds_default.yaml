@@ -123,7 +123,7 @@ science_red_extract_tolerance: 0.000006
 science_red_extract_cosmicray_sigma: 4.0
 science_red_extract_max_iter: 99
 science_red_extract_forced: False
-science_red_extract_variances: None
+science_red_extract_variances: ~
 science_red_extract_npoly: 21
 science_red_extract_polyspacing: 1
 science_red_extract_pord: 5
@@ -182,7 +182,7 @@ science_blue_rectification_bin_size: 6
 science_blue_rectification_n_bin: 15
 science_blue_rectification_spline_order: 3
 science_blue_rectification_order: 2
-science_blue_rectification_coeff: [-3.12670341e+01,  1.33333333e-01, -1.06252190e-18]
+science_blue_rectification_coeff: ~
 science_blue_rectification_use_arc: True
 science_blue_rectification_apply: False
 science_blue_rectification_display: False
@@ -211,7 +211,7 @@ science_blue_extract_tolerance: 0.000006
 science_blue_extract_cosmicray_sigma: 3.0
 science_blue_extract_max_iter: 99
 science_blue_extract_forced: False
-science_blue_extract_variances: None
+science_blue_extract_variances: ~
 science_blue_extract_npoly: 21
 science_blue_extract_polyspacing: 1
 science_blue_extract_pord: 5
@@ -299,7 +299,7 @@ standard_red_extract_tolerance: 0.000006
 standard_red_extract_cosmicray_sigma: 4.0
 standard_red_extract_max_iter: 99
 standard_red_extract_forced: False
-standard_red_extract_variances: None
+standard_red_extract_variances: ~
 standard_red_extract_npoly: 21
 standard_red_extract_polyspacing: 1
 standard_red_extract_pord: 5
@@ -358,7 +358,7 @@ standard_blue_rectification_bin_size: 6
 standard_blue_rectification_n_bin: 15
 standard_blue_rectification_spline_order: 3
 standard_blue_rectification_order: 2
-standard_blue_rectification_coeff: [-3.12670341e+01,  1.33333333e-01, -1.06252190e-18]
+standard_blue_rectification_coeff: ~
 standard_blue_rectification_use_arc: True
 standard_blue_rectification_apply: False
 standard_blue_rectification_display: False
@@ -387,7 +387,7 @@ standard_blue_extract_tolerance: 0.000006
 standard_blue_extract_cosmicray_sigma: 3.0
 standard_blue_extract_max_iter: 99
 standard_blue_extract_forced: False
-standard_blue_extract_variances: None
+standard_blue_extract_variances: ~
 standard_blue_extract_npoly: 21
 standard_blue_extract_polyspacing: 1
 standard_blue_extract_pord: 5
@@ -502,7 +502,7 @@ red_plot_search_space_top_n_candidate: 3
 red_plot_search_space_weighted: True
 red_plot_search_space_save_fig: True
 red_plot_search_space_fig_type: "png+pdf"
-red_plot_search_space_filename: None
+red_plot_search_space_filename: ~
 red_plot_search_space_return_jsonstring: False
 red_plot_search_space_renderer: "default"
 red_plot_search_space_display: False
@@ -514,7 +514,7 @@ blue_plot_search_space_top_n_candidate: 3
 blue_plot_search_space_weighted: True
 blue_plot_search_space_save_fig: True
 blue_plot_search_space_fig_type: "png+pdf"
-blue_plot_search_space_filename: None
+blue_plot_search_space_filename: ~
 blue_plot_search_space_return_jsonstring: False
 blue_plot_search_space_renderer: "default"
 blue_plot_search_space_display: False
