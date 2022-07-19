@@ -1576,7 +1576,7 @@ flux_error_combined = np.concatenate(
 
 # https://lco.global/observatory/instruments/floyds/
 # pixel scale is 1.74
-wave_out = np.arange(3200.0, 10000.0, 1.74)
+wave_out = np.arange(3300.0, 10000.0, 1.74)
 flux_out, flux_error_out = spectres(
     wave_out, wave_combined, flux_combined, flux_error_combined
 )
@@ -1594,7 +1594,7 @@ plt.fill_between(
     label=r"Weighted Combined Noise (1$\sigma$)",
     zorder=1,
 )
-plt.xlim(3200.0, 10000.0)
+plt.xlim(3300.0, 10000.0)
 plt.ylim(
     np.nanpercentile(flux_combined[np.isfinite(flux_combined)], 0.25),
     np.nanpercentile(flux_combined[np.isfinite(flux_combined)], 99.75),
@@ -1684,7 +1684,7 @@ blue_onedspec.science_spectrum_list[
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT1"] = "Angstroms"
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CRVAL1"] = 3.200e03
+].flux_resampled_atm_ext_corrected_hdulist[0].header["CRVAL1"] = 3.300e03
 blue_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CDELT1"] = 1.74e00

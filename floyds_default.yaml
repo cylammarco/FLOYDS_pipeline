@@ -6,7 +6,7 @@ log_file_name: ~
 log_file_folder: ~
 
 # If the name of a frame is provided, it will be directly used
-# ONLY ONE frame can be provided
+# Provide in lists
 science_light_frame: ~
 science_flat_frame: ~
 science_arc_frame: ~
@@ -568,7 +568,7 @@ red_apply_wavelength_calibration_wave_end: 10000.0
 red_apply_wavelength_calibration_wave_bin: 1
 
 # apply_wavelength_calibration
-blue_apply_wavelength_calibration_wave_start: 3200.0
+blue_apply_wavelength_calibration_wave_start: 3300.0
 blue_apply_wavelength_calibration_wave_end: 5500.0
 blue_apply_wavelength_calibration_wave_bin: 1
 
@@ -709,7 +709,7 @@ red_inspect_reduced_spectrum_science_filename: "science_red_reduced"
 red_inspect_reduced_spectrum_standard_filename: "standard_red_reduced"
 
 # inspect reduced spectrum
-blue_inspect_reduced_spectrum_wave_min: 3200.0
+blue_inspect_reduced_spectrum_wave_min: 3300.0
 blue_inspect_reduced_spectrum_wave_max: 5500.0
 blue_inspect_reduced_spectrum_display: False
 blue_inspect_reduced_spectrum_renderer: "default"
