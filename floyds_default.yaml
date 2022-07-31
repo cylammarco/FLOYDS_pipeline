@@ -105,7 +105,8 @@ science_red_rectification_bin_size: 6
 science_red_rectification_n_bin: 15
 science_red_rectification_spline_order: 3
 science_red_rectification_order: 2
-science_red_rectification_coeff: [-9.66263834e+01,  1.90028256e-01, -5.20879934e-05]
+science_red_rectification_coeff:
+  [-9.66263834e+01, 1.90028256e-01, -5.20879934e-05]
 science_red_rectification_use_arc: True
 science_red_rectification_apply: False
 science_red_rectification_display: False
@@ -193,7 +194,8 @@ science_blue_rectification_bin_size: 6
 science_blue_rectification_n_bin: 15
 science_blue_rectification_spline_order: 3
 science_blue_rectification_order: 2
-science_blue_rectification_coeff: [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
+science_blue_rectification_coeff:
+  [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
 science_blue_rectification_use_arc: True
 science_blue_rectification_apply: False
 science_blue_rectification_display: False
@@ -281,7 +283,8 @@ standard_red_rectification_bin_size: 6
 standard_red_rectification_n_bin: 15
 standard_red_rectification_spline_order: 3
 standard_red_rectification_order: 2
-standard_red_rectification_coeff: [-9.66263834e+01,  1.90028256e-01, -5.20879934e-05]
+standard_red_rectification_coeff:
+  [-9.66263834e+01, 1.90028256e-01, -5.20879934e-05]
 standard_red_rectification_use_arc: True
 standard_red_rectification_apply: False
 standard_red_rectification_display: False
@@ -369,7 +372,8 @@ standard_blue_rectification_bin_size: 6
 standard_blue_rectification_n_bin: 15
 standard_blue_rectification_spline_order: 3
 standard_blue_rectification_order: 2
-standard_blue_rectification_coeff: [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
+standard_blue_rectification_coeff:
+  [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
 standard_blue_rectification_use_arc: True
 standard_blue_rectification_apply: False
 standard_blue_rectification_display: False
@@ -487,7 +491,6 @@ red_set_ransac_properties_minimum_matches: 19
 red_set_ransac_properties_minimum_peak_utilisation: 0.0
 red_set_ransac_properties_minimum_fit_error: 0.0001
 
-
 # set_ransac_properties
 blue_set_ransac_properties_sample_size: 5
 blue_set_ransac_properties_top_n_candidate: 5
@@ -574,7 +577,7 @@ blue_apply_wavelength_calibration_wave_bin: 1
 
 # load_standard
 load_standard_target: ~
-load_standard_library: 'esohststan'
+load_standard_library: "esohststan"
 load_standard_ftype: "flux"
 load_standard_cutoff: 0.4
 
@@ -722,42 +725,42 @@ blue_inspect_reduced_spectrum_standard_filename: "standard_blue_reduced"
 
 # create_fits: True
 red_create_fits: True
-red_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+red_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_create_fits_recreate: True
 red_create_fits_empty_primary_hdu: True
 
 # create_fits: True
 blue_create_fits: True
-blue_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+blue_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_create_fits_recreate: True
 blue_create_fits_empty_primary_hdu: True
 
 # save_fits
 red_save_fits: True
-red_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+red_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_save_fits_filename: "red_reduced"
 red_save_fits_recreate: True
 red_save_fits_empty_primary_hdu: True
-red_save_fits_overwrite: False
+red_save_fits_overwrite: True
 
 # save_fits
 blue_save_fits: True
-blue_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+blue_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_save_fits_filename: "blue_reduced"
 blue_save_fits_recreate: True
 blue_save_fits_empty_primary_hdu: True
-blue_save_fits_overwrite: False
+blue_save_fits_overwrite: True
 
 # save_csv
 red_save_csv: True
-red_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+red_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_save_csv_filename: "red_reduced"
 red_save_csv_recreate: True
-red_save_csv_overwrite: False
+red_save_csv_overwrite: True
 
 # save_csv
 blue_save_csv: True
-blue_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled"
+blue_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_save_csv_filename: "blue_reduced"
 blue_save_csv_recreate: True
-blue_save_csv_overwrite: False
+blue_save_csv_overwrite: True

@@ -86,12 +86,13 @@ def fringe_correction(target, flat):
 
 
 HERE = os.getcwd()
-param_filename = sys.argv[1]
 
 # Get config file
 try:
+    param_filename = sys.argv[1]
     params_path = os.path.join(HERE, param_filename)
-except:
+except Exception as e:
+    print(e)
     params_path = os.path.join(HERE, "floyds_default.yaml")
 
 if not os.path.isabs(params_path):
@@ -894,9 +895,6 @@ except:
 
 # Apply the wavelength calibration and display it
 red_onedspec.apply_wavelength_calibration(
-    wave_start=params["red_apply_wavelength_calibration_wave_start"],
-    wave_end=params["red_apply_wavelength_calibration_wave_end"],
-    wave_bin=params["red_apply_wavelength_calibration_wave_bin"],
     stype="science+standard",
 )
 
@@ -1188,9 +1186,6 @@ except:
 
 # Apply the wavelength calibration and display it
 blue_onedspec.apply_wavelength_calibration(
-    wave_start=params["blue_apply_wavelength_calibration_wave_start"],
-    wave_end=params["blue_apply_wavelength_calibration_wave_end"],
-    wave_bin=params["blue_apply_wavelength_calibration_wave_bin"],
     stype="science+standard",
 )
 
@@ -1259,38 +1254,16 @@ red_literature_flux = spectres(
     red_std_spec.flux_literature,
 )
 
-red_literature_flux_resampled = spectres(
-    red_std_spec.wave_resampled,
-    red_std_spec.wave_literature,
-    red_std_spec.flux_literature,
-)
-
 red_second_pass_correction = red_std_spec.flux / red_literature_flux
 red_second_pass_correction = medfilt(red_second_pass_correction, 15)
-
-red_second_pass_correction_resampled = (
-    red_std_spec.flux_resampled / red_literature_flux_resampled
-)
-red_second_pass_correction_resampled = medfilt(
-    red_second_pass_correction_resampled, 15
-)
 
 red_std_spec.flux /= red_second_pass_correction
 red_std_spec.flux_err /= red_second_pass_correction
 red_std_spec.flux_sky /= red_second_pass_correction
 
-red_std_spec.flux_resampled /= red_second_pass_correction_resampled
-red_std_spec.flux_err_resampled /= red_second_pass_correction_resampled
-red_std_spec.flux_sky_resampled /= red_second_pass_correction_resampled
-
 red_sci_spec.flux /= red_second_pass_correction
 red_sci_spec.flux_err /= red_second_pass_correction
 red_sci_spec.flux_sky /= red_second_pass_correction
-
-red_sci_spec.flux_resampled /= red_second_pass_correction_resampled
-red_sci_spec.flux_err_resampled /= red_second_pass_correction_resampled
-red_sci_spec.flux_sky_resampled /= red_second_pass_correction_resampled
-
 
 blue_std_spec = blue_onedspec.standard_spectrum_list[0]
 blue_sci_spec = blue_onedspec.science_spectrum_list[0]
@@ -1300,38 +1273,17 @@ blue_literature_flux = spectres(
     blue_std_spec.wave_literature,
     blue_std_spec.flux_literature,
 )
-blue_literature_flux_resampled = spectres(
-    blue_std_spec.wave_resampled,
-    blue_std_spec.wave_literature,
-    blue_std_spec.flux_literature,
-)
 
 blue_second_pass_correction = blue_std_spec.flux / blue_literature_flux
 blue_second_pass_correction = medfilt(blue_second_pass_correction, 15)
-
-blue_second_pass_correction_resampled = (
-    blue_std_spec.flux_resampled / blue_literature_flux_resampled
-)
-blue_second_pass_correction_resampled = medfilt(
-    blue_second_pass_correction_resampled, 15
-)
 
 blue_std_spec.flux /= blue_second_pass_correction
 blue_std_spec.flux_err /= blue_second_pass_correction
 blue_std_spec.flux_sky /= blue_second_pass_correction
 
-blue_std_spec.flux_resampled /= blue_second_pass_correction_resampled
-blue_std_spec.flux_err_resampled /= blue_second_pass_correction_resampled
-blue_std_spec.flux_sky_resampled /= blue_second_pass_correction_resampled
-
 blue_sci_spec.flux /= blue_second_pass_correction
 blue_sci_spec.flux_err /= blue_second_pass_correction
 blue_sci_spec.flux_sky /= blue_second_pass_correction
-
-blue_sci_spec.flux_resampled /= blue_second_pass_correction_resampled
-blue_sci_spec.flux_err_resampled /= blue_second_pass_correction_resampled
-blue_sci_spec.flux_sky_resampled /= blue_second_pass_correction_resampled
-
 
 #
 #
@@ -1451,6 +1403,25 @@ red_onedspec.inspect_reduced_spectrum(
 #
 #
 #
+# Resampling before saving
+#
+#
+#
+red_onedspec.resample(
+    wave_start=params["red_apply_wavelength_calibration_wave_start"],
+    wave_end=params["red_apply_wavelength_calibration_wave_end"],
+    wave_bin=params["red_apply_wavelength_calibration_wave_bin"],
+)
+blue_onedspec.resample(
+    wave_start=params["blue_apply_wavelength_calibration_wave_start"],
+    wave_end=params["blue_apply_wavelength_calibration_wave_end"],
+    wave_bin=params["blue_apply_wavelength_calibration_wave_bin"],
+)
+
+
+#
+#
+#
 # Saving files here
 #
 #
@@ -1523,14 +1494,14 @@ wave_blue = blue_onedspec.science_spectrum_list[0].wave_resampled
 
 flux_red = red_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected
+].flux_resampled_atm_ext_telluric_corrected
 flux_blue = blue_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_corrected
 
 flux_red_err = red_onedspec.science_spectrum_list[
     0
-].flux_err_resampled_atm_ext_corrected
+].flux_err_resampled_atm_ext_telluric_corrected
 flux_blue_err = blue_onedspec.science_spectrum_list[
     0
 ].flux_err_resampled_atm_ext_corrected
@@ -1539,7 +1510,7 @@ flux_blue_err = blue_onedspec.science_spectrum_list[
 # in the combined spectrum
 red_limit = 5000
 # This value has to match the
-blue_limit = params["blue_apply_wavelength_calibration_wave_end"]
+blue_limit = 6000
 
 blue_mask = (wave_blue >= red_limit) & (wave_blue <= blue_limit)
 red_mask = (wave_red >= red_limit) & (wave_red <= blue_limit)
@@ -1690,22 +1661,19 @@ blue_onedspec.science_spectrum_list[
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CDELT1"] = 1.74e00
 blue_onedspec.science_spectrum_list[
     0
+].flux_resampled_atm_ext_corrected_hdulist[0].header["CD1_1"] = 1.74e00
+blue_onedspec.science_spectrum_list[
+    0
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CRPIX1"] = 1.00e00
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE2"] = "a2      "
+].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE2"] = "LINEAR"
 blue_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT2"] = "Pixels  "
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CRVAL2"] = 1.00e00
-blue_onedspec.science_spectrum_list[
-    0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CDELT2"] = 1.00e00
-blue_onedspec.science_spectrum_list[
-    0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CRPIX2"] = 1.00e00
+].flux_resampled_atm_ext_corrected_hdulist[0].header["CD2_2"] = 0.00e00
 
 blue_onedspec.science_spectrum_list[
     0
