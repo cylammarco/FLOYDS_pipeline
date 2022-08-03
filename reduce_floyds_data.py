@@ -93,7 +93,7 @@ try:
     params_path = os.path.join(HERE, param_filename)
 except Exception as e:
     print(e)
-    params_path = os.path.join(HERE, "floyds_default.yaml")
+    params_path = os.path.join(HERE, "floyds_2022jdf_20220629_2932516.yaml")
 
 if not os.path.isabs(params_path):
     params_path = os.path.abspath(params_path)
@@ -174,11 +174,12 @@ fsmode = params["fsmode"]
 psfmodel = params["psfmodel"]
 psfsize = params["psfsize"]
 
-rec_coeff_blue = None
-rec_coeff_red = None
-# rec_coeff_blue = (-1.28091530e+02, 1.11427370e-01, 5.19032671e-07)
-# rec_coeff_red = (-1.52689504e+02, 1.31426850e-01, -1.25352165e-06)
-
+# rec_coeff_blue = None
+# rec_coeff_red = None
+# north
+rec_coeff_blue = (-1.28091530e02, 1.11427370e-01, 5.19032671e-07)
+rec_coeff_red = (-1.52689504e02, 1.31426850e-01, -1.25352165e-06)
+# south ??
 
 #
 #
@@ -1567,8 +1568,18 @@ plt.fill_between(
 )
 plt.xlim(3300.0, 10000.0)
 plt.ylim(
-    np.nanpercentile(flux_combined[np.isfinite(flux_combined)], 0.25),
-    np.nanpercentile(flux_combined[np.isfinite(flux_combined)], 99.75),
+    np.nanpercentile(
+        flux_combined[wave_combined < 9000][
+            np.isfinite(flux_combined[wave_combined < 9000])
+        ],
+        0.25,
+    ),
+    np.nanpercentile(
+        flux_combined[wave_combined < 9000][
+            np.isfinite(flux_combined[wave_combined < 9000])
+        ],
+        99,
+    ),
 )
 plt.xlabel("Wavelength / A")
 plt.ylabel("Flux / (erg / s / cm / cm / A)")

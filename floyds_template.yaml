@@ -1,9 +1,14 @@
-# logger level
+# log level
 log_level: "info"
-
-target_name: "AT2022DML - 20220228"
 log_file_name: ~
 log_file_folder: ~
+
+# Output path (For the folder and file names)
+output_folder_path: ~
+output_file_name_suffix: ~
+
+# Target name (For the titles in figures)
+target_name: ~
 
 # If the name of a frame is provided, it will be directly used
 # Provide in lists
@@ -16,13 +21,13 @@ standard_flat_frame: ~
 standard_arc_frame: ~
 
 # If the names of the frames are provided, the following will be IGNORED
-science_light_folder: "AT2022DML/science_light"
-science_flat_folder: "AT2022DML/science_flat"
-science_arc_folder: "AT2022DML/science_arc"
+science_light_folder: ~
+science_flat_folder: ~
+science_arc_folder: ~
 
-standard_light_folder: "AT2022DML/standard_light"
-standard_flat_folder: "AT2022DML/standard_flat"
-standard_arc_folder: "AT2022DML/standard_arc"
+standard_light_folder: ~
+standard_flat_folder: ~
+standard_arc_folder: ~
 
 science_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
 science_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
@@ -31,10 +36,6 @@ science_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
 standard_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
 standard_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
 standard_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
-
-# Output path
-output_folder_path: "AT2022DML/output"
-output_file_name_suffix: "AT2022DML"
 
 # Cosmic ray cleaning only (light frame only)
 cosmicray: True
@@ -471,7 +472,7 @@ red_set_hough_properties_range_tolerance: 500
 red_set_hough_properties_linearity_tolerance: 100
 
 # set_hough_properties
-blue_set_hough_properties_num_slopes: 500
+blue_set_hough_properties_num_slopes: 750
 blue_set_hough_properties_xbins: 200
 blue_set_hough_properties_ybins: 200
 blue_set_hough_properties_min_wavelength: 3200.0
@@ -498,7 +499,7 @@ blue_set_ransac_properties_linear: True
 blue_set_ransac_properties_filter_close: True
 blue_set_ransac_properties_ransac_tolerance: 3
 blue_set_ransac_properties_candidate_weighted: True
-blue_set_ransac_properties_hough_weight: 3.0
+blue_set_ransac_properties_hough_weight: 2.0
 blue_set_ransac_properties_minimum_matches: 9
 blue_set_ransac_properties_minimum_peak_utilisation: 0.0
 blue_set_ransac_properties_minimum_fit_error: 0.0001
@@ -534,7 +535,7 @@ blue_plot_search_space_renderer: "default"
 blue_plot_search_space_display: False
 
 # fit the wavelength
-red_fit_max_tries: 2000
+red_fit_max_tries: 2500
 red_fit_fit_deg: 5
 red_fit_fit_coeff: ~
 red_fit_fit_tolerance: 10.0
@@ -550,7 +551,7 @@ red_fit_fig_type: "png+pdf"
 red_fit_filename: "red_wavelength_solution"
 
 # fit the wavelength
-blue_fit_max_tries: 2000
+blue_fit_max_tries: 2500
 blue_fit_fit_deg: 4
 blue_fit_fit_coeff: ~
 blue_fit_fit_tolerance: 10.0
@@ -564,16 +565,6 @@ blue_fit_renderer: "default"
 blue_fit_save_fig: True
 blue_fit_fig_type: "png+pdf"
 blue_fit_filename: "blue_wavelength_solution"
-
-# apply_wavelength_calibration
-red_apply_wavelength_calibration_wave_start: 5000.0
-red_apply_wavelength_calibration_wave_end: 10000.0
-red_apply_wavelength_calibration_wave_bin: 1
-
-# apply_wavelength_calibration
-blue_apply_wavelength_calibration_wave_start: 3300.0
-blue_apply_wavelength_calibration_wave_end: 5500.0
-blue_apply_wavelength_calibration_wave_bin: 1
 
 # load_standard
 load_standard_target: ~
@@ -698,6 +689,16 @@ red_apply_atmospheric_extinction_correction_standard_airmass: ~
 # apply_atmospheric_extinction_correction
 blue_apply_atmospheric_extinction_correction_science_airmass: ~
 blue_apply_atmospheric_extinction_correction_standard_airmass: ~
+
+# resample the wavelength before exporting
+red_apply_wavelength_calibration_wave_start: 5000.0
+red_apply_wavelength_calibration_wave_end: 10000.0
+red_apply_wavelength_calibration_wave_bin: ~
+
+# resample the wavelength before exporting
+blue_apply_wavelength_calibration_wave_start: 3300.0
+blue_apply_wavelength_calibration_wave_end: 5500.0
+blue_apply_wavelength_calibration_wave_bin: ~
 
 # inspect reduced spectrum
 red_inspect_reduced_spectrum_wave_min: 5000.0
