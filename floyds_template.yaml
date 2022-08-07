@@ -10,6 +10,9 @@ output_file_name_suffix: ~
 # Target name (For the titles in figures)
 target_name: ~
 
+# FLOYDS North or South
+hemisphere: ~
+
 # If the name of a frame is provided, it will be directly used
 # Provide in lists
 science_light_frame: ~
@@ -78,9 +81,9 @@ standard_arc_combine_type: median
 # Aperture Tracing
 science_red_aptrace_nspec: 1
 science_red_aptrace_smooth: False
-science_red_aptrace_nwindow: 25
+science_red_aptrace_nwindow: 20
 science_red_aptrace_spec_sep: 5
-science_red_aptrace_trace_width: 20
+science_red_aptrace_trace_width: 30
 science_red_aptrace_resample_factor: 4
 science_red_aptrace_rescale: False
 science_red_aptrace_scaling_min: 0.995
@@ -106,8 +109,10 @@ science_red_rectification_bin_size: 6
 science_red_rectification_n_bin: 15
 science_red_rectification_spline_order: 3
 science_red_rectification_order: 2
-science_red_rectification_coeff:
-  [-9.66263834e+01, 1.90028256e-01, -5.20879934e-05]
+science_red_rectification_coeff_north:
+  [-1.52689504e+02, 1.31426850e-01, -1.25352165e-06]
+science_red_rectification_coeff_south:
+  [-5.75392819e+01, 5.45549668e-02, 6.84072176e-05]
 science_red_rectification_use_arc: True
 science_red_rectification_apply: False
 science_red_rectification_display: False
@@ -169,7 +174,7 @@ science_blue_aptrace_nspec: 1
 science_blue_aptrace_smooth: False
 science_blue_aptrace_nwindow: 20
 science_blue_aptrace_spec_sep: 5
-science_blue_aptrace_trace_width: 25
+science_blue_aptrace_trace_width: 30
 science_blue_aptrace_resample_factor: 4
 science_blue_aptrace_rescale: False
 science_blue_aptrace_scaling_min: 0.995
@@ -195,8 +200,10 @@ science_blue_rectification_bin_size: 6
 science_blue_rectification_n_bin: 15
 science_blue_rectification_spline_order: 3
 science_blue_rectification_order: 2
-science_blue_rectification_coeff:
-  [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
+science_blue_rectification_coeff_north:
+  [-1.28091530e+02, 1.11427370e-01, 5.19032671e-07]
+science_blue_rectification_coeff_south:
+  [-3.39877863e+01, 1.33333333e-01, -4.71398587e-19]
 science_blue_rectification_use_arc: True
 science_blue_rectification_apply: False
 science_blue_rectification_display: False
@@ -258,7 +265,7 @@ standard_red_aptrace_nspec: 1
 standard_red_aptrace_smooth: False
 standard_red_aptrace_nwindow: 25
 standard_red_aptrace_spec_sep: 5
-standard_red_aptrace_trace_width: 20
+standard_red_aptrace_trace_width: 30
 standard_red_aptrace_resample_factor: 4
 standard_red_aptrace_rescale: False
 standard_red_aptrace_scaling_min: 0.995
@@ -284,8 +291,10 @@ standard_red_rectification_bin_size: 6
 standard_red_rectification_n_bin: 15
 standard_red_rectification_spline_order: 3
 standard_red_rectification_order: 2
-standard_red_rectification_coeff:
-  [-9.66263834e+01, 1.90028256e-01, -5.20879934e-05]
+standard_red_rectification_coeff_north:
+  [-1.52689504e+02, 1.31426850e-01, -1.25352165e-06]
+standard_red_rectification_coeff_south:
+  [-5.75392819e+01, 5.45549668e-02, 6.84072176e-05]
 standard_red_rectification_use_arc: True
 standard_red_rectification_apply: False
 standard_red_rectification_display: False
@@ -347,7 +356,7 @@ standard_blue_aptrace_nspec: 1
 standard_blue_aptrace_smooth: False
 standard_blue_aptrace_nwindow: 25
 standard_blue_aptrace_spec_sep: 5
-standard_blue_aptrace_trace_width: 15
+standard_blue_aptrace_trace_width: 30
 standard_blue_aptrace_resample_factor: 4
 standard_blue_aptrace_rescale: False
 standard_blue_aptrace_scaling_min: 0.995
@@ -373,8 +382,10 @@ standard_blue_rectification_bin_size: 6
 standard_blue_rectification_n_bin: 15
 standard_blue_rectification_spline_order: 3
 standard_blue_rectification_order: 2
-standard_blue_rectification_coeff:
-  [-3.38141912e+01, 1.33333333e-01, 1.09828071e-18]
+standard_blue_rectification_coeff_north:
+  [-1.28091530e+02, 1.11427370e-01, 5.19032671e-07]
+standard_blue_rectification_coeff_south:
+  [-3.39877863e+01, 1.33333333e-01, -4.71398587e-19]
 standard_blue_rectification_use_arc: True
 standard_blue_rectification_apply: False
 standard_blue_rectification_display: False

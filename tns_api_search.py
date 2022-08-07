@@ -26,7 +26,7 @@ url_tns_api = "https://" + TNS + "/api/get"
 
 TNS_BOT_ID = "YOUR_BOT_ID_HERE"
 TNS_BOT_NAME = "YOUR_BOT_NAME_HERE"
-TNS_API_KEY = ""
+TNS_API_KEY = "c80937eb203e21e4644e23e411c64fd5d25faf04"
 
 # list that represents json file for search obj
 search_obj = [

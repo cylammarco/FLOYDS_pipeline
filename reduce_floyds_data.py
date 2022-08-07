@@ -174,13 +174,27 @@ fsmode = params["fsmode"]
 psfmodel = params["psfmodel"]
 psfsize = params["psfsize"]
 
-# rec_coeff_blue = None
-# rec_coeff_red = None
-# north
-rec_coeff_blue = (-1.28091530e02, 1.11427370e-01, 5.19032671e-07)
-rec_coeff_red = (-1.52689504e02, 1.31426850e-01, -1.25352165e-06)
-# south ??
+if params["hemisphere"] == "north":
 
+    rec_coeff_blue_science = params["science_blue_rectification_coeff_north"]
+    rec_coeff_red_science = params["science_red_rectification_coeff_north"]
+    rec_coeff_blue_standard = params["standard_blue_rectification_coeff_north"]
+    rec_coeff_red_standard = params["standard_red_rectification_coeff_north"]
+
+elif params["hemisphere"] == "south":
+
+    rec_coeff_blue_science = params["science_blue_rectification_coeff_south"]
+    rec_coeff_red_science = params["science_red_rectification_coeff_south"]
+    rec_coeff_blue_standard = params["standard_blue_rectification_coeff_south"]
+    rec_coeff_red_standard = params["standard_red_rectification_coeff_south"]
+
+else:
+
+    print(
+        "Only north or south are acceptable. You have provided {}.".format(
+            params["hemisphere"]
+        )
+    )
 #
 #
 #
@@ -213,6 +227,8 @@ img = {
 target_name = {}
 total_exposure_time = 0.0
 
+# Do standard first, so that the ap-trace can be used for curvature correction
+# in both science and standard
 for frame_type in ["science", "standard"]:
 
     logger.info("Start working on the {} frames.".format(frame_type))
@@ -421,11 +437,19 @@ for frame_type in ["science", "standard"]:
 
             spatial_mask = red_spatial_mask
             spec_mask = red_spec_mask
+            if frame_type == "science":
+                coeff = rec_coeff_red_science
+            if frame_type == "standard":
+                coeff = rec_coeff_red_standard
 
         else:
 
             spatial_mask = blue_spatial_mask
             spec_mask = blue_spec_mask
+            if frame_type == "science":
+                coeff = rec_coeff_blue_science
+            if frame_type == "standard":
+                coeff = rec_coeff_blue_standard
 
         twodspec = extracted_twodspec[frame_type][arm]
 
@@ -504,7 +528,7 @@ for frame_type in ["science", "standard"]:
                 frame_type + "_" + arm + "_rectification_spline_order"
             ],
             order=params[frame_type + "_" + arm + "_rectification_order"],
-            coeff=params[frame_type + "_" + arm + "_rectification_coeff"],
+            coeff=coeff,
             use_arc=params[frame_type + "_" + arm + "_rectification_use_arc"],
             apply=params[frame_type + "_" + arm + "_rectification_apply"],
             display=params[frame_type + "_" + arm + "_rectification_display"],
@@ -824,30 +848,57 @@ try:
         stype="science",
     )
 except:
-    red_onedspec.set_ransac_properties(
-        minimum_matches=params["red_set_ransac_properties_minimum_matches"]
-        - 1,
-        stype="science",
-    )
-    red_onedspec.fit(
-        max_tries=params["red_fit_max_tries"],
-        fit_deg=params["red_fit_fit_deg"],
-        fit_coeff=params["red_fit_fit_coeff"],
-        fit_tolerance=params["red_fit_fit_tolerance"],
-        fit_type=params["red_fit_fit_type"],
-        candidate_tolerance=params["red_fit_candidate_tolerance"],
-        brute_force=params["red_fit_brute_force"],
-        progress=params["red_fit_progress"],
-        return_solution=params["red_fit_return_solution"],
-        display=params["red_fit_display"],
-        renderer=params["red_fit_renderer"],
-        save_fig=params["red_fit_save_fig"],
-        fig_type=params["red_fit_fig_type"],
-        filename=os.path.join(
-            output_folder_path, params["red_fit_filename"] + "_science"
-        ),
-        stype="science",
-    )
+    try:
+        red_onedspec.set_ransac_properties(
+            minimum_matches=params["red_set_ransac_properties_minimum_matches"]
+            - 1,
+            stype="science",
+        )
+        red_onedspec.fit(
+            max_tries=params["red_fit_max_tries"],
+            fit_deg=params["red_fit_fit_deg"],
+            fit_coeff=params["red_fit_fit_coeff"],
+            fit_tolerance=params["red_fit_fit_tolerance"],
+            fit_type=params["red_fit_fit_type"],
+            candidate_tolerance=params["red_fit_candidate_tolerance"],
+            brute_force=params["red_fit_brute_force"],
+            progress=params["red_fit_progress"],
+            return_solution=params["red_fit_return_solution"],
+            display=params["red_fit_display"],
+            renderer=params["red_fit_renderer"],
+            save_fig=params["red_fit_save_fig"],
+            fig_type=params["red_fit_fig_type"],
+            filename=os.path.join(
+                output_folder_path, params["red_fit_filename"] + "_science"
+            ),
+            stype="science",
+        )
+    except:
+        if params["hemisphere"] == "north":
+            red_onedspec.add_fit_coeff(
+                [
+                    4768.18,
+                    3.42711,
+                    3.46385e-6,
+                    1.09948e-7,
+                    -1.04667e-10,
+                    2.96244e-14,
+                ],
+                stype="science",
+            )
+        else:
+            red_onedspec.add_fit_coeff(
+                [
+                    4307.37,
+                    4.67048,
+                    -0.00308638,
+                    3.66622e-6,
+                    -2.03226e-9,
+                    4.27453e-13,
+                ],
+                stype="science",
+            )
+
 try:
     red_onedspec.fit(
         max_tries=params["red_fit_max_tries"],
@@ -869,30 +920,56 @@ try:
         stype="standard",
     )
 except:
-    red_onedspec.set_ransac_properties(
-        minimum_matches=params["red_set_ransac_properties_minimum_matches"]
-        - 1,
-        stype="standard",
-    )
-    red_onedspec.fit(
-        max_tries=params["red_fit_max_tries"],
-        fit_deg=params["red_fit_fit_deg"],
-        fit_coeff=params["red_fit_fit_coeff"],
-        fit_tolerance=params["red_fit_fit_tolerance"],
-        fit_type=params["red_fit_fit_type"],
-        candidate_tolerance=params["red_fit_candidate_tolerance"],
-        brute_force=params["red_fit_brute_force"],
-        progress=params["red_fit_progress"],
-        return_solution=params["red_fit_return_solution"],
-        display=params["red_fit_display"],
-        renderer=params["red_fit_renderer"],
-        save_fig=params["red_fit_save_fig"],
-        fig_type=params["red_fit_fig_type"],
-        filename=os.path.join(
-            output_folder_path, params["red_fit_filename"] + "_standard"
-        ),
-        stype="standard",
-    )
+    try:
+        red_onedspec.set_ransac_properties(
+            minimum_matches=params["red_set_ransac_properties_minimum_matches"]
+            - 1,
+            stype="standard",
+        )
+        red_onedspec.fit(
+            max_tries=params["red_fit_max_tries"],
+            fit_deg=params["red_fit_fit_deg"],
+            fit_coeff=params["red_fit_fit_coeff"],
+            fit_tolerance=params["red_fit_fit_tolerance"],
+            fit_type=params["red_fit_fit_type"],
+            candidate_tolerance=params["red_fit_candidate_tolerance"],
+            brute_force=params["red_fit_brute_force"],
+            progress=params["red_fit_progress"],
+            return_solution=params["red_fit_return_solution"],
+            display=params["red_fit_display"],
+            renderer=params["red_fit_renderer"],
+            save_fig=params["red_fit_save_fig"],
+            fig_type=params["red_fit_fig_type"],
+            filename=os.path.join(
+                output_folder_path, params["red_fit_filename"] + "_standard"
+            ),
+            stype="standard",
+        )
+    except:
+        if params["hemisphere"] == "north":
+            red_onedspec.add_fit_coeff(
+                [
+                    4768.18,
+                    3.42711,
+                    3.46385e-6,
+                    1.09948e-7,
+                    -1.04667e-10,
+                    2.96244e-14,
+                ],
+                stype="standard",
+            )
+        else:
+            red_onedspec.add_fit_coeff(
+                [
+                    4307.37,
+                    4.67048,
+                    -0.00308638,
+                    3.66622e-6,
+                    -2.03226e-9,
+                    4.27453e-13,
+                ],
+                stype="standard",
+            )
 
 # Apply the wavelength calibration and display it
 red_onedspec.apply_wavelength_calibration(
@@ -1113,30 +1190,44 @@ try:
     )
 except:
 
-    blue_onedspec.set_ransac_properties(
-        minimum_matches=params["blue_set_ransac_properties_minimum_matches"]
-        - 1,
-        stype="science",
-    )
-    blue_onedspec.fit(
-        max_tries=params["blue_fit_max_tries"],
-        fit_deg=params["blue_fit_fit_deg"],
-        fit_coeff=params["blue_fit_fit_coeff"],
-        fit_tolerance=params["blue_fit_fit_tolerance"],
-        fit_type=params["blue_fit_fit_type"],
-        candidate_tolerance=params["blue_fit_candidate_tolerance"],
-        brute_force=params["blue_fit_brute_force"],
-        progress=params["blue_fit_progress"],
-        return_solution=params["blue_fit_return_solution"],
-        display=params["blue_fit_display"],
-        renderer=params["blue_fit_renderer"],
-        save_fig=params["blue_fit_save_fig"],
-        fig_type=params["blue_fit_fig_type"],
-        filename=os.path.join(
-            output_folder_path, params["blue_fit_filename"] + "_science"
-        ),
-        stype="science",
-    )
+    try:
+        blue_onedspec.set_ransac_properties(
+            minimum_matches=params[
+                "blue_set_ransac_properties_minimum_matches"
+            ]
+            - 1,
+            stype="science",
+        )
+        blue_onedspec.fit(
+            max_tries=params["blue_fit_max_tries"],
+            fit_deg=params["blue_fit_fit_deg"],
+            fit_coeff=params["blue_fit_fit_coeff"],
+            fit_tolerance=params["blue_fit_fit_tolerance"],
+            fit_type=params["blue_fit_fit_type"],
+            candidate_tolerance=params["blue_fit_candidate_tolerance"],
+            brute_force=params["blue_fit_brute_force"],
+            progress=params["blue_fit_progress"],
+            return_solution=params["blue_fit_return_solution"],
+            display=params["blue_fit_display"],
+            renderer=params["blue_fit_renderer"],
+            save_fig=params["blue_fit_save_fig"],
+            fig_type=params["blue_fit_fig_type"],
+            filename=os.path.join(
+                output_folder_path, params["blue_fit_filename"] + "_science"
+            ),
+            stype="science",
+        )
+    except:
+        if params["hemisphere"] == "north":
+            blue_onedspec.add_fit_coeff(
+                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+                stype="science",
+            )
+        else:
+            blue_onedspec.add_fit_coeff(
+                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
+                stype="science",
+            )
 
 try:
     blue_onedspec.fit(
@@ -1159,31 +1250,44 @@ try:
         stype="standard",
     )
 except:
-    blue_onedspec.set_ransac_properties(
-        minimum_matches=params["blue_set_ransac_properties_minimum_matches"]
-        - 1,
-        stype="standard",
-    )
-    blue_onedspec.fit(
-        max_tries=params["blue_fit_max_tries"],
-        fit_deg=params["blue_fit_fit_deg"],
-        fit_coeff=params["blue_fit_fit_coeff"],
-        fit_tolerance=params["blue_fit_fit_tolerance"],
-        fit_type=params["blue_fit_fit_type"],
-        candidate_tolerance=params["blue_fit_candidate_tolerance"],
-        brute_force=params["blue_fit_brute_force"],
-        progress=params["blue_fit_progress"],
-        return_solution=params["blue_fit_return_solution"],
-        display=params["blue_fit_display"],
-        renderer=params["blue_fit_renderer"],
-        save_fig=params["blue_fit_save_fig"],
-        fig_type=params["blue_fit_fig_type"],
-        filename=os.path.join(
-            output_folder_path, params["blue_fit_filename"] + "_standard"
-        ),
-        stype="standard",
-    )
-
+    try:
+        blue_onedspec.set_ransac_properties(
+            minimum_matches=params[
+                "blue_set_ransac_properties_minimum_matches"
+            ]
+            - 1,
+            stype="standard",
+        )
+        blue_onedspec.fit(
+            max_tries=params["blue_fit_max_tries"],
+            fit_deg=params["blue_fit_fit_deg"],
+            fit_coeff=params["blue_fit_fit_coeff"],
+            fit_tolerance=params["blue_fit_fit_tolerance"],
+            fit_type=params["blue_fit_fit_type"],
+            candidate_tolerance=params["blue_fit_candidate_tolerance"],
+            brute_force=params["blue_fit_brute_force"],
+            progress=params["blue_fit_progress"],
+            return_solution=params["blue_fit_return_solution"],
+            display=params["blue_fit_display"],
+            renderer=params["blue_fit_renderer"],
+            save_fig=params["blue_fit_save_fig"],
+            fig_type=params["blue_fit_fig_type"],
+            filename=os.path.join(
+                output_folder_path, params["blue_fit_filename"] + "_standard"
+            ),
+            stype="standard",
+        )
+    except:
+        if params["hemisphere"] == "north":
+            blue_onedspec.add_fit_coeff(
+                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+                stype="standard",
+            )
+        else:
+            blue_onedspec.add_fit_coeff(
+                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
+                stype="standard",
+            )
 
 # Apply the wavelength calibration and display it
 blue_onedspec.apply_wavelength_calibration(
@@ -1507,11 +1611,11 @@ flux_blue_err = blue_onedspec.science_spectrum_list[
     0
 ].flux_err_resampled_atm_ext_corrected
 
-# trim the last ~100A from the blue and the first ~100A from the red
-# in the combined spectrum
+# trim the last few hundred A from the blue and the first few hundred A from
+# the red in the combined spectrum
 red_limit = 5000
 # This value has to match the
-blue_limit = 6000
+blue_limit = 5750
 
 blue_mask = (wave_blue >= red_limit) & (wave_blue <= blue_limit)
 red_mask = (wave_red >= red_limit) & (wave_red <= blue_limit)
@@ -1572,13 +1676,13 @@ plt.ylim(
         flux_combined[wave_combined < 9000][
             np.isfinite(flux_combined[wave_combined < 9000])
         ],
-        0.25,
+        0.5,
     ),
     np.nanpercentile(
         flux_combined[wave_combined < 9000][
             np.isfinite(flux_combined[wave_combined < 9000])
         ],
-        99,
+        99.5,
     ),
 )
 plt.xlabel("Wavelength / A")
