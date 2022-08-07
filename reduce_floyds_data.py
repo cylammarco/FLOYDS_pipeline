@@ -224,12 +224,15 @@ img = {
     "science": None,
     "standard": None,
 }
+ap_trace_position = {}
+ap_trace_sigma = {}
+
 target_name = {}
 total_exposure_time = 0.0
 
 # Do standard first, so that the ap-trace can be used for curvature correction
 # in both science and standard
-for frame_type in ["science", "standard"]:
+for frame_type in ["standard", "science"]:
 
     logger.info("Start working on the {} frames.".format(frame_type))
 
@@ -470,50 +473,69 @@ for frame_type in ["science", "standard"]:
         twodspec.apply_mask_to_arc()
 
         # Get the trace to rectify the image
-        twodspec.ap_trace(
-            nspec=params[frame_type + "_" + arm + "_aptrace_nspec"],
-            smooth=params[frame_type + "_" + arm + "_aptrace_smooth"],
-            nwindow=params[frame_type + "_" + arm + "_aptrace_nwindow"],
-            spec_sep=params[frame_type + "_" + arm + "_aptrace_spec_sep"],
-            trace_width=params[
-                frame_type + "_" + arm + "_aptrace_trace_width"
-            ],
-            resample_factor=params[
-                frame_type + "_" + arm + "_aptrace_resample_factor"
-            ],
-            rescale=params[frame_type + "_" + arm + "_aptrace_rescale"],
-            scaling_min=params[
-                frame_type + "_" + arm + "_aptrace_scaling_min"
-            ],
-            scaling_max=params[
-                frame_type + "_" + arm + "_aptrace_scaling_max"
-            ],
-            scaling_step=params[
-                frame_type + "_" + arm + "_aptrace_scaling_step"
-            ],
-            percentile=params[frame_type + "_" + arm + "_aptrace_percentile"],
-            shift_tol=params[frame_type + "_" + arm + "_aptrace_shift_tol"],
-            fit_deg=params[frame_type + "_" + arm + "_aptrace_fit_deg"],
-            ap_faint=params[frame_type + "_" + arm + "_aptrace_ap_faint"],
-            display=params[frame_type + "_" + arm + "_aptrace_display"],
-            renderer=params[frame_type + "_" + arm + "_aptrace_renderer"],
-            width=params[frame_type + "_" + arm + "_aptrace_width"],
-            height=params[frame_type + "_" + arm + "_aptrace_height"],
-            return_jsonstring=params[
-                frame_type + "_" + arm + "_aptrace_return_jsonstring"
-            ],
-            save_fig=params[frame_type + "_" + arm + "_aptrace_save_fig"],
-            fig_type=params[frame_type + "_" + arm + "_aptrace_fig_type"],
-            filename=os.path.join(
-                output_folder_path,
-                params[frame_type + "_" + arm + "_aptrace_filename"]
-                + "_"
-                + frame_type,
-            ),
-            open_iframe=params[
-                frame_type + "_" + arm + "_aptrace_open_iframe"
-            ],
-        )
+        if frame_type == "standard":
+
+            twodspec.ap_trace(
+                nspec=params[frame_type + "_" + arm + "_aptrace_nspec"],
+                smooth=params[frame_type + "_" + arm + "_aptrace_smooth"],
+                nwindow=params[frame_type + "_" + arm + "_aptrace_nwindow"],
+                spec_sep=params[frame_type + "_" + arm + "_aptrace_spec_sep"],
+                trace_width=params[
+                    frame_type + "_" + arm + "_aptrace_trace_width"
+                ],
+                resample_factor=params[
+                    frame_type + "_" + arm + "_aptrace_resample_factor"
+                ],
+                rescale=params[frame_type + "_" + arm + "_aptrace_rescale"],
+                scaling_min=params[
+                    frame_type + "_" + arm + "_aptrace_scaling_min"
+                ],
+                scaling_max=params[
+                    frame_type + "_" + arm + "_aptrace_scaling_max"
+                ],
+                scaling_step=params[
+                    frame_type + "_" + arm + "_aptrace_scaling_step"
+                ],
+                percentile=params[
+                    frame_type + "_" + arm + "_aptrace_percentile"
+                ],
+                shift_tol=params[
+                    frame_type + "_" + arm + "_aptrace_shift_tol"
+                ],
+                fit_deg=params[frame_type + "_" + arm + "_aptrace_fit_deg"],
+                ap_faint=params[frame_type + "_" + arm + "_aptrace_ap_faint"],
+                display=params[frame_type + "_" + arm + "_aptrace_display"],
+                renderer=params[frame_type + "_" + arm + "_aptrace_renderer"],
+                width=params[frame_type + "_" + arm + "_aptrace_width"],
+                height=params[frame_type + "_" + arm + "_aptrace_height"],
+                return_jsonstring=params[
+                    frame_type + "_" + arm + "_aptrace_return_jsonstring"
+                ],
+                save_fig=params[frame_type + "_" + arm + "_aptrace_save_fig"],
+                fig_type=params[frame_type + "_" + arm + "_aptrace_fig_type"],
+                filename=os.path.join(
+                    output_folder_path,
+                    params[frame_type + "_" + arm + "_aptrace_filename"]
+                    + "_"
+                    + frame_type,
+                ),
+                open_iframe=params[
+                    frame_type + "_" + arm + "_aptrace_open_iframe"
+                ],
+            )
+
+            ap_trace_position[arm] = copy.deepcopy(
+                twodspec.spectrum_list[0].trace
+            )
+            ap_trace_sigma[arm] = copy.deepcopy(
+                twodspec.spectrum_list[0].trace_sigma
+            )
+
+        if frame_type == "science":
+
+            twodspec.add_trace(
+                ap_trace_position[arm], ap_trace_sigma[arm], spec_id=0
+            )
 
         # Get the rectification polynomial
         twodspec.get_rectification(
@@ -1638,15 +1660,19 @@ flux_error_weighted_combine = 1.0 / np.sqrt(
 )
 
 flux_combined = np.concatenate(
-    (flux_blue[~blue_mask], flux_weighted_combine, flux_red[~red_mask])
+    (
+        flux_blue[~blue_mask],
+        flux_weighted_combine,
+        flux_red[wave_red > blue_limit],
+    )
 )
-wave_combined = np.concatenate((wave_blue, wave_red[~red_mask]))
+wave_combined = np.concatenate((wave_blue, wave_red[wave_red > blue_limit]))
 
 flux_error_combined = np.concatenate(
     (
         flux_blue_err[~blue_mask],
         flux_error_weighted_combine,
-        flux_red_err[~red_mask],
+        flux_red_err[wave_red > blue_limit],
     )
 )
 

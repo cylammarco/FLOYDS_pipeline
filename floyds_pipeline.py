@@ -401,11 +401,54 @@ for k, v in target_list.items():
         yaml.dump(list_yaml, f)
 
 
-# use backup arc and flat (north-south dependent) if any of the science or standard calibration frames are missing
-
-
 # run the reduction the reduce_floyds_data.py
 for yaml_filename in yaml_config_list:
     os.system(
         "{} reduce_floyds_data.py {}".format(sys.executable, yaml_filename)
     )
+    with open(yaml_filename, "r") as stream:
+        params = yaml.load(stream)
+    outtext = ""
+    # Print the data used in a txt file
+    outtext += datetime.now().strftime("%Y-%m-%d %H:%M:%S") + os.linesep
+    outtext += "Target: {}".format(target_name) + os.linesep
+    outtext += (
+        "Science light frame: {}".format(params["science_light_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Science flat frame: {}".format(params["science_flat_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Science arc frame: {}".format(params["science_arc_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Standard light frame: {}".format(params["standard_light_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Standard flat frame: {}".format(params["standard_flat_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Standard arc frame: {}".format(params["standard_arc_frame"])
+        + os.linesep
+    )
+    outtext += (
+        "Intermediate and final data reduction products are saved at: {}".format(
+            params["output_folder_path"]
+        )
+        + os.linesep
+    )
+    text_file = open(
+        os.path.join(
+            params["target_name"],
+            "_".join(params["output_folder_path"].split(os.path.sep)[:-1])
+            + ".txt",
+        ),
+        "w+",
+    )
+    text_file.write(outtext)
+    text_file.close()
