@@ -5,6 +5,7 @@ from datetime import timedelta, datetime
 import json
 from multiprocessing.sharedctypes import Value
 import os
+import pkgutil
 import sys
 
 import numpy as np
@@ -71,10 +72,13 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+
 # Modify the yaml initialisation
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
-
+yaml_template = os.path.join(HERE, "floyds_template.yaml")
 
 # Perform a search on the Transient Name Server
 # https://www.wis-tns.org/
@@ -108,8 +112,6 @@ def get(get_obj):
     response = requests.post(get_url, headers=headers, data=get_data)
     return response
 
-
-HERE = os.path.dirname(os.path.realpath(__file__))
 
 # Load the login information: TNS & SNEx
 if args.login is not None:
@@ -445,7 +447,7 @@ yaml_config_list = []
 # generate yaml configuration files floyds_target_filename.yaml
 for k, v in target_list.items():
     # Star from the template
-    with open("floyds_template.yaml") as f:
+    with open(yaml_template) as f:
         list_yaml = yaml.load(f)
     # Set the hemisphere north/south
     list_yaml["hemisphere"] = v["science"]["hemisphere"]
