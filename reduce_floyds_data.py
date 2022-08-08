@@ -611,7 +611,7 @@ for frame_type in ["standard", "science"]:
             ],
             percentile=params[frame_type + "_" + arm + "_aptrace_percentile"],
             shift_tol=params[frame_type + "_" + arm + "_aptrace_shift_tol"],
-            fit_deg=params[frame_type + "_" + arm + "_aptrace_fit_deg"],
+            fit_deg=2,
             ap_faint=params[frame_type + "_" + arm + "_aptrace_ap_faint"],
             display=params[frame_type + "_" + arm + "_aptrace_display"],
             renderer=params[frame_type + "_" + arm + "_aptrace_renderer"],
@@ -1211,45 +1211,16 @@ try:
         stype="science",
     )
 except:
-
-    try:
-        blue_onedspec.set_ransac_properties(
-            minimum_matches=params[
-                "blue_set_ransac_properties_minimum_matches"
-            ]
-            - 1,
+    if params["hemisphere"] == "north":
+        blue_onedspec.add_fit_coeff(
+            [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
             stype="science",
         )
-        blue_onedspec.fit(
-            max_tries=params["blue_fit_max_tries"],
-            fit_deg=params["blue_fit_fit_deg"],
-            fit_coeff=params["blue_fit_fit_coeff"],
-            fit_tolerance=params["blue_fit_fit_tolerance"],
-            fit_type=params["blue_fit_fit_type"],
-            candidate_tolerance=params["blue_fit_candidate_tolerance"],
-            brute_force=params["blue_fit_brute_force"],
-            progress=params["blue_fit_progress"],
-            return_solution=params["blue_fit_return_solution"],
-            display=params["blue_fit_display"],
-            renderer=params["blue_fit_renderer"],
-            save_fig=params["blue_fit_save_fig"],
-            fig_type=params["blue_fit_fig_type"],
-            filename=os.path.join(
-                output_folder_path, params["blue_fit_filename"] + "_science"
-            ),
+    else:
+        blue_onedspec.add_fit_coeff(
+            [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
             stype="science",
         )
-    except:
-        if params["hemisphere"] == "north":
-            blue_onedspec.add_fit_coeff(
-                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
-                stype="science",
-            )
-        else:
-            blue_onedspec.add_fit_coeff(
-                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
-                stype="science",
-            )
 
 try:
     blue_onedspec.fit(
@@ -1272,44 +1243,16 @@ try:
         stype="standard",
     )
 except:
-    try:
-        blue_onedspec.set_ransac_properties(
-            minimum_matches=params[
-                "blue_set_ransac_properties_minimum_matches"
-            ]
-            - 1,
+    if params["hemisphere"] == "north":
+        blue_onedspec.add_fit_coeff(
+            [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
             stype="standard",
         )
-        blue_onedspec.fit(
-            max_tries=params["blue_fit_max_tries"],
-            fit_deg=params["blue_fit_fit_deg"],
-            fit_coeff=params["blue_fit_fit_coeff"],
-            fit_tolerance=params["blue_fit_fit_tolerance"],
-            fit_type=params["blue_fit_fit_type"],
-            candidate_tolerance=params["blue_fit_candidate_tolerance"],
-            brute_force=params["blue_fit_brute_force"],
-            progress=params["blue_fit_progress"],
-            return_solution=params["blue_fit_return_solution"],
-            display=params["blue_fit_display"],
-            renderer=params["blue_fit_renderer"],
-            save_fig=params["blue_fit_save_fig"],
-            fig_type=params["blue_fit_fig_type"],
-            filename=os.path.join(
-                output_folder_path, params["blue_fit_filename"] + "_standard"
-            ),
+    else:
+        blue_onedspec.add_fit_coeff(
+            [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
             stype="standard",
         )
-    except:
-        if params["hemisphere"] == "north":
-            blue_onedspec.add_fit_coeff(
-                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
-                stype="standard",
-            )
-        else:
-            blue_onedspec.add_fit_coeff(
-                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
-                stype="standard",
-            )
 
 # Apply the wavelength calibration and display it
 blue_onedspec.apply_wavelength_calibration(
@@ -1651,9 +1594,9 @@ flux_red_resampled, flux_red_resampled_err = spectres(
 )
 
 flux_weighted_combine = (
-    flux_red_resampled / flux_red_resampled_err
-    + flux_blue[blue_mask] / flux_blue_err[blue_mask]
-) / (1 / flux_red_resampled_err + 1 / flux_blue_err[blue_mask])
+    flux_red_resampled / flux_red_resampled_err**2.0
+    + flux_blue[blue_mask] / flux_blue_err[blue_mask] ** 2.0
+) / (1 / flux_red_resampled_err**2.0 + 1 / flux_blue_err[blue_mask] ** 2.0)
 
 flux_error_weighted_combine = 1.0 / np.sqrt(
     1.0 / flux_red_resampled_err**2.0 + 1.0 / flux_blue_err[blue_mask] ** 2.0
@@ -1661,16 +1604,18 @@ flux_error_weighted_combine = 1.0 / np.sqrt(
 
 flux_combined = np.concatenate(
     (
-        flux_blue[~blue_mask],
+        flux_blue[wave_blue < red_limit],
         flux_weighted_combine,
         flux_red[wave_red > blue_limit],
     )
 )
-wave_combined = np.concatenate((wave_blue, wave_red[wave_red > blue_limit]))
+wave_combined = np.concatenate(
+    (wave_blue[wave_blue < blue_limit], wave_red[wave_red > blue_limit])
+)
 
 flux_error_combined = np.concatenate(
     (
-        flux_blue_err[~blue_mask],
+        flux_blue_err[wave_blue < red_limit],
         flux_error_weighted_combine,
         flux_red_err[wave_red > blue_limit],
     )

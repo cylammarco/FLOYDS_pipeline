@@ -1,18 +1,83 @@
 #!/usr/bin/python3
-from query_lco_archive import get_metadata, download_frame
-import os
+from argparse import ArgumentParser
 from collections import OrderedDict
-import requests
-import json
 from datetime import timedelta, datetime
-import numpy as np
-import ruamel.yaml
+import json
+from multiprocessing.sharedctypes import Value
+import os
 import sys
 
+import numpy as np
+import requests
+import ruamel.yaml
+
+from query_lco_archive import get_metadata, download_frame
+
+# Configure the parser
+parser = ArgumentParser(
+    description="Downloads and Reduce data from archive.lco.global."
+)
+
+parser.add_argument(
+    "--target_name",
+    default=None,
+    help="The target name to be queried on the TNS.",
+)
+parser.add_argument(
+    "--ra",
+    default=None,
+    help="Right Ascension in decimal. Only used if target_name is None.",
+)
+parser.add_argument(
+    "--dec",
+    default=None,
+    help="Declination in decimal. Only used if target_name is None.",
+)
+parser.add_argument(
+    "--directory",
+    default=None,
+    help="Path to store the raw and reduced data products.",
+)
+parser.add_argument("--login", default=None, help="Path to the login details.")
+parser.add_argument(
+    "--lco_token",
+    default=None,
+    help="LCO token. Only used if --login is None.",
+)
+parser.add_argument(
+    "--tns_bot_id",
+    default=None,
+    help="TNS Bot ID. Only used if --login is None.",
+)
+parser.add_argument(
+    "--tns_bot_name",
+    default=None,
+    help="TNS Bot name. Only used if --login is None.",
+)
+parser.add_argument(
+    "--tns_token",
+    default=None,
+    help="TNS token. Only used if --login is None.",
+)
+parser.add_argument(
+    "--date_start",
+    default="1900-01-01",
+    help="The date of the beginning of the night of the observation.",
+)
+parser.add_argument(
+    "--date_end",
+    default="2100-12-31",
+    help="The date of the beginning of the night of the observation.",
+)
+args = parser.parse_args()
+
+# Modify the yaml initialisation
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
 
 
+# Perform a search on the Transient Name Server
+# https://www.wis-tns.org/
 def tns_search(search_obj):
     search_url = url_tns_api + "/search"
     headers = {
@@ -28,6 +93,7 @@ def tns_search(search_obj):
     return response
 
 
+# Download the info of the object of interest from the TNS
 def get(get_obj):
     get_url = url_tns_api + "/object"
     headers = {
@@ -43,51 +109,89 @@ def get(get_obj):
     return response
 
 
-base_directory = "AT2022jdf"
-target_name = "2022jdf"
+HERE = os.path.dirname(os.path.realpath(__file__))
+
+# Load the login information: TNS & SNEx
+if args.login is not None:
+
+    with open(args.login) as f:
+        login_yaml = yaml.load(f)
+
 # choose directory to store the output
+base_directory = args.directory
+target_name = args.target_name
 
+if target_name is None:
 
-with open("login_details.yaml") as f:
-    login_yaml = yaml.load(f)
+    if (args.ra is None) or (args.dec is None):
+
+        raise ValueError(
+            "Either target_name or (ra & dec) has to be provided."
+        )
+
+    target_name = base_directory
+    ra = args.ra
+    dec = args.dec
+
+else:
+
+    print("target name is provided, input ra and dec are ignored.")
+
+    # get the target position if only a name is provided
+    TNS = "www.wis-tns.org"
+    url_tns_api = "https://" + TNS + "/api/get"
+
+    if args.login is not None:
+
+        TNS_BOT_ID = login_yaml["TNS_BOT_ID"]
+        TNS_BOT_NAME = login_yaml["TNS_BOT_NAME"]
+        TNS_API_KEY = login_yaml["TNS_API_KEY"]
+
+    else:
+
+        TNS_BOT_ID = args.tns_bot_id
+        TNS_BOT_NAME = args.tns_bot_name
+        TNS_API_KEY = args.tns_token
+
+    search_obj = [("objname", target_name)]
+    tns_search_response = tns_search(search_obj)
+
+    # assuming only 1 result...
+    get_obj = [
+        ("objid", tns_search_response.json()["data"]["reply"][0]["objid"])
+    ]
+    get_obj_response = get(get_obj)
+
+    ra = get_obj_response.json()["data"]["reply"]["radeg"]
+    dec = get_obj_response.json()["data"]["reply"]["decdeg"]
+
 
 # get the token
 # LCO token: needed for private data
 # TNS token: needed for name resolving to (ra, dec)
-lco_token = login_yaml["lco_token"]
+if args.login is not None:
+
+    lco_token = login_yaml["lco_token"]
+
+else:
+
+    lco_token = args.lco_token
 
 if lco_token is None:
+
     authtoken = {}
+
 else:
+
     authtoken = {"Authorization": "Token {}".format(lco_token)}
-
-
-# get the target position if only a name is provided
-TNS = "www.wis-tns.org"
-url_tns_api = "https://" + TNS + "/api/get"
-
-TNS_BOT_ID = login_yaml["TNS_BOT_ID"]
-TNS_BOT_NAME = login_yaml["TNS_BOT_NAME"]
-TNS_API_KEY = login_yaml["TNS_API_KEY"]
-
-search_obj = [("objname", target_name)]
-tns_search_response = tns_search(search_obj)
-
-# assuming only 1 result...
-get_obj = [("objid", tns_search_response.json()["data"]["reply"][0]["objid"])]
-get_obj_response = get(get_obj)
-
-ra = get_obj_response.json()["data"]["reply"]["radeg"]
-dec = get_obj_response.json()["data"]["reply"]["decdeg"]
 
 
 # get the filelist
 # en06 is FLOYDS North at the Haleakala Observatory (OGG)
 # en12 is FLOYDS South at the Siding Spring Observatory (COJ)
 # the search has to be done seprately
-
-start_mjd = "1900-01-01"
-end_mjd = "2100-12-31"
+date_start = args.date_start
+date_end = args.date_end
 
 science_metadata = []
 standard_metadata = []
@@ -103,12 +207,13 @@ for instrume in ["en06", "en12"]:
         authtoken=authtoken,
         limit=1000,
         INSTRUME=instrume,
-        start=start_mjd,
-        end=end_mjd,
+        start=date_start,
+        end=date_end,
         RLEVEL=0,
         covers="POINT({} {})".format(ra, dec),
     )
 
+    # There is only one spectrum from a single group of request_id
     for metadata in _science_metadata:
         request_id.append(metadata["request_id"])
         obstype.append(metadata["OBSTYPE"])
@@ -124,6 +229,7 @@ for instrume in ["en06", "en12"]:
         v for v in _science_metadata if v["request_id"] in request_id_science
     ]
 
+    # Look for the standard frames taken closest to the time of observation
     for day in [i for i, j in zip(day_obs, obstype) if j == "SPECTRUM"]:
 
         _day = datetime.fromisoformat(day)
@@ -240,6 +346,7 @@ standard_filepath_list = []
 standard_filename_list = []
 standard_hemisphere_list = []
 
+# Download the science and the best matched standard frames
 for i in range(len(science_metadata)):
 
     science_frame = science_metadata[i]
@@ -287,6 +394,7 @@ for i in range(len(science_metadata)):
             "OBJECT"
         ] = science_frame["OBJECT"]
 
+        # Download the frames
         if ".tar.gz" not in standard_frame["filename"]:
             [
                 x.append(y)
