@@ -554,7 +554,7 @@ for yaml_filename in yaml_config_list:
     )
     text_file = open(
         os.path.join(
-            params["target_name"],
+            base_directory,
             "_".join(params["output_folder_path"].split(os.path.sep)[:-1])
             + ".txt",
         ),
