@@ -514,7 +514,9 @@ for k, v in target_list.items():
 # run the reduction the reduce_floyds_data.py
 for yaml_filename in yaml_config_list:
     os.system(
-        "{} reduce_floyds_data.py {}".format(sys.executable, yaml_filename)
+        "{} {}{}reduce_floyds_data.py {}".format(
+            sys.executable, HERE, os.sep, yaml_filename
+        )
     )
     with open(yaml_filename, "r") as stream:
         params = yaml.load(stream)
