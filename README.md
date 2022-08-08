@@ -55,6 +55,7 @@ For the same target, if you have the position, we can skip the query through TNS
 Create an alias for the `reduce_floyds_data.py` file. For example in bash, add this to your `.bashrc` or `.bash_profile`
 
 `alias reduce_floyds="/path/to/where/you/have/the/script/reduce_floyds_data.py"`
+
 `alias floyds_pipeline="/path/to/where/you/have/the/script/floyds_pipeline.py"`
 
 ## More to do 
