@@ -1647,7 +1647,7 @@ plt.ylim(
         flux_combined[wave_combined < 9000][
             np.isfinite(flux_combined[wave_combined < 9000])
         ],
-        0.5,
+        0.25,
     ),
     np.nanpercentile(
         flux_combined[wave_combined < 9000][

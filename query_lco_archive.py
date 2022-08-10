@@ -43,7 +43,7 @@ def get_metadata(authtoken={}, limit=None, logger=None, **kwargs):
     return frames[:limit]
 
 
-def download_frame(frame, base_directory, no_date=False):
+def download_frame(frame, base_directory, no_date=False, overwrite=False):
     """
     Download a single image from the LCOGT archive
 
@@ -71,7 +71,10 @@ def download_frame(frame, base_directory, no_date=False):
         os.makedirs(filepath)
 
     filename = frame["filename"]
-    with open(os.path.join(filepath, filename), "wb") as f:
-        f.write(requests.get(frame["url"]).content)
+
+    if not os.path.exists(os.path.join(filepath, filename)) or overwrite:
+
+        with open(os.path.join(filepath, filename), "wb") as f:
+            f.write(requests.get(frame["url"]).content)
 
     return filepath, filename

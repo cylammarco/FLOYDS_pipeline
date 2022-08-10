@@ -2,10 +2,10 @@
 from argparse import ArgumentParser
 from collections import OrderedDict
 from datetime import timedelta, datetime
+import getpass
 import json
 from multiprocessing.sharedctypes import Value
 import os
-import pkgutil
 import sys
 
 import numpy as np
@@ -43,22 +43,26 @@ parser.add_argument("--login", default=None, help="Path to the login details.")
 parser.add_argument(
     "--lco_token",
     default=None,
-    help="LCO token. Only used if --login is None.",
+    help="LCO token. Only used if --login is None. Will ask for one if"
+    "needed and nothing is provided.",
 )
 parser.add_argument(
     "--tns_bot_id",
     default=None,
-    help="TNS Bot ID. Only used if --login is None.",
+    help="TNS Bot ID. Only used if --login is None. Will ask for one if"
+    "needed and is nothing is provided.",
 )
 parser.add_argument(
     "--tns_bot_name",
     default=None,
-    help="TNS Bot name. Only used if --login is None.",
+    help="TNS Bot name. Only used if --login is None. Will ask for one if"
+    "needed and is nothing is provided.",
 )
 parser.add_argument(
     "--tns_token",
     default=None,
-    help="TNS token. Only used if --login is None.",
+    help="TNS token. Only used if --login is None. Will ask for one if"
+    "needed and is nothing is provided.",
 )
 parser.add_argument(
     "--date_start",
@@ -79,6 +83,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
 yaml_template = os.path.join(HERE, "floyds_template.yaml")
+
 
 # Perform a search on the Transient Name Server
 # https://www.wis-tns.org/
@@ -123,7 +128,15 @@ if args.login is not None:
 base_directory = args.directory
 target_name = args.target_name
 
-if target_name is None:
+if (base_directory is None) & (target_name is None):
+
+    raise ValueError("Either base_directory or target_name has to be provided")
+
+elif base_directory is None:
+
+    base_directory = target_name
+
+elif target_name is None:
 
     if (args.ra is None) or (args.dec is None):
 
@@ -155,6 +168,14 @@ else:
         TNS_BOT_NAME = args.tns_bot_name
         TNS_API_KEY = args.tns_token
 
+    # Prompt to ask for the IDs if some are still None.
+    if TNS_BOT_ID is None:
+        TNS_BOT_ID = getpass.getpass(prompt="Enter TNS_BOT_ID: ")
+    if TNS_BOT_NAME is None:
+        TNS_BOT_NAME = getpass.getpass(prompt="Enter TNS_BOT_NAME: ")
+    if TNS_API_KEY is None:
+        TNS_API_KEY = getpass.getpass(prompt="Enter TNS_API_KEY: ")
+
     search_obj = [("objname", target_name)]
     tns_search_response = tns_search(search_obj)
 
@@ -179,13 +200,21 @@ else:
 
     lco_token = args.lco_token
 
-if lco_token is None:
+
+if lco_token == "public":
 
     authtoken = {}
 
 else:
 
-    authtoken = {"Authorization": "Token {}".format(lco_token)}
+    if lco_token is None:
+
+        # Prompt to ask for the token is still None.
+        lco_token = getpass.getpass(Prompt="Enter LCO API token: ")
+
+    else:
+
+        authtoken = {"Authorization": "Token {}".format(lco_token)}
 
 
 # get the filelist
