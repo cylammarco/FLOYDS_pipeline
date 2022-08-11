@@ -50,19 +50,19 @@ parser.add_argument(
     "--tns_bot_id",
     default=None,
     help="TNS Bot ID. Only used if --login is None. Will ask for one if"
-    "needed and is nothing is provided.",
+    "needed and nothing is provided.",
 )
 parser.add_argument(
     "--tns_bot_name",
     default=None,
     help="TNS Bot name. Only used if --login is None. Will ask for one if"
-    "needed and is nothing is provided.",
+    "needed and nothing is provided.",
 )
 parser.add_argument(
     "--tns_token",
     default=None,
     help="TNS token. Only used if --login is None. Will ask for one if"
-    "needed and is nothing is provided.",
+    "needed and nothing is provided.",
 )
 parser.add_argument(
     "--date_start",
@@ -73,6 +73,11 @@ parser.add_argument(
     "--date_end",
     default="2100-12-31",
     help="The date of the beginning of the night of the observation.",
+)
+parser.add_argument(
+    "--most_recent_only",
+    action="store_true",
+    help="Set to reduce the most recently collected spectrum only.",
 )
 args = parser.parse_args()
 
@@ -250,11 +255,26 @@ for instrume in ["en06", "en12"]:
         obstype.append(metadata["OBSTYPE"])
         day_obs.append(metadata["DAY_OBS"])
 
+    request_id = np.array(request_id)
+    obstype = np.array(obstype)
+    day_obs = np.array(day_obs)
+
+    if "SPECTRUM" not in obstype:
+
+        continue
+
+    # If only requesting the newest data, remove the unwanted results
+    if args.most_recent_only:
+        on_target = obstype == "SPECTRUM"
+        _keeping = np.argmax(request_id[on_target])
+        request_id = [np.asarray(request_id[on_target])[_keeping]]
+        obstype = [np.asarray(obstype[on_target])[_keeping]]
+        day_obs = [np.asarray(day_obs[on_target])[_keeping]]
+
     # Get the request_id that contains useful spectral data
     request_id_science = [
         i for i, j in zip(request_id, obstype) if j == "SPECTRUM"
     ]
-    request_id_standard = []
 
     science_metadata += [
         v for v in _science_metadata if v["request_id"] in request_id_science

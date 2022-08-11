@@ -17,17 +17,18 @@ To reduce a FLOYDS spectrum already exist in the LCO archive from scratch, we on
 At the command line, these are the options, brackets show the default values.
 
 ```
---target_name:  The target name to be queried on the TNS. (None)
---ra:           Right Ascension in decimal. Only used if target_name is None. (None)
---dec:          Declination in decimal. Only used if target_name is None. (None)
---directory:    Path to store the raw and reduced data products. (None)
---login:        Path to the login details. (None)
---lco_token:    LCO token. Only used if --login is None. (None)
---tns_bot_id:   TNS Bot ID. Only used if --login is None. Not used if ra and dec are provided. (None)
---tns_bot_name: TNS Bot name. Only used if --login is None. Not used if ra and dec are provided. (None)
---tns_token:    TNS token. Only used if --login is None. Not used if ra and dec are provided. (None)
---date_start:   The date of the beginning of the night of the observation. ("1900-01-01")
---date_end:     The date of the beginning of the night of the observation. ("2100-12-31")
+--target_name:      The target name to be queried on the TNS. (None)
+--ra:               Right Ascension in decimal. Only used if target_name is None. (None)
+--dec:              Declination in decimal. Only used if target_name is None. (None)
+--directory:        Path to store the raw and reduced data products. (None)
+--login:            Path to the login details. (None)
+--lco_token:        LCO token. Only used if --login is None. Will ask for one if needed and nothing is provided. Will ask for one if needed and nothing is provided. (None)
+--tns_bot_id:       TNS Bot ID. Only used if --login is None. Not used if ra and dec are provided. Will ask for one if needed and nothing is provided. (None)
+--tns_bot_name:     TNS Bot name. Only used if --login is None. Not used if ra and dec are provided. Will ask for one if needed and nothing is provided. (None)
+--tns_token:        TNS token. Only used if --login is None. Not used if ra and dec are provided. Will ask for one if needed and nothing is provided. (None)
+--date_start:       The date of the beginning of the night of the observation. ("1900-01-01")
+--date_end:         The date of the beginning of the night of the observation. ("2100-12-31")
+--most_recent_only: Set to reduce the most recently collected spectrum only. (False)  
 ```
 
 ## Running the reduction manually or automatically
