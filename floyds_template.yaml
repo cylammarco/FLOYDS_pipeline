@@ -10,6 +10,9 @@ output_file_name_suffix: ~
 # Target name (For the titles in figures)
 target_name: ~
 
+# Name of who is reducing it
+reducer: "Auotmated"
+
 # FLOYDS North or South
 hemisphere: ~
 

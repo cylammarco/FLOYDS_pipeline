@@ -20,6 +20,11 @@ parser = ArgumentParser(
 )
 
 parser.add_argument(
+    "--reducer",
+    default="Automated",
+    help="Your name to be added to the header.",
+)
+parser.add_argument(
     "--target_name",
     default=None,
     help="The target name to be queried on the TNS.",
@@ -132,6 +137,7 @@ if args.login is not None:
 # choose directory to store the output
 base_directory = args.directory
 target_name = args.target_name
+reducer = args.reducer
 
 if (base_directory is None) & (target_name is None):
 
@@ -545,6 +551,7 @@ for k, v in target_list.items():
         )
     ]
     list_yaml["target_name"] = target_name
+    list_yaml["reducer"] = reducer
     list_yaml["output_folder_path"] = os.path.join(
         base_directory, v["science"]["DAY_OBS"].replace("-", ""), "output"
     )
@@ -573,6 +580,7 @@ for yaml_filename in yaml_config_list:
     # Print the data used in a txt file
     outtext += datetime.now().strftime("%Y-%m-%d %H:%M:%S") + os.linesep
     outtext += "Target: {}".format(target_name) + os.linesep
+    outtext += "Reduced by: {}".format(reducer) + os.linesep
     outtext += (
         "Science light frame: {}".format(params["science_light_frame"])
         + os.linesep

@@ -1567,14 +1567,14 @@ flux_red = red_onedspec.science_spectrum_list[
 ].flux_resampled_atm_ext_telluric_corrected
 flux_blue = blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected
+].flux_resampled_atm_ext_telluric_corrected
 
 flux_red_err = red_onedspec.science_spectrum_list[
     0
 ].flux_err_resampled_atm_ext_telluric_corrected
 flux_blue_err = blue_onedspec.science_spectrum_list[
     0
-].flux_err_resampled_atm_ext_corrected
+].flux_resampled_atm_ext_telluric_corrected
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
@@ -1687,15 +1687,15 @@ utc_time = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 # https://lco.global/observatory/instruments/floyds/
 # resolution is ~1.74 A / pix
 #
-blue_onedspec.create_fits(output="flux_resampled_atm_ext_corrected")
+blue_onedspec.create_fits(output="flux_resampled_atm_ext_telluric_corrected")
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].data = flux_out
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].data = flux_out
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header = img[
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header = img[
     "science"
 ].light_header[
     0
@@ -1703,14 +1703,14 @@ blue_onedspec.science_spectrum_list[
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["nstack"] = len(
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header["nstack"] = len(
     light_path
 )
 
 for i in range(len(light_path)):
     blue_onedspec.science_spectrum_list[
         0
-    ].flux_resampled_atm_ext_corrected_hdulist[0].header[
+    ].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
         "frame{}".format(i + 1)
     ] = light_path[
         i
@@ -1722,58 +1722,82 @@ for i in range(len(light_path)):
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header[
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
     "SLIT"
 ] = light_temp.header[
     "APERWID"
 ]
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header[
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
     "EXPTIME"
 ] = total_exposure_time
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE1"] = "Wavelength"
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CTYPE1"
+] = "Wavelength"
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT1"] = "Angstroms"
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CUNIT1"
+] = "Angstroms"
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CRVAL1"] = 3.300e03
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CRVAL1"
+] = 3.300e03
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CDELT1"] = 1.74e00
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CDELT1"
+] = 1.74e00
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CD1_1"] = 1.74e00
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CD1_1"
+] = 1.74e00
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CRPIX1"] = 1.00e00
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CRPIX1"
+] = 1.00e00
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE2"] = "LINEAR"
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CTYPE2"
+] = "LINEAR"
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT2"] = "Pixels  "
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CUNIT2"
+] = "Pixels  "
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["CD2_2"] = 0.00e00
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "CD2_2"
+] = 0.00e00
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["REDUCER"] = "Marco Lam"
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "REDUCER"
+] = params[
+    "reducer"
+]
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header["REDUCET"] = utc_time
+].flux_resampled_atm_ext_telluric_corrected_hdulist[0].header[
+    "REDUCET"
+] = utc_time
 
 output = fits.PrimaryHDU(
     blue_onedspec.science_spectrum_list[0]
-    .flux_resampled_atm_ext_corrected_hdulist[0]
+    .flux_resampled_atm_ext_telluric_corrected_hdulist[0]
     .data,
     blue_onedspec.science_spectrum_list[0]
-    .flux_resampled_atm_ext_corrected_hdulist[0]
+    .flux_resampled_atm_ext_telluric_corrected_hdulist[0]
     .header,
 )
 output.writeto(
