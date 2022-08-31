@@ -1560,21 +1560,22 @@ if params["blue_save_csv"]:
 #
 #
 wave_red = red_onedspec.science_spectrum_list[0].wave_resampled
-wave_blue = blue_onedspec.science_spectrum_list[0].wave_resampled
 
 flux_red = red_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_telluric_corrected
-flux_blue = blue_onedspec.science_spectrum_list[
-    0
-].flux_resampled_atm_ext_telluric_corrected
-
 flux_red_err = red_onedspec.science_spectrum_list[
     0
 ].flux_err_resampled_atm_ext_telluric_corrected
+
+# blue is NOT telluric corrected as it is not needed
+wave_blue = blue_onedspec.science_spectrum_list[0].wave_resampled
+flux_blue = blue_onedspec.science_spectrum_list[
+    0
+].flux_resampled_atm_ext_corrected
 flux_blue_err = blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_telluric_corrected
+].flux_resampled_atm_ext_corrected
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
@@ -1596,7 +1597,9 @@ flux_red_resampled, flux_red_resampled_err = spectres(
 flux_weighted_combine = (
     flux_red_resampled / flux_red_resampled_err**2.0
     + flux_blue[blue_mask] / flux_blue_err[blue_mask] ** 2.0
-) / (1 / flux_red_resampled_err**2.0 + 1 / flux_blue_err[blue_mask] ** 2.0)
+) / (
+    1.0 / flux_red_resampled_err**2.0 + 1.0 / flux_blue_err[blue_mask] ** 2.0
+)
 
 flux_error_weighted_combine = 1.0 / np.sqrt(
     1.0 / flux_red_resampled_err**2.0 + 1.0 / flux_blue_err[blue_mask] ** 2.0
