@@ -141,7 +141,7 @@ science_red_extract_lowess_frac: 0.1
 science_red_extract_lowess_it: 3
 science_red_extract_lowess_delta: 0.0
 science_red_extract_tolerance: 0.000006
-science_red_extract_cosmicray_sigma: 4.0
+science_red_extract_cosmicray_sigma: 3.0
 science_red_extract_max_iter: 99
 science_red_extract_forced: False
 science_red_extract_variances: ~
@@ -220,7 +220,7 @@ science_blue_rectification_filename: "blue_rectification"
 science_blue_rectification_open_iframe: False
 
 # Aperture Extraction
-science_blue_extract_apwidth: 15
+science_blue_extract_apwidth: 11
 science_blue_extract_skysep: 5
 science_blue_extract_skywidth: 7
 science_blue_extract_skydeg: 1
@@ -323,7 +323,7 @@ standard_red_extract_lowess_frac: 0.1
 standard_red_extract_lowess_it: 3
 standard_red_extract_lowess_delta: 0.0
 standard_red_extract_tolerance: 0.000006
-standard_red_extract_cosmicray_sigma: 4.0
+standard_red_extract_cosmicray_sigma: 3.0
 standard_red_extract_max_iter: 99
 standard_red_extract_forced: False
 standard_red_extract_variances: ~
@@ -402,7 +402,7 @@ standard_blue_rectification_filename: "blue_rectification"
 standard_blue_rectification_open_iframe: False
 
 # Aperture Extraction
-standard_blue_extract_apwidth: 15
+standard_blue_extract_apwidth: 11
 standard_blue_extract_skysep: 3
 standard_blue_extract_skywidth: 7
 standard_blue_extract_skydeg: 1
