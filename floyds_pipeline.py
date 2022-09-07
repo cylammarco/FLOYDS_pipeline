@@ -221,7 +221,7 @@ else:
     if lco_token is None:
 
         # Prompt to ask for the token is still None.
-        lco_token = getpass.getpass(Prompt="Enter LCO API token: ")
+        lco_token = getpass.getpass(prompt="Enter LCO API token: ")
 
     else:
 
