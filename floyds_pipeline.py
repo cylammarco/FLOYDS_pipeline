@@ -222,6 +222,7 @@ else:
 
         # Prompt to ask for the token is still None.
         lco_token = getpass.getpass(prompt="Enter LCO API token: ")
+        authtoken = {"Authorization": "Token {}".format(lco_token)}
 
     else:
 
