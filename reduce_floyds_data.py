@@ -379,7 +379,10 @@ for frame_type in ["standard", "science"]:
 
     # Add the light frames
     for i, path_i in enumerate(light_path):
-        light_temp = fits.open(path_i)["SCI"]
+        try:
+            light_temp = fits.open(path_i)["SCI"]
+        except:
+            light_temp = fits.open(path_i)[1]
         light_temp_data = np.array(light_temp.data).astype("float") / float(
             light_temp.header["GAIN"]
         )
@@ -401,7 +404,10 @@ for frame_type in ["standard", "science"]:
 
     # Add the arc frames
     for i, path_i in enumerate(arc_path):
-        arc_temp = fits.open(path_i)["SCI"]
+        try:
+            arc_temp = fits.open(path_i)["SCI"]
+        except:
+            arc_temp = fits.open(path_i)[1]
         img[frame_type].add_arc(arc_temp.data, arc_temp.header)
         logger.info("arc frame {} added.".format(path_i))
 
@@ -413,7 +419,10 @@ for frame_type in ["standard", "science"]:
     flat_header = []
     flat_data = []
     for i, path_i in enumerate(flat_path):
-        flat_temp = fits.open(path_i)["SCI"]
+        try:
+            flat_temp = fits.open(path_i)["SCI"]
+        except:
+            flat_temp = fits.open(path_i)[1]
         flat_header.append(flat_temp.header)
         flat_data.append(
             CCDData(np.array(flat_temp.data).astype("float"), unit=u.ct)
@@ -1325,7 +1334,7 @@ red_literature_flux = spectres(
 )
 
 red_second_pass_correction = red_std_spec.flux / red_literature_flux
-red_second_pass_correction = medfilt(red_second_pass_correction, 15)
+red_second_pass_correction = medfilt(red_second_pass_correction, 5)
 
 red_std_spec.flux /= red_second_pass_correction
 red_std_spec.flux_err /= red_second_pass_correction
