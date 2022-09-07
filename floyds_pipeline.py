@@ -4,7 +4,6 @@ from collections import OrderedDict
 from datetime import timedelta, datetime
 import getpass
 import json
-from multiprocessing.sharedctypes import Value
 import os
 import sys
 
@@ -156,8 +155,8 @@ elif target_name is None:
         )
 
     target_name = base_directory
-    ra = args.ra
-    dec = args.dec
+    ra = float(args.ra)
+    dec = float(args.dec)
 
 else:
 
@@ -566,6 +565,7 @@ for k, v in target_list.items():
     ]
     list_yaml["target_name"] = target_name
     list_yaml["reducer"] = reducer
+    list_yaml["observer"] = reducer
     list_yaml["output_folder_path"] = os.path.join(
         base_directory, v["science"]["DAY_OBS"].replace("-", ""), "output"
     )

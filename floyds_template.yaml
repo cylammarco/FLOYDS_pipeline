@@ -48,7 +48,7 @@ cosmicray: True
 sigclip: 3.0
 fsmode: "convolve"
 psfmodel: "gaussy"
-psfsize: 5
+psfsize: 11
 
 # ImageReduction set up
 science_light_sigma_clipping: True
