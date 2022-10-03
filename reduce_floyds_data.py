@@ -524,8 +524,10 @@ for frame_type in ["standard", "science"]:
                 fig_type=params[frame_type + "_" + arm + "_aptrace_fig_type"],
                 filename=os.path.join(
                     output_folder_path,
-                    params[frame_type + "_" + arm + "_aptrace_filename"]
+                    frame_type
                     + "_"
+                    + arm
+                    + "_pre_rectification_"
                     + frame_type,
                 ),
                 open_iframe=params[
@@ -1588,7 +1590,7 @@ flux_blue_err = blue_onedspec.science_spectrum_list[
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
-red_limit = 5000
+red_limit = 4800
 # This value has to match the
 blue_limit = 5750
 
@@ -1773,6 +1775,11 @@ blue_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CD2_2"] = 0.00e00
 
+blue_onedspec.science_spectrum_list[
+    0
+].flux_resampled_atm_ext_corrected_hdulist[0].header["OBSERVER"] = params[
+    "observer"
+]
 blue_onedspec.science_spectrum_list[
     0
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["REDUCER"] = params[
