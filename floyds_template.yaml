@@ -135,7 +135,7 @@ science_red_extract_skywidth: 7
 science_red_extract_skydeg: 1
 science_red_extract_sky_sigma: 3.0
 science_red_extract_optimal: True
-science_red_extract_algorithm: "horne86"
+science_red_extract_algorithm: "marsh89"
 science_red_extract_model: "gauss"
 science_red_extract_lowess_frac: 0.1
 science_red_extract_lowess_it: 3
@@ -226,7 +226,7 @@ science_blue_extract_skywidth: 7
 science_blue_extract_skydeg: 1
 science_blue_extract_sky_sigma: 2.5
 science_blue_extract_optimal: True
-science_blue_extract_algorithm: "horne86"
+science_blue_extract_algorithm: "marsh89"
 science_blue_extract_model: "gauss"
 science_blue_extract_lowess_frac: 0.1
 science_blue_extract_lowess_it: 3
@@ -317,7 +317,7 @@ standard_red_extract_skywidth: 7
 standard_red_extract_skydeg: 1
 standard_red_extract_sky_sigma: 3.0
 standard_red_extract_optimal: True
-standard_red_extract_algorithm: "horne86"
+standard_red_extract_algorithm: "marsh89"
 standard_red_extract_model: "lowess"
 standard_red_extract_lowess_frac: 0.1
 standard_red_extract_lowess_it: 3
@@ -408,7 +408,7 @@ standard_blue_extract_skywidth: 7
 standard_blue_extract_skydeg: 1
 standard_blue_extract_sky_sigma: 2.5
 standard_blue_extract_optimal: True
-standard_blue_extract_algorithm: "horne86"
+standard_blue_extract_algorithm: "marsh89"
 standard_blue_extract_model: "lowess"
 standard_blue_extract_lowess_frac: 0.1
 standard_blue_extract_lowess_it: 3

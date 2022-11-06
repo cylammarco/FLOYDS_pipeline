@@ -142,10 +142,6 @@ if (base_directory is None) & (target_name is None):
 
     raise ValueError("Either base_directory or target_name has to be provided")
 
-elif base_directory is None:
-
-    base_directory = target_name
-
 elif target_name is None:
 
     if (args.ra is None) or (args.dec is None):
@@ -197,6 +193,11 @@ else:
 
     ra = get_obj_response.json()["data"]["reply"]["radeg"]
     dec = get_obj_response.json()["data"]["reply"]["decdeg"]
+
+
+if base_directory is None:
+
+    base_directory = target_name
 
 
 # get the token
@@ -321,9 +322,9 @@ for date, instrume, day in [
     if len(_standard_metadata) > 1:
         # first check for the day_obs
         for meta in _standard_metadata:
-            print(meta["DAY_OBS"])
-            if meta["DAY_OBS"] == day_obs:
+            if meta["DAY_OBS"] == day:
                 _standard_metadata_day_obs.append(meta)
+
         if len(_standard_metadata_day_obs) > 1:
             # Get all the timestamps
             for meta in _standard_metadata_day_obs:
@@ -361,6 +362,9 @@ for date, instrume, day in [
         OBSTYPE="SPECTRUM",
         RLEVEL=0,
     )
+    if len(standard_spectrum_metadata) > 1:
+        standard_spectrum_metadata = [d for d in standard_spectrum_metadata][0]
+
     # make sure there is an arc...
     standard_arc_metadata = []
     day_range = 0.0
@@ -392,23 +396,22 @@ for date, instrume, day in [
             authtoken=authtoken,
             limit=1000,
             INSTRUME=instrume,
-            start=(_time[min_time_idx] - timedelta(minutes=30)).isoformat(),
-            end=(_time[min_time_idx] + timedelta(minutes=30)).isoformat(),
+            start=(_time[min_time_idx] - timedelta(minutes=30) - timedelta(days=day_range)).isoformat(),
+            end=(_time[min_time_idx] + timedelta(minutes=30) + timedelta(days=day_range)).isoformat(),
             PROPID="FLOYDS standards",
             OBSTYPE="LAMPFLAT",
             RLEVEL=0,
         )
         day_range += 1
-    if len(standard_spectrum_metadata) > 1:
+    if isinstance(standard_spectrum_metadata, list):
         standard_spectrum_metadata = standard_spectrum_metadata[0]
-    if len(standard_flat_metadata) > 1:
+    if isinstance(standard_flat_metadata, list):
         standard_flat_metadata = standard_flat_metadata[0]
-    if len(standard_arc_metadata) > 1:
+    if isinstance(standard_arc_metadata, list):
         standard_arc_metadata = standard_arc_metadata[0]
-    standard_metadata += standard_spectrum_metadata
-    standard_metadata += standard_arc_metadata
-    standard_metadata += standard_flat_metadata
-
+    standard_metadata.append(standard_spectrum_metadata)
+    standard_metadata.append(standard_arc_metadata)
+    standard_metadata.append(standard_flat_metadata)
 
 # Pack the light, flat & arc fro science and standard as a dictionary item
 target_list = {}
@@ -425,7 +428,8 @@ standard_hemisphere_list = []
 for i in range(len(science_metadata)):
     science_frame = science_metadata[i]
     standard_frame = standard_metadata[i]
-    if (".tar.gz" not in science_frame["filename"]) & (
+    if ((".tar.gz" not in science_frame["filename"]) or (
+        "fits.fz" not in science_frame["filename"])) & (
         science_frame["request_id"] in request_id_science
     ):
         [
@@ -467,7 +471,8 @@ for i in range(len(science_metadata)):
             "OBJECT"
         ] = science_frame["OBJECT"]
         # Download the frames
-        if ".tar.gz" not in standard_frame["filename"]:
+        if (".tar.gz" not in standard_frame["filename"]) or (
+            ".fits.fz" not in standard_frame["filename"]):
             [
                 x.append(y)
                 for x, y in zip(
