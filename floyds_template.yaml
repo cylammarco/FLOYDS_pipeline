@@ -11,6 +11,7 @@ output_file_name_suffix: ~
 target_name: ~
 
 # Name of who is reducing it
+observer: "Auotmated"
 reducer: "Auotmated"
 
 # FLOYDS North or South
