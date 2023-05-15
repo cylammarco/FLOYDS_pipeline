@@ -93,7 +93,7 @@ try:
     params_path = os.path.join(HERE, param_filename)
 except Exception as e:
     print(e)
-    params_path = os.path.join(HERE, "floyds_2022jdf_20220629_2932516.yaml")
+    params_path = os.path.join(HERE, "floyds_template.yaml")
 
 if not os.path.isabs(params_path):
     params_path = os.path.abspath(params_path)
@@ -130,15 +130,13 @@ if log_file_name is None:
 # log file output folder
 log_file_folder = params["log_file_folder"]
 params_folder_path = os.path.dirname(params_path)
-output_folder_path = os.path.join(
-    params_folder_path, params["output_folder_path"]
-)
+output_folder = os.path.join(params_folder_path, params["output_folder"])
 
-if not os.path.exists(output_folder_path):
-    os.makedirs(output_folder_path)
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
 
 if log_file_folder is None:
-    log_file_folder = output_folder_path
+    log_file_folder = output_folder
 
 # configure the logger display format
 formatter = logging.Formatter(
@@ -156,17 +154,17 @@ logger.addHandler(handler)
 logger.info("The parameter file is at: {}".format(params_folder_path))
 
 # If the output folder path is default use the logger name.
-if output_folder_path is None:
-    output_folder_path = os.path.join(HERE, os.extsep(log_file_name)[0])
+if output_folder is None:
+    output_folder = os.path.join(HERE, os.extsep(log_file_name)[0])
 
-if not os.path.exists(output_folder_path):
-    os.mkdir(output_folder_path)
+if not os.path.exists(output_folder):
+    os.mkdir(output_folder)
     logger.info(
         "The output folder does not exist, a folder is created at: "
-        "{}".format(output_folder_path)
+        "{}".format(output_folder)
     )
 
-logger.info("The output folder is at: {}".format(output_folder_path))
+logger.info("The output folder is at: {}".format(output_folder))
 
 cosmicray = params["cosmicray"]
 sigclip = params["sigclip"]
@@ -175,21 +173,16 @@ psfmodel = params["psfmodel"]
 psfsize = params["psfsize"]
 
 if params["hemisphere"] == "north":
-
     rec_coeff_blue_science = params["science_blue_rectification_coeff_north"]
     rec_coeff_red_science = params["science_red_rectification_coeff_north"]
     rec_coeff_blue_standard = params["standard_blue_rectification_coeff_north"]
     rec_coeff_red_standard = params["standard_red_rectification_coeff_north"]
-
 elif params["hemisphere"] == "south":
-
     rec_coeff_blue_science = params["science_blue_rectification_coeff_south"]
     rec_coeff_red_science = params["science_red_rectification_coeff_south"]
     rec_coeff_blue_standard = params["standard_blue_rectification_coeff_south"]
     rec_coeff_red_standard = params["standard_red_rectification_coeff_south"]
-
 else:
-
     print(
         "Only north or south are acceptable. You have provided {}.".format(
             params["hemisphere"]
@@ -230,88 +223,39 @@ ap_trace_sigma = {}
 target_name = {}
 total_exposure_time = 0.0
 
+input_folder = params["input_folder"]
+
 # Do standard first, so that the ap-trace can be used for curvature correction
 # in both science and standard
 for frame_type in ["standard", "science"]:
-
     logger.info("Start working on the {} frames.".format(frame_type))
-
-    # if the path to the light frame is provided
-    if params[frame_type + "_light_frame"] is not None:
-
-        light_path = [
-            os.path.join(HERE, i) for i in params[frame_type + "_light_frame"]
-        ]
-
-    # If the paths to the frames are not provided, search into the folder
-    else:
-
-        # Get all the parameters for the file locations
-        light_folder = os.path.join(HERE, params[frame_type + "_light_folder"])
-        logger.info("Looking for light frames at {}.".format(light_folder))
-
-        light_path = os.listdir(light_folder)
-        logger.info("These are the light frames found: {}".format(light_path))
-
-        # If light or flat folders are empty, fail right away
-        if light_path == []:
-
-            logger.error(light_folder + " cannot be empty.")
-
-    # if the path to the flat frame is provided
-    if params[frame_type + "_light_frame"] is not None:
-
-        flat_path = [
-            os.path.join(HERE, i) for i in params[frame_type + "_flat_frame"]
-        ]
-
-    else:
-
-        flat_folder = os.path.join(HERE, params[frame_type + "_flat_folder"])
-        logger.info("Looking for flat frames at {}.".format(flat_folder))
-
-        flat_path = os.listdir(flat_folder)
-        logger.info("These are the flat frames found: {}".format(flat_path))
-
-        if flat_path == []:
-
-            logger.error(flat_folder + " cannot be empty.")
-
-    # if the path to the arc frame is provided
-    if params[frame_type + "_light_frame"] is not None:
-
-        arc_path = [
-            os.path.join(HERE, i) for i in params[frame_type + "_arc_frame"]
-        ]
-
-    else:
-
-        arc_folder = os.path.join(HERE, params[frame_type + "_arc_folder"])
-        logger.info("Looking for arc frames at {}.".format(arc_folder))
-
-        arc_path = os.listdir(arc_folder)
-        logger.info("These are the arc frames found: {}".format(arc_path))
-
-        # Throw warning with arcs cannot be found.
-        if arc_path == []:
-
-            logger.error(arc_folder + " cannot be empty.")
-
+    # path to the light frame
+    light_path = [
+        os.path.join(input_folder, i)
+        for i in params[frame_type + "_light_frame"]
+    ]
+    # path to the flat frame
+    flat_path = [
+        os.path.join(input_folder, i)
+        for i in params[frame_type + "_flat_frame"]
+    ]
+    # path to the arc frame
+    arc_path = [
+        os.path.join(input_folder, i)
+        for i in params[frame_type + "_arc_frame"]
+    ]
     light_extension = params[frame_type + "_light_extension"]
     logger.info(
         "Looking for light frames with extension {}.".format(light_extension)
     )
-
     flat_extension = params[frame_type + "_flat_extension"]
     logger.info(
         "Looking for flat frames with extension {}.".format(flat_extension)
     )
-
     arc_extension = params[frame_type + "_arc_extension"]
     logger.info(
         "Looking for arc frames with extension {}.".format(arc_extension)
     )
-
     # Get only the light files with the right extension
     light_sigma_clipping = params[frame_type + "_light_sigma_clipping"]
     light_clip_low = params[frame_type + "_light_clip_low"]
@@ -320,18 +264,16 @@ for frame_type in ["standard", "science"]:
     light_path_new = []
     for i, path_i in enumerate(light_path):
         if not os.path.isabs(path_i):
-            path_i = os.path.abspath(os.path.join(light_folder, path_i))
+            path_i = os.path.abspath(os.path.join(input_folder, path_i))
         if os.path.splitext(path_i.lower())[-1][1:] in light_extension:
             if os.path.exists(path_i):
                 light_path_new.append(path_i)
             else:
                 raise ValueError(path_i + " does not exist.")
-
     light_path = light_path_new
     logger.info(
         "These are the light frames found, in full path: {}".format(light_path)
     )
-
     # Get only the flat files with the right extension
     flat_sigma_clipping = params[frame_type + "_flat_sigma_clipping"]
     flat_clip_low = params[frame_type + "_flat_clip_low"]
@@ -340,18 +282,16 @@ for frame_type in ["standard", "science"]:
     flat_path_new = []
     for i, path_i in enumerate(flat_path):
         if not os.path.isabs(path_i):
-            path_i = os.path.abspath(os.path.join(flat_folder, path_i))
+            path_i = os.path.abspath(os.path.join(input_folder, path_i))
         if os.path.splitext(path_i.lower())[-1][1:] in flat_extension:
             if os.path.exists(path_i):
                 flat_path_new.append(path_i)
             else:
                 raise ValueError(path_i + " does not exist.")
-
     flat_path = flat_path_new
     logger.info(
         "These are the flat frames found, in full path: {}".format(flat_path)
     )
-
     # Get only the arc files with the right extension
     arc_sigma_clipping = params[frame_type + "_arc_sigma_clipping"]
     arc_clip_low = params[frame_type + "_arc_clip_low"]
@@ -360,23 +300,20 @@ for frame_type in ["standard", "science"]:
     arc_path_new = []
     for i, path_i in enumerate(arc_path):
         if not os.path.isabs(path_i):
-            path_i = os.path.abspath(os.path.join(arc_folder, path_i))
+            path_i = os.path.abspath(os.path.join(input_folder, path_i))
         if os.path.splitext(path_i.lower())[-1][1:] in arc_extension:
             if os.path.exists(path_i):
                 arc_path_new.append(path_i)
             else:
                 raise ValueError(path_i + " does not exist.")
-
     arc_path = arc_path_new
     logger.info(
         "These are the arc frames found, in full path: {}".format(arc_path)
     )
-
     img[frame_type] = image_reduction.ImageReduction(
         log_file_name=os.path.join(log_file_folder, log_file_name),
     )
     logger.info("ImageReduction object created.")
-
     # Add the light frames
     for i, path_i in enumerate(light_path):
         try:
@@ -401,7 +338,6 @@ for frame_type in ["standard", "science"]:
         logger.info("light frame {} added.".format(path_i))
         if frame_type == "science":
             total_exposure_time += float(light_temp.header["EXPTIME"])
-
     # Add the arc frames
     for i, path_i in enumerate(arc_path):
         try:
@@ -410,11 +346,9 @@ for frame_type in ["standard", "science"]:
             arc_temp = fits.open(path_i)[1]
         img[frame_type].add_arc(arc_temp.data, arc_temp.header)
         logger.info("arc frame {} added.".format(path_i))
-
     # There is nothing to reduce, but this put things in the right place
     img[frame_type].reduce()
     logger.info("{} image reduced.".format(frame_type))
-
     # Collect the flat frames
     flat_header = []
     flat_data = []
@@ -428,43 +362,31 @@ for frame_type in ["standard", "science"]:
             CCDData(np.array(flat_temp.data).astype("float"), unit=u.ct)
         )
         logger.info("flat frame {} added.".format(path_i))
-
     flat_combiner = Combiner(flat_data)
     flat_combiner.sigma_clipping(
         low_thresh=flat_clip_low, high_thresh=flat_clip_high, func=np.ma.median
     )
-
     if flat_combine_type == "median":
-
         flat_combined_CCDdata = flat_combiner.median_combine()
-
     if flat_combine_type in ["average", "mean"]:
-
         flat_combined_CCDdata = flat_combiner.average_combine()
-
     # Red & Blue arm
     for arm in ["red", "blue"]:
-
         if arm == "red":
-
             spatial_mask = red_spatial_mask
             spec_mask = red_spec_mask
             if frame_type == "science":
                 coeff = rec_coeff_red_science
             if frame_type == "standard":
                 coeff = rec_coeff_red_standard
-
         else:
-
             spatial_mask = blue_spatial_mask
             spec_mask = blue_spec_mask
             if frame_type == "science":
                 coeff = rec_coeff_blue_science
             if frame_type == "standard":
                 coeff = rec_coeff_blue_standard
-
         twodspec = extracted_twodspec[frame_type][arm]
-
         twodspec.add_data(img[frame_type])
         twodspec.set_properties(
             readnoise=float(light_temp.header["RDNOISE"]),
@@ -477,13 +399,10 @@ for frame_type in ["standard", "science"]:
         twodspec.set_seeing()
         twodspec.set_exptime()
         twodspec.set_airmass()
-
         # Trim the arc the same way
         twodspec.apply_mask_to_arc()
-
         # Get the trace to rectify the image
         if frame_type == "standard":
-
             twodspec.ap_trace(
                 nspec=params[frame_type + "_" + arm + "_aptrace_nspec"],
                 smooth=params[frame_type + "_" + arm + "_aptrace_smooth"],
@@ -523,7 +442,7 @@ for frame_type in ["standard", "science"]:
                 save_fig=params[frame_type + "_" + arm + "_aptrace_save_fig"],
                 fig_type=params[frame_type + "_" + arm + "_aptrace_fig_type"],
                 filename=os.path.join(
-                    output_folder_path,
+                    output_folder,
                     frame_type
                     + "_"
                     + arm
@@ -534,20 +453,16 @@ for frame_type in ["standard", "science"]:
                     frame_type + "_" + arm + "_aptrace_open_iframe"
                 ],
             )
-
             ap_trace_position[arm] = copy.deepcopy(
                 twodspec.spectrum_list[0].trace
             )
             ap_trace_sigma[arm] = copy.deepcopy(
                 twodspec.spectrum_list[0].trace_sigma
             )
-
         if frame_type == "science":
-
             twodspec.add_trace(
                 ap_trace_position[arm], ap_trace_sigma[arm], spec_id=0
             )
-
         # Get the rectification polynomial
         twodspec.get_rectification(
             upsample_factor=params[
@@ -580,7 +495,7 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_rectification_fig_type"
             ],
             filename=os.path.join(
-                output_folder_path,
+                output_folder,
                 params[frame_type + "_" + arm + "_rectification_filename"]
                 + "_"
                 + frame_type,
@@ -589,15 +504,12 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_rectification_open_iframe"
             ],
         )
-
         # Apply the rectification
         twodspec.apply_rectification()
-
         # Need to store the traces for fringe correction before overwriting them
         # with the new traces
         trace = copy.deepcopy(twodspec.spectrum_list[0].trace)
         trace_sigma = copy.deepcopy(twodspec.spectrum_list[0].trace_sigma)
-
         # Get the trace again for the rectified image and then extract
         twodspec.ap_trace(
             nspec=params[frame_type + "_" + arm + "_aptrace_nspec"],
@@ -622,7 +534,7 @@ for frame_type in ["standard", "science"]:
             ],
             percentile=params[frame_type + "_" + arm + "_aptrace_percentile"],
             shift_tol=params[frame_type + "_" + arm + "_aptrace_shift_tol"],
-            fit_deg=2,
+            fit_deg=1,
             ap_faint=params[frame_type + "_" + arm + "_aptrace_ap_faint"],
             display=params[frame_type + "_" + arm + "_aptrace_display"],
             renderer=params[frame_type + "_" + arm + "_aptrace_renderer"],
@@ -634,7 +546,7 @@ for frame_type in ["standard", "science"]:
             save_fig=params[frame_type + "_" + arm + "_aptrace_save_fig"],
             fig_type=params[frame_type + "_" + arm + "_aptrace_fig_type"],
             filename=os.path.join(
-                output_folder_path,
+                output_folder,
                 params[frame_type + "_" + arm + "_aptrace_filename"]
                 + "_"
                 + frame_type,
@@ -643,7 +555,6 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_aptrace_open_iframe"
             ],
         )
-
         twodspec.ap_extract(
             apwidth=params[frame_type + "_" + arm + "_extract_apwidth"],
             skysep=params[frame_type + "_" + arm + "_extract_skysep"],
@@ -684,7 +595,7 @@ for frame_type in ["standard", "science"]:
             save_fig=params[frame_type + "_" + arm + "_extract_save_fig"],
             fig_type=params[frame_type + "_" + arm + "_extract_fig_type"],
             filename=os.path.join(
-                output_folder_path,
+                output_folder,
                 params[frame_type + "_" + arm + "_extract_filename"]
                 + "_"
                 + frame_type,
@@ -693,7 +604,6 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_extract_open_iframe"
             ],
         )
-
         twodspec.extract_arc_spec(
             spec_width=params[frame_type + "_" + arm + "_arc_spec_spec_width"],
             display=params[frame_type + "_" + arm + "_arc_spec_display"],
@@ -706,7 +616,7 @@ for frame_type in ["standard", "science"]:
             save_fig=params[frame_type + "_" + arm + "_arc_spec_save_fig"],
             fig_type=params[frame_type + "_" + arm + "_arc_spec_fig_type"],
             filename=os.path.join(
-                output_folder_path,
+                output_folder,
                 params[frame_type + "_" + arm + "_arc_spec_filename"]
                 + "_"
                 + frame_type,
@@ -715,13 +625,11 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_arc_spec_open_iframe"
             ],
         )
-
         # Get the traces for fringe removal
         trace_rectified = copy.deepcopy(twodspec.spectrum_list[0].trace)
         trace_sigma_rectified = copy.deepcopy(
             twodspec.spectrum_list[0].trace_sigma
         )
-
         if arm == "red":
             # Extract the red flat
             flat = spectral_reduction.TwoDSpec(
@@ -734,20 +642,15 @@ for frame_type in ["standard", "science"]:
                 gain=float(light_temp.header["GAIN"]),
                 log_file_name=os.path.join(log_file_folder, log_file_name),
             )
-
             # Add the trace for rectification
             flat.add_trace(trace, trace_sigma)
             flat.get_rectification(coeff=twodspec.rec_coeff)
             flat.apply_rectification()
-
             # Add the trace for fringe removal
             flat.add_trace(trace_rectified, trace_sigma_rectified)
-
             # Force extraction from the flat for fringe correction
             flat.ap_extract(apwidth=10, skywidth=0, display=False)
-
             fringe_correction(twodspec, flat)
-
     target_name[frame_type] = (
         img[frame_type].light_header[0]["OBJECT"].upper().replace(" ", "")
     )
@@ -794,7 +697,7 @@ red_onedspec.find_arc_lines(
     save_fig=params["red_find_arc_lines_save_fig"],
     fig_type=params["red_find_arc_lines_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_find_arc_lines_filename"] + "_science"
+        output_folder, params["red_find_arc_lines_filename"] + "_science"
     ),
     open_iframe=params["red_find_arc_lines_open_iframe"],
     stype="science",
@@ -813,7 +716,7 @@ red_onedspec.find_arc_lines(
     save_fig=params["red_find_arc_lines_save_fig"],
     fig_type=params["red_find_arc_lines_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_find_arc_lines_filename"] + "_standard"
+        output_folder, params["red_find_arc_lines_filename"] + "_standard"
     ),
     open_iframe=params["red_find_arc_lines_open_iframe"],
     stype="standard",
@@ -876,7 +779,7 @@ try:
         save_fig=params["red_fit_save_fig"],
         fig_type=params["red_fit_fig_type"],
         filename=os.path.join(
-            output_folder_path, params["red_fit_filename"] + "_science"
+            output_folder, params["red_fit_filename"] + "_science"
         ),
         stype="science",
     )
@@ -902,7 +805,7 @@ except:
             save_fig=params["red_fit_save_fig"],
             fig_type=params["red_fit_fig_type"],
             filename=os.path.join(
-                output_folder_path, params["red_fit_filename"] + "_science"
+                output_folder, params["red_fit_filename"] + "_science"
             ),
             stype="science",
         )
@@ -948,7 +851,7 @@ try:
         save_fig=params["red_fit_save_fig"],
         fig_type=params["red_fit_fig_type"],
         filename=os.path.join(
-            output_folder_path, params["red_fit_filename"] + "_standard"
+            output_folder, params["red_fit_filename"] + "_standard"
         ),
         stype="standard",
     )
@@ -974,7 +877,7 @@ except:
             save_fig=params["red_fit_save_fig"],
             fig_type=params["red_fit_fig_type"],
             filename=os.path.join(
-                output_folder_path, params["red_fit_filename"] + "_standard"
+                output_folder, params["red_fit_filename"] + "_standard"
             ),
             stype="standard",
         )
@@ -1037,7 +940,7 @@ red_onedspec.inspect_sensitivity(
     save_fig=params["red_inspect_sensitivity_save_fig"],
     fig_type=params["red_inspect_sensitivity_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_inspect_sensitivity_filename"]
+        output_folder, params["red_inspect_sensitivity_filename"]
     ),
 )
 
@@ -1053,7 +956,7 @@ red_onedspec.apply_flux_calibration(
     save_fig=params["red_apply_flux_calibration_save_fig"],
     fig_type=params["red_apply_flux_calibration_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_apply_flux_calibration_filename"]
+        output_folder, params["red_apply_flux_calibration_filename"]
     ),
 )
 red_onedspec.get_telluric_profile(
@@ -1073,7 +976,7 @@ red_onedspec.inspect_telluric_profile(
     save_fig=params["red_inspect_telluric_profile_save_fig"],
     fig_type=params["red_inspect_telluric_profile_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_inspect_telluric_profile_filename"]
+        output_folder, params["red_inspect_telluric_profile_filename"]
     ),
 )
 
@@ -1089,7 +992,7 @@ red_onedspec.inspect_telluric_correction(
     save_fig=params["red_inspect_telluric_correction_save_fig"],
     fig_type=params["red_inspect_telluric_correction_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["red_inspect_telluric_correction_filename"]
+        output_folder, params["red_inspect_telluric_correction_filename"]
     ),
 )
 
@@ -1122,7 +1025,7 @@ blue_onedspec.find_arc_lines(
     save_fig=params["blue_find_arc_lines_save_fig"],
     fig_type=params["blue_find_arc_lines_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["blue_find_arc_lines_filename"] + "_science"
+        output_folder, params["blue_find_arc_lines_filename"] + "_science"
     ),
     open_iframe=params["blue_find_arc_lines_open_iframe"],
     stype="science",
@@ -1141,7 +1044,7 @@ blue_onedspec.find_arc_lines(
     save_fig=params["blue_find_arc_lines_save_fig"],
     fig_type=params["blue_find_arc_lines_fig_type"],
     filename=os.path.join(
-        output_folder_path,
+        output_folder,
         params["blue_find_arc_lines_filename"] + "_standard",
     ),
     open_iframe=params["blue_find_arc_lines_open_iframe"],
@@ -1217,7 +1120,7 @@ try:
         save_fig=params["blue_fit_save_fig"],
         fig_type=params["blue_fit_fig_type"],
         filename=os.path.join(
-            output_folder_path, params["blue_fit_filename"] + "_science"
+            output_folder, params["blue_fit_filename"] + "_science"
         ),
         stype="science",
     )
@@ -1249,7 +1152,7 @@ try:
         save_fig=params["blue_fit_save_fig"],
         fig_type=params["blue_fit_fig_type"],
         filename=os.path.join(
-            output_folder_path, params["blue_fit_filename"] + "_standard"
+            output_folder, params["blue_fit_filename"] + "_standard"
         ),
         stype="standard",
     )
@@ -1298,7 +1201,7 @@ blue_onedspec.inspect_sensitivity(
     save_fig=params["blue_inspect_sensitivity_save_fig"],
     fig_type=params["blue_inspect_sensitivity_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["blue_inspect_sensitivity_filename"]
+        output_folder, params["blue_inspect_sensitivity_filename"]
     ),
 )
 
@@ -1314,7 +1217,7 @@ blue_onedspec.apply_flux_calibration(
     save_fig=params["blue_apply_flux_calibration_save_fig"],
     fig_type=params["blue_apply_flux_calibration_fig_type"],
     filename=os.path.join(
-        output_folder_path, params["blue_apply_flux_calibration_filename"]
+        output_folder, params["blue_apply_flux_calibration_filename"]
     ),
 )
 
@@ -1406,9 +1309,7 @@ blue_science_filename = params[
     "blue_inspect_reduced_spectrum_science_filename"
 ]
 if blue_science_filename is None:
-    blue_science_filename = os.path.join(
-        output_folder_path, science_name + "_blue"
-    )
+    blue_science_filename = os.path.join(output_folder, science_name + "_blue")
 blue_onedspec.inspect_reduced_spectrum(
     wave_min=params["blue_inspect_reduced_spectrum_wave_min"],
     wave_max=params["blue_inspect_reduced_spectrum_wave_max"],
@@ -1418,15 +1319,13 @@ blue_onedspec.inspect_reduced_spectrum(
     height=params["blue_inspect_reduced_spectrum_height"],
     save_fig=params["blue_inspect_reduced_spectrum_save_fig"],
     fig_type=params["blue_inspect_reduced_spectrum_fig_type"],
-    filename=os.path.join(output_folder_path, blue_science_filename),
+    filename=os.path.join(output_folder, blue_science_filename),
     stype="science",
 )
 
 red_science_filename = params["red_inspect_reduced_spectrum_science_filename"]
 if red_science_filename is None:
-    red_science_filename = os.path.join(
-        output_folder_path, science_name + "_blue"
-    )
+    red_science_filename = os.path.join(output_folder, science_name + "_blue")
 red_onedspec.inspect_reduced_spectrum(
     wave_min=params["red_inspect_reduced_spectrum_wave_min"],
     wave_max=params["red_inspect_reduced_spectrum_wave_max"],
@@ -1436,7 +1335,7 @@ red_onedspec.inspect_reduced_spectrum(
     height=params["red_inspect_reduced_spectrum_height"],
     save_fig=params["red_inspect_reduced_spectrum_save_fig"],
     fig_type=params["red_inspect_reduced_spectrum_fig_type"],
-    filename=os.path.join(output_folder_path, red_science_filename),
+    filename=os.path.join(output_folder, red_science_filename),
     stype="science",
 )
 
@@ -1445,7 +1344,7 @@ blue_standard_filename = params[
 ]
 if blue_standard_filename is None:
     blue_standard_filename = os.path.join(
-        output_folder_path, standard_name + "_blue"
+        output_folder, standard_name + "_blue"
     )
 blue_onedspec.inspect_reduced_spectrum(
     wave_min=params["blue_inspect_reduced_spectrum_wave_min"],
@@ -1456,7 +1355,7 @@ blue_onedspec.inspect_reduced_spectrum(
     height=params["blue_inspect_reduced_spectrum_height"],
     save_fig=params["blue_inspect_reduced_spectrum_save_fig"],
     fig_type=params["blue_inspect_reduced_spectrum_fig_type"],
-    filename=os.path.join(output_folder_path, blue_standard_filename),
+    filename=os.path.join(output_folder, blue_standard_filename),
     stype="standard",
 )
 
@@ -1465,7 +1364,7 @@ red_standard_filename = params[
 ]
 if red_standard_filename is None:
     red_standard_filename = os.path.join(
-        output_folder_path, standard_name + "_blue"
+        output_folder, standard_name + "_blue"
     )
 red_onedspec.inspect_reduced_spectrum(
     wave_min=params["red_inspect_reduced_spectrum_wave_min"],
@@ -1476,7 +1375,7 @@ red_onedspec.inspect_reduced_spectrum(
     height=params["red_inspect_reduced_spectrum_height"],
     save_fig=params["red_inspect_reduced_spectrum_save_fig"],
     fig_type=params["red_inspect_reduced_spectrum_fig_type"],
-    filename=os.path.join(output_folder_path, red_standard_filename),
+    filename=os.path.join(output_folder, red_standard_filename),
     stype="standard",
 )
 
@@ -1524,9 +1423,7 @@ if params["blue_create_fits"]:
 if params["red_save_fits"]:
     red_onedspec.save_fits(
         output=params["red_save_fits_output"],
-        filename=os.path.join(
-            output_folder_path, params["red_save_fits_filename"]
-        ),
+        filename=os.path.join(output_folder, params["red_save_fits_filename"]),
         recreate=params["red_save_fits_recreate"],
         empty_primary_hdu=params["red_save_fits_empty_primary_hdu"],
         overwrite=params["red_save_fits_overwrite"],
@@ -1536,7 +1433,7 @@ if params["blue_save_fits"]:
     blue_onedspec.save_fits(
         output=params["blue_save_fits_output"],
         filename=os.path.join(
-            output_folder_path, params["blue_save_fits_filename"]
+            output_folder, params["blue_save_fits_filename"]
         ),
         recreate=params["blue_save_fits_recreate"],
         empty_primary_hdu=params["blue_save_fits_empty_primary_hdu"],
@@ -1546,9 +1443,7 @@ if params["blue_save_fits"]:
 if params["red_save_csv"]:
     red_onedspec.save_csv(
         output=params["red_save_csv_output"],
-        filename=os.path.join(
-            output_folder_path, params["red_save_csv_filename"]
-        ),
+        filename=os.path.join(output_folder, params["red_save_csv_filename"]),
         recreate=params["red_save_csv_recreate"],
         overwrite=params["red_save_csv_overwrite"],
     )
@@ -1556,9 +1451,7 @@ if params["red_save_csv"]:
 if params["blue_save_csv"]:
     blue_onedspec.save_csv(
         output=params["blue_save_csv_output"],
-        filename=os.path.join(
-            output_folder_path, params["blue_save_csv_filename"]
-        ),
+        filename=os.path.join(output_folder, params["blue_save_csv_filename"]),
         recreate=params["blue_save_csv_recreate"],
         overwrite=params["blue_save_csv_overwrite"],
     )
@@ -1590,7 +1483,7 @@ flux_blue_err = blue_onedspec.science_spectrum_list[
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
-red_limit = 4800
+red_limit = 4900
 # This value has to match the
 blue_limit = 5750
 
@@ -1678,14 +1571,14 @@ plt.tight_layout()
 plt.title(science_name)
 plt.savefig(
     os.path.join(
-        output_folder_path,
+        output_folder,
         science_name.replace(" ", "_")
         + "_both_arms_{}.png".format(params["output_file_name_suffix"]),
     )
 )
 np.savetxt(
     os.path.join(
-        output_folder_path,
+        output_folder,
         science_name.replace(" ", "_")
         + "_{}.csv".format(params["output_file_name_suffix"]),
     ),
@@ -1799,7 +1692,7 @@ output = fits.PrimaryHDU(
 )
 output.writeto(
     os.path.join(
-        output_folder_path,
+        output_folder,
         science_name.replace(" ", "_")
         + "_{}.fits".format(params["output_file_name_suffix"]),
     ),

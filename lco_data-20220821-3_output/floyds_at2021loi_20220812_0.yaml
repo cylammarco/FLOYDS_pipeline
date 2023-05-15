@@ -1,0 +1,777 @@
+# log level
+log_level: "info"
+log_file_name:
+log_file_folder:
+
+# Output path (For the folder and file names)
+output_folder: C:\Users\cylam\git\FLOYDS_pipeline\lco_data-20220821-3_output
+output_file_name_suffix: at2021loi
+
+# Target name (For TNS query)
+target_name: at2021loi
+ra:
+dec:
+
+# Name of the person who observe and reduce it
+# Note that SNEx displays "observer" as the reduced in the web interface
+observer: "Automated"
+reducer: "Automated"
+
+# FLOYDS North or South
+hemisphere: north
+
+# Input folder
+input_folder: C:\Users\cylam\git\FLOYDS_pipeline\lco_data-20220821-3
+
+# If the name of a frame is provided, it will be directly used
+# Provide in lists
+science_light_frame:
+- ogg2m001-en06-20220812-0035-e00.fits.fz
+science_flat_frame:
+- ogg2m001-en06-20220812-0037-w00.fits.fz
+science_arc_frame:
+
+- ogg2m001-en06-20220812-0036-a00.fits.fz
+standard_light_frame:
+- ogg2m001-en06-20220812-0016-e00.fits.fz
+standard_flat_frame:
+- ogg2m001-en06-20220812-0017-w00.fits.fz
+standard_arc_frame:
+
+- ogg2m001-en06-20220812-0018-a00.fits.fz
+science_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
+science_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
+science_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
+
+standard_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
+standard_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
+standard_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
+
+# Cosmic ray cleaning only (light frame only)
+cosmicray: true
+sigclip: 4.5
+fsmode: "convolve"
+psfmodel: "gaussy"
+psfsize: 11
+
+# ImageReduction set up
+science_light_sigma_clipping: true
+science_light_clip_low: 5.0
+science_light_clip_high: 5.0
+science_light_combine_type: median
+
+science_flat_sigma_clipping: true
+science_flat_clip_low: 5.0
+science_flat_clip_high: 5.0
+science_flat_combine_type: median
+
+science_arc_sigma_clipping: true
+science_arc_clip_low: 5.0
+science_arc_clip_high: 5.0
+science_arc_combine_type: median
+
+standard_light_sigma_clipping: true
+standard_light_clip_low: 5.0
+standard_light_clip_high: 5.0
+standard_light_combine_type: median
+
+standard_flat_sigma_clipping: true
+standard_flat_clip_low: 5.0
+standard_flat_clip_high: 5.0
+standard_flat_combine_type: median
+
+standard_arc_sigma_clipping: true
+standard_arc_clip_low: 5.0
+standard_arc_clip_high: 5.0
+standard_arc_combine_type: median
+
+# Aperture Tracing
+science_red_aptrace_nspec: 1
+science_red_aptrace_smooth: false
+science_red_aptrace_nwindow: 20
+science_red_aptrace_spec_sep: 5
+science_red_aptrace_trace_width: 30
+science_red_aptrace_resample_factor: 4
+science_red_aptrace_rescale: false
+science_red_aptrace_scaling_min: 0.995
+science_red_aptrace_scaling_max: 1.005
+science_red_aptrace_scaling_step: 0.001
+science_red_aptrace_percentile: 10
+science_red_aptrace_shift_tol: 35
+science_red_aptrace_fit_deg: 5
+science_red_aptrace_ap_faint: 15
+science_red_aptrace_display: false
+science_red_aptrace_renderer: "default"
+science_red_aptrace_width: 1280
+science_red_aptrace_height: 720
+science_red_aptrace_return_jsonstring: false
+science_red_aptrace_save_fig: true
+science_red_aptrace_fig_type: "png+pdf"
+science_red_aptrace_filename: "red_aptrace"
+science_red_aptrace_open_iframe: false
+
+# Rectification
+science_red_rectification_upsample_factor: 5
+science_red_rectification_bin_size: 6
+science_red_rectification_n_bin: 15
+science_red_rectification_spline_order: 3
+science_red_rectification_order: 2
+science_red_rectification_coeff_north:
+science_red_rectification_coeff_south:
+science_red_rectification_use_arc: true
+science_red_rectification_apply: false
+science_red_rectification_display: false
+science_red_rectification_renderer: "default"
+science_red_rectification_width: 1280
+science_red_rectification_height: 720
+science_red_rectification_return_jsonstring: false
+science_red_rectification_save_fig: true
+science_red_rectification_fig_type: "png+pdf"
+science_red_rectification_filename: "red_rectification"
+science_red_rectification_open_iframe: false
+
+# Aperture Extraction
+science_red_extract_apwidth: 15
+science_red_extract_skysep: 5
+science_red_extract_skywidth: 7
+science_red_extract_skydeg: 1
+science_red_extract_sky_sigma: 3.0
+science_red_extract_optimal: true
+science_red_extract_algorithm: "horne86"
+science_red_extract_model: "gauss"
+science_red_extract_lowess_frac: 0.1
+science_red_extract_lowess_it: 3
+science_red_extract_lowess_delta: 0.0
+science_red_extract_tolerance: 0.000006
+science_red_extract_cosmicray_sigma: 3.0
+science_red_extract_max_iter: 99
+science_red_extract_forced: false
+science_red_extract_variances:
+science_red_extract_npoly: 21
+science_red_extract_polyspacing: 1
+science_red_extract_pord: 5
+science_red_extract_qmode: "fast-linear"
+science_red_extract_nreject: 100
+science_red_extract_display: false
+science_red_extract_renderer: "default"
+science_red_extract_width: 1280
+science_red_extract_height: 720
+science_red_extract_return_jsonstring: false
+science_red_extract_save_fig: true
+science_red_extract_fig_type: "png+pdf"
+science_red_extract_filename: "red_apextract"
+science_red_extract_open_iframe: false
+
+# Arc spec
+science_red_arc_spec_spec_width:
+science_red_arc_spec_display: false
+science_red_arc_spec_renderer: "default"
+science_red_arc_spec_width: 1280
+science_red_arc_spec_height: 720
+science_red_arc_spec_return_jsonstring: false
+science_red_arc_spec_save_fig: true
+science_red_arc_spec_fig_type: "png+pdf"
+science_red_arc_spec_filename: "red_arc_spec"
+science_red_arc_spec_open_iframe: false
+
+# Aperture Tracing
+science_blue_aptrace_nspec: 1
+science_blue_aptrace_smooth: false
+science_blue_aptrace_nwindow: 20
+science_blue_aptrace_spec_sep: 5
+science_blue_aptrace_trace_width: 30
+science_blue_aptrace_resample_factor: 4
+science_blue_aptrace_rescale: false
+science_blue_aptrace_scaling_min: 0.995
+science_blue_aptrace_scaling_max: 1.005
+science_blue_aptrace_scaling_step: 0.001
+science_blue_aptrace_percentile: 5
+science_blue_aptrace_shift_tol: 10
+science_blue_aptrace_fit_deg: 5
+science_blue_aptrace_ap_faint: 15
+science_blue_aptrace_display: false
+science_blue_aptrace_renderer: "default"
+science_blue_aptrace_width: 1280
+science_blue_aptrace_height: 720
+science_blue_aptrace_return_jsonstring: false
+science_blue_aptrace_save_fig: true
+science_blue_aptrace_fig_type: "png+pdf"
+science_blue_aptrace_filename: "blue_aptrace"
+science_blue_aptrace_open_iframe: false
+
+# Rectification
+science_blue_rectification_upsample_factor: 5
+science_blue_rectification_bin_size: 6
+science_blue_rectification_n_bin: 15
+science_blue_rectification_spline_order: 3
+science_blue_rectification_order: 2
+science_blue_rectification_coeff_north:
+science_blue_rectification_coeff_south:
+science_blue_rectification_use_arc: true
+science_blue_rectification_apply: false
+science_blue_rectification_display: false
+science_blue_rectification_renderer: "default"
+science_blue_rectification_width: 1280
+science_blue_rectification_height: 720
+science_blue_rectification_return_jsonstring: false
+science_blue_rectification_save_fig: true
+science_blue_rectification_fig_type: "png+pdf"
+science_blue_rectification_filename: "blue_rectification"
+science_blue_rectification_open_iframe: false
+
+# Aperture Extraction
+science_blue_extract_apwidth: 11
+science_blue_extract_skysep: 5
+science_blue_extract_skywidth: 7
+science_blue_extract_skydeg: 1
+science_blue_extract_sky_sigma: 2.5
+science_blue_extract_optimal: true
+science_blue_extract_algorithm: "horne86"
+science_blue_extract_model: "gauss"
+science_blue_extract_lowess_frac: 0.1
+science_blue_extract_lowess_it: 3
+science_blue_extract_lowess_delta: 0.0
+science_blue_extract_tolerance: 0.000006
+science_blue_extract_cosmicray_sigma: 3.0
+science_blue_extract_max_iter: 99
+science_blue_extract_forced: false
+science_blue_extract_variances:
+science_blue_extract_npoly: 21
+science_blue_extract_polyspacing: 1
+science_blue_extract_pord: 5
+science_blue_extract_qmode: "fast-linear"
+science_blue_extract_nreject: 100
+science_blue_extract_display: false
+science_blue_extract_renderer: "default"
+science_blue_extract_width: 1280
+science_blue_extract_height: 720
+science_blue_extract_return_jsonstring: false
+science_blue_extract_save_fig: true
+science_blue_extract_fig_type: "png+pdf"
+science_blue_extract_filename: "blue_apextract"
+science_blue_extract_open_iframe: false
+
+# Arc spec
+science_blue_arc_spec_spec_width:
+science_blue_arc_spec_display: false
+science_blue_arc_spec_renderer: "default"
+science_blue_arc_spec_width: 1280
+science_blue_arc_spec_height: 720
+science_blue_arc_spec_return_jsonstring: false
+science_blue_arc_spec_save_fig: true
+science_blue_arc_spec_fig_type: "png+pdf"
+science_blue_arc_spec_filename: "blue_arc_spec"
+science_blue_arc_spec_open_iframe: false
+
+# Aperture Tracing
+standard_red_aptrace_nspec: 1
+standard_red_aptrace_smooth: false
+standard_red_aptrace_nwindow: 25
+standard_red_aptrace_spec_sep: 5
+standard_red_aptrace_trace_width: 30
+standard_red_aptrace_resample_factor: 4
+standard_red_aptrace_rescale: false
+standard_red_aptrace_scaling_min: 0.995
+standard_red_aptrace_scaling_max: 1.005
+standard_red_aptrace_scaling_step: 0.001
+standard_red_aptrace_percentile: 10
+standard_red_aptrace_shift_tol: 35
+standard_red_aptrace_fit_deg: 5
+standard_red_aptrace_ap_faint: 15
+standard_red_aptrace_display: false
+standard_red_aptrace_renderer: "default"
+standard_red_aptrace_width: 1280
+standard_red_aptrace_height: 720
+standard_red_aptrace_return_jsonstring: false
+standard_red_aptrace_save_fig: true
+standard_red_aptrace_fig_type: "png+pdf"
+standard_red_aptrace_filename: "red_aptrace"
+standard_red_aptrace_open_iframe: false
+
+# Rectification
+standard_red_rectification_upsample_factor: 5
+standard_red_rectification_bin_size: 6
+standard_red_rectification_n_bin: 15
+standard_red_rectification_spline_order: 3
+standard_red_rectification_order: 2
+standard_red_rectification_coeff_north:
+standard_red_rectification_coeff_south:
+standard_red_rectification_use_arc: true
+standard_red_rectification_apply: false
+standard_red_rectification_display: false
+standard_red_rectification_renderer: "default"
+standard_red_rectification_width: 1280
+standard_red_rectification_height: 720
+standard_red_rectification_return_jsonstring: false
+standard_red_rectification_save_fig: true
+standard_red_rectification_fig_type: "png+pdf"
+standard_red_rectification_filename: "red_rectification"
+standard_red_rectification_open_iframe: false
+
+# Aperture Extraction
+standard_red_extract_apwidth: 15
+standard_red_extract_skysep: 5
+standard_red_extract_skywidth: 7
+standard_red_extract_skydeg: 1
+standard_red_extract_sky_sigma: 3.0
+standard_red_extract_optimal: true
+standard_red_extract_algorithm: "horne86"
+standard_red_extract_model: "gauss"
+standard_red_extract_lowess_frac: 0.1
+standard_red_extract_lowess_it: 3
+standard_red_extract_lowess_delta: 0.0
+standard_red_extract_tolerance: 0.000006
+standard_red_extract_cosmicray_sigma: 3.0
+standard_red_extract_max_iter: 99
+standard_red_extract_forced: false
+standard_red_extract_variances:
+standard_red_extract_npoly: 21
+standard_red_extract_polyspacing: 1
+standard_red_extract_pord: 5
+standard_red_extract_qmode: "fast-linear"
+standard_red_extract_nreject: 100
+standard_red_extract_display: false
+standard_red_extract_renderer: "default"
+standard_red_extract_width: 1280
+standard_red_extract_height: 720
+standard_red_extract_return_jsonstring: false
+standard_red_extract_save_fig: true
+standard_red_extract_fig_type: "png+pdf"
+standard_red_extract_filename: "red_apextract"
+standard_red_extract_open_iframe: false
+
+# Arc spec
+standard_red_arc_spec_spec_width:
+standard_red_arc_spec_display: false
+standard_red_arc_spec_renderer: "default"
+standard_red_arc_spec_width: 1280
+standard_red_arc_spec_height: 720
+standard_red_arc_spec_return_jsonstring: false
+standard_red_arc_spec_save_fig: true
+standard_red_arc_spec_fig_type: "png+pdf"
+standard_red_arc_spec_filename: "red_arc_spec"
+standard_red_arc_spec_open_iframe: false
+
+# Aperture Tracing
+standard_blue_aptrace_nspec: 1
+standard_blue_aptrace_smooth: false
+standard_blue_aptrace_nwindow: 25
+standard_blue_aptrace_spec_sep: 5
+standard_blue_aptrace_trace_width: 30
+standard_blue_aptrace_resample_factor: 4
+standard_blue_aptrace_rescale: false
+standard_blue_aptrace_scaling_min: 0.995
+standard_blue_aptrace_scaling_max: 1.005
+standard_blue_aptrace_scaling_step: 0.001
+standard_blue_aptrace_percentile: 10
+standard_blue_aptrace_shift_tol: 50
+standard_blue_aptrace_fit_deg: 5
+standard_blue_aptrace_ap_faint: 10
+standard_blue_aptrace_display: false
+standard_blue_aptrace_renderer: "default"
+standard_blue_aptrace_width: 1280
+standard_blue_aptrace_height: 720
+standard_blue_aptrace_return_jsonstring: false
+standard_blue_aptrace_save_fig: true
+standard_blue_aptrace_fig_type: "png+pdf"
+standard_blue_aptrace_filename: "blue_aptrace"
+standard_blue_aptrace_open_iframe: false
+
+# Rectification
+standard_blue_rectification_upsample_factor: 5
+standard_blue_rectification_bin_size: 6
+standard_blue_rectification_n_bin: 15
+standard_blue_rectification_spline_order: 3
+standard_blue_rectification_order: 2
+standard_blue_rectification_coeff_north:
+standard_blue_rectification_coeff_south:
+standard_blue_rectification_use_arc: true
+standard_blue_rectification_apply: false
+standard_blue_rectification_display: false
+standard_blue_rectification_renderer: "default"
+standard_blue_rectification_width: 1280
+standard_blue_rectification_height: 720
+standard_blue_rectification_return_jsonstring: false
+standard_blue_rectification_save_fig: true
+standard_blue_rectification_fig_type: "png+pdf"
+standard_blue_rectification_filename: "blue_rectification"
+standard_blue_rectification_open_iframe: false
+
+# Aperture Extraction
+standard_blue_extract_apwidth: 11
+standard_blue_extract_skysep: 3
+standard_blue_extract_skywidth: 7
+standard_blue_extract_skydeg: 1
+standard_blue_extract_sky_sigma: 2.5
+standard_blue_extract_optimal: true
+standard_blue_extract_algorithm: "horne86"
+standard_blue_extract_model: "gauss"
+standard_blue_extract_lowess_frac: 0.1
+standard_blue_extract_lowess_it: 3
+standard_blue_extract_lowess_delta: 0.0
+standard_blue_extract_tolerance: 0.000006
+standard_blue_extract_cosmicray_sigma: 3.0
+standard_blue_extract_max_iter: 99
+standard_blue_extract_forced: false
+standard_blue_extract_variances:
+standard_blue_extract_npoly: 21
+standard_blue_extract_polyspacing: 1
+standard_blue_extract_pord: 5
+standard_blue_extract_qmode: "fast-linear"
+standard_blue_extract_nreject: 100
+standard_blue_extract_display: false
+standard_blue_extract_renderer: "default"
+standard_blue_extract_width: 1280
+standard_blue_extract_height: 720
+standard_blue_extract_return_jsonstring: false
+standard_blue_extract_save_fig: true
+standard_blue_extract_fig_type: "png+pdf"
+standard_blue_extract_filename: "blue_apextract"
+standard_blue_extract_open_iframe: false
+
+# Arc spec
+standard_blue_arc_spec_spec_width:
+standard_blue_arc_spec_display: false
+standard_blue_arc_spec_renderer: "default"
+standard_blue_arc_spec_width: 1280
+standard_blue_arc_spec_height: 720
+standard_blue_arc_spec_return_jsonstring: false
+standard_blue_arc_spec_save_fig: true
+standard_blue_arc_spec_fig_type: "png+pdf"
+standard_blue_arc_spec_filename: "blue_arc_spec"
+standard_blue_arc_spec_open_iframe: false
+
+# find arc lines
+red_find_arc_lines_prominence: 0.25
+red_find_arc_lines_top_n_peaks: 25
+red_find_arc_lines_distance: 4.0
+red_find_arc_lines_refine: true
+red_find_arc_lines_refine_window_width: 5
+red_find_arc_lines_display: false
+red_find_arc_lines_width: 1280
+red_find_arc_lines_height: 720
+red_find_arc_lines_return_jsonstring: false
+red_find_arc_lines_renderer: "default"
+red_find_arc_lines_save_fig: true
+red_find_arc_lines_fig_type: "png+pdf"
+red_find_arc_lines_filename: "red_arc_lines"
+red_find_arc_lines_open_iframe: false
+
+blue_find_arc_lines_prominence: 0.1
+blue_find_arc_lines_top_n_peaks: 11
+blue_find_arc_lines_distance: 4.0
+blue_find_arc_lines_refine: true
+blue_find_arc_lines_refine_window_width: 5
+blue_find_arc_lines_display: false
+blue_find_arc_lines_width: 1280
+blue_find_arc_lines_height: 720
+blue_find_arc_lines_return_jsonstring: false
+blue_find_arc_lines_renderer: "default"
+blue_find_arc_lines_save_fig: true
+blue_find_arc_lines_fig_type: "png+pdf"
+blue_find_arc_lines_filename: "blue_arc_lines"
+blue_find_arc_lines_open_iframe: false
+
+# set_hough_properties
+red_set_hough_properties_num_slopes: 5000
+red_set_hough_properties_xbins: 500
+red_set_hough_properties_ybins: 500
+red_set_hough_properties_min_wavelength: 4750.0
+red_set_hough_properties_max_wavelength: 10750.0
+red_set_hough_properties_range_tolerance: 500
+red_set_hough_properties_linearity_tolerance: 100
+
+# set_hough_properties
+blue_set_hough_properties_num_slopes: 750
+blue_set_hough_properties_xbins: 200
+blue_set_hough_properties_ybins: 200
+blue_set_hough_properties_min_wavelength: 3200.0
+blue_set_hough_properties_max_wavelength: 5800.0
+blue_set_hough_properties_range_tolerance: 200
+blue_set_hough_properties_linearity_tolerance: 100
+
+# set_ransac_properties
+red_set_ransac_properties_sample_size: 5
+red_set_ransac_properties_top_n_candidate: 5
+red_set_ransac_properties_linear: true
+red_set_ransac_properties_filter_close: false
+red_set_ransac_properties_ransac_tolerance: 5
+red_set_ransac_properties_candidate_weighted: true
+red_set_ransac_properties_hough_weight: 1.0
+red_set_ransac_properties_minimum_matches: 19
+red_set_ransac_properties_minimum_peak_utilisation: 0.0
+red_set_ransac_properties_minimum_fit_error: 0.0001
+
+# set_ransac_properties
+blue_set_ransac_properties_sample_size: 5
+blue_set_ransac_properties_top_n_candidate: 5
+blue_set_ransac_properties_linear: true
+blue_set_ransac_properties_filter_close: true
+blue_set_ransac_properties_ransac_tolerance: 3
+blue_set_ransac_properties_candidate_weighted: true
+blue_set_ransac_properties_hough_weight: 2.0
+blue_set_ransac_properties_minimum_matches: 9
+blue_set_ransac_properties_minimum_peak_utilisation: 0.0
+blue_set_ransac_properties_minimum_fit_error: 0.0001
+
+# do_hough_transform
+red_do_hough_transform_brute_force: false
+
+# do_hough_transform
+blue_do_hough_transform_brute_force: false
+
+# plot_search_space
+red_plot_search_space: true
+red_plot_search_space_fit_coeff:
+red_plot_search_space_top_n_candidate: 3
+red_plot_search_space_weighted: true
+red_plot_search_space_save_fig: true
+red_plot_search_space_fig_type: "png+pdf"
+red_plot_search_space_filename:
+red_plot_search_space_return_jsonstring: false
+red_plot_search_space_renderer: "default"
+red_plot_search_space_display: false
+
+# plot_search_space
+blue_plot_search_space: true
+blue_plot_search_space_fit_coeff:
+blue_plot_search_space_top_n_candidate: 3
+blue_plot_search_space_weighted: true
+blue_plot_search_space_save_fig: true
+blue_plot_search_space_fig_type: "png+pdf"
+blue_plot_search_space_filename:
+blue_plot_search_space_return_jsonstring: false
+blue_plot_search_space_renderer: "default"
+blue_plot_search_space_display: false
+
+# fit the wavelength
+red_fit_max_tries: 2500
+red_fit_fit_deg: 5
+red_fit_fit_coeff:
+red_fit_fit_tolerance: 10.0
+red_fit_fit_type: "poly"
+red_fit_candidate_tolerance: 3.0
+red_fit_brute_force: false
+red_fit_progress: true
+red_fit_return_solution: false
+red_fit_display: false
+red_fit_renderer: "default"
+red_fit_save_fig: true
+red_fit_fig_type: "png+pdf"
+red_fit_filename: "red_wavelength_solution"
+
+# fit the wavelength
+blue_fit_max_tries: 2500
+blue_fit_fit_deg: 4
+blue_fit_fit_coeff:
+blue_fit_fit_tolerance: 10.0
+blue_fit_fit_type: "poly"
+blue_fit_candidate_tolerance: 3.0
+blue_fit_brute_force: false
+blue_fit_progress: true
+blue_fit_return_solution: false
+blue_fit_display: false
+blue_fit_renderer: "default"
+blue_fit_save_fig: true
+blue_fit_fig_type: "png+pdf"
+blue_fit_filename: "blue_wavelength_solution"
+
+# load_standard
+load_standard_target:
+load_standard_library: "esohststan"
+load_standard_ftype: "flux"
+load_standard_cutoff: 0.4
+
+# get_sensitivity
+red_get_sensitivity_k: 3
+red_get_sensitivity_method: "polynomial"
+red_get_sensitivity_mask_range: [[6850, 6960], [7580, 7700]]
+red_get_sensitivity_mask_fit_order: 1
+red_get_sensitivity_mask_fit_size: 5
+red_get_sensitivity_smooth: true
+red_get_sensitivity_slength: 11
+red_get_sensitivity_sorder: 3
+red_get_sensitivity_return_function: false
+red_get_sensitivity_sens_deg: 17
+
+# get_sensitivity
+blue_get_sensitivity_k: 3
+blue_get_sensitivity_method: "polynomial"
+blue_get_sensitivity_mask_range: [[6850, 6960], [7580, 7700]]
+blue_get_sensitivity_mask_fit_order: 1
+blue_get_sensitivity_mask_fit_size: 5
+blue_get_sensitivity_smooth: true
+blue_get_sensitivity_slength: 11
+blue_get_sensitivity_sorder: 3
+blue_get_sensitivity_return_function: false
+blue_get_sensitivity_sens_deg: 17
+
+# inspect_sensitivity
+red_inspect_sensitivity_display: false
+red_inspect_sensitivity_renderer: "default"
+red_inspect_sensitivity_width: 1280
+red_inspect_sensitivity_height: 720
+red_inspect_sensitivity_return_jsonstring: false
+red_inspect_sensitivity_save_fig: true
+red_inspect_sensitivity_fig_type: "png+pdf"
+red_inspect_sensitivity_filename: "red_sensitivity"
+
+# inspect_sensitivity
+blue_inspect_sensitivity_display: false
+blue_inspect_sensitivity_renderer: "default"
+blue_inspect_sensitivity_width: 1280
+blue_inspect_sensitivity_height: 720
+blue_inspect_sensitivity_return_jsonstring: false
+blue_inspect_sensitivity_save_fig: true
+blue_inspect_sensitivity_fig_type: "png+pdf"
+blue_inspect_sensitivity_filename: "blue_sensitivity"
+
+# apply_flux_calibration
+red_apply_flux_calibration_inspect: false
+red_apply_flux_calibration_wave_min: 5000.0
+red_apply_flux_calibration_wave_max: 10000.0
+red_apply_flux_calibration_display: false
+red_apply_flux_calibration_renderer: "default"
+red_apply_flux_calibration_width: 1280
+red_apply_flux_calibration_height: 720
+red_apply_flux_calibration_return_jsonstring: false
+red_apply_flux_calibration_save_fig: true
+red_apply_flux_calibration_fig_type: "png+pdf"
+red_apply_flux_calibration_filename: "red_flux_calibration"
+
+# apply_flux_calibration
+blue_apply_flux_calibration_inspect: false
+blue_apply_flux_calibration_wave_min: 3200.0
+blue_apply_flux_calibration_wave_max: 5500.0
+blue_apply_flux_calibration_display: false
+blue_apply_flux_calibration_renderer: "default"
+blue_apply_flux_calibration_width: 1280
+blue_apply_flux_calibration_height: 720
+blue_apply_flux_calibration_return_jsonstring: false
+blue_apply_flux_calibration_save_fig: true
+blue_apply_flux_calibration_fig_type: "png+pdf"
+blue_apply_flux_calibration_filename: "blue_flux_calibration"
+
+# get_telluric_profile
+red_get_telluric_profile_mask_range: [[6850, 6960], [7580, 7700]]
+
+# get_telluric_correction
+red_get_telluric_correction_factor: 1.0
+
+# inspect_telluric_profile
+red_inspect_telluric_profile_display: false
+red_inspect_telluric_profile_renderer: "default"
+red_inspect_telluric_profile_width: 1280
+red_inspect_telluric_profile_height: 720
+red_inspect_telluric_profile_return_jsonstring: false
+red_inspect_telluric_profile_save_fig: true
+red_inspect_telluric_profile_fig_type: "png+pdf"
+red_inspect_telluric_profile_filename: "telluric_profile"
+
+# inspect_telluric_correction
+red_inspect_telluric_correction_factor: 1.0
+red_inspect_telluric_correction_display: false
+red_inspect_telluric_correction_renderer: "default"
+red_inspect_telluric_correction_width: 1280
+red_inspect_telluric_correction_height: 720
+red_inspect_telluric_correction_return_jsonstring: false
+red_inspect_telluric_correction_save_fig: true
+red_inspect_telluric_correction_fig_type: "png+pdf"
+red_inspect_telluric_correction_filename: "telluric_correction"
+
+# apply_telluric_correction
+red_apply_telluric_correction_factor: 1.0
+
+# set_atmospheric_extinction
+red_set_atmospheric_extinction_location: "MK"
+red_set_atmospheric_extinction_kind: "cubic"
+red_set_atmospheric_extinction_fill_value: "extrapolate"
+
+# set_atmospheric_extinction
+blue_set_atmospheric_extinction_location: "MK"
+blue_set_atmospheric_extinction_kind: "cubic"
+blue_set_atmospheric_extinction_fill_value: "extrapolate"
+
+# apply_atmospheric_extinction_correction
+red_apply_atmospheric_extinction_correction_science_airmass:
+red_apply_atmospheric_extinction_correction_standard_airmass:
+
+# apply_atmospheric_extinction_correction
+blue_apply_atmospheric_extinction_correction_science_airmass:
+blue_apply_atmospheric_extinction_correction_standard_airmass:
+
+# resample the wavelength before exporting
+red_apply_wavelength_calibration_wave_start: 5000.0
+red_apply_wavelength_calibration_wave_end: 10000.0
+red_apply_wavelength_calibration_wave_bin:
+
+# resample the wavelength before exporting
+blue_apply_wavelength_calibration_wave_start: 3300.0
+blue_apply_wavelength_calibration_wave_end: 5500.0
+blue_apply_wavelength_calibration_wave_bin:
+
+# inspect reduced spectrum
+red_inspect_reduced_spectrum_wave_min: 5000.0
+red_inspect_reduced_spectrum_wave_max: 10000.0
+red_inspect_reduced_spectrum_display: false
+red_inspect_reduced_spectrum_renderer: "default"
+red_inspect_reduced_spectrum_width: 1280
+red_inspect_reduced_spectrum_height: 720
+red_inspect_reduced_spectrum_save_fig: true
+red_inspect_reduced_spectrum_fig_type: "png+pdf"
+red_inspect_reduced_spectrum_science_filename: "science_red_reduced"
+red_inspect_reduced_spectrum_standard_filename: "standard_red_reduced"
+
+# inspect reduced spectrum
+blue_inspect_reduced_spectrum_wave_min: 3300.0
+blue_inspect_reduced_spectrum_wave_max: 5500.0
+blue_inspect_reduced_spectrum_display: false
+blue_inspect_reduced_spectrum_renderer: "default"
+blue_inspect_reduced_spectrum_width: 1280
+blue_inspect_reduced_spectrum_height: 720
+blue_inspect_reduced_spectrum_save_fig: true
+blue_inspect_reduced_spectrum_fig_type: "png+pdf"
+blue_inspect_reduced_spectrum_science_filename: "science_blue_reduced"
+blue_inspect_reduced_spectrum_standard_filename: "standard_blue_reduced"
+
+# create_fits: True
+red_create_fits: true
+red_create_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_create_fits_recreate: true
+red_create_fits_empty_primary_hdu: true
+
+# create_fits: True
+blue_create_fits: true
+blue_create_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_create_fits_recreate: true
+blue_create_fits_empty_primary_hdu: true
+
+# save_fits
+red_save_fits: true
+red_save_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_save_fits_filename: "red_reduced"
+red_save_fits_recreate: true
+red_save_fits_empty_primary_hdu: true
+red_save_fits_overwrite: true
+
+# save_fits
+blue_save_fits: true
+blue_save_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_save_fits_filename: "blue_reduced"
+blue_save_fits_recreate: true
+blue_save_fits_empty_primary_hdu: true
+blue_save_fits_overwrite: true
+
+# save_csv
+red_save_csv: true
+red_save_csv_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_save_csv_filename: "red_reduced"
+red_save_csv_recreate: true
+red_save_csv_overwrite: true
+
+# save_csv
+blue_save_csv: true
+blue_save_csv_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_save_csv_filename: "blue_reduced"
+blue_save_csv_recreate: true
+blue_save_csv_overwrite: true

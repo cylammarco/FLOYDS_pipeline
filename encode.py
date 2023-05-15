@@ -3,7 +3,6 @@ from cryptography.fernet import Fernet
 
 
 def encode(password, string):
-
     if len(password) > 32:
         raise ValueError("Password has to be shorter than 32 charaters.")
     len_diff = 32 - len(password)
@@ -17,7 +16,6 @@ def encode(password, string):
 
 
 def decode(password, token):
-
     if len(password) > 32:
         raise ValueError("Password has to be shorter than 32 charaters.")
     len_diff = 32 - len(password)

@@ -109,11 +109,9 @@ else:
 
 
 if args.directory is None:
-
     directory = args.name
 
 else:
-
     directory = args.directory
 
 # Get your token at https://observe.lco.global/accounts/profile

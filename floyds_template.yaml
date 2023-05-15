@@ -4,18 +4,24 @@ log_file_name: ~
 log_file_folder: ~
 
 # Output path (For the folder and file names)
-output_folder_path: ~
+output_folder: ~
 output_file_name_suffix: ~
 
-# Target name (For the titles in figures)
+# Target name (For TNS query)
 target_name: ~
+ra: ~
+dec: ~
 
-# Name of who is reducing it
+# Name of the person who observe and reduce it
+# Note that SNEx displays "observer" as the reduced in the web interface
 observer: "Auotmated"
 reducer: "Auotmated"
 
 # FLOYDS North or South
 hemisphere: ~
+
+# Input folder
+input_folder: ~
 
 # If the name of a frame is provided, it will be directly used
 # Provide in lists
@@ -27,15 +33,6 @@ standard_light_frame: ~
 standard_flat_frame: ~
 standard_arc_frame: ~
 
-# If the names of the frames are provided, the following will be IGNORED
-science_light_folder: ~
-science_flat_folder: ~
-science_arc_folder: ~
-
-standard_light_folder: ~
-standard_flat_folder: ~
-standard_arc_folder: ~
-
 science_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
 science_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
 science_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
@@ -46,7 +43,7 @@ standard_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
 
 # Cosmic ray cleaning only (light frame only)
 cosmicray: True
-sigclip: 3.0
+sigclip: 4.5
 fsmode: "convolve"
 psfmodel: "gaussy"
 psfsize: 11
@@ -96,7 +93,7 @@ science_red_aptrace_scaling_step: 0.001
 science_red_aptrace_percentile: 10
 science_red_aptrace_shift_tol: 35
 science_red_aptrace_fit_deg: 5
-science_red_aptrace_ap_faint: 20
+science_red_aptrace_ap_faint: 15
 science_red_aptrace_display: False
 science_red_aptrace_renderer: "default"
 science_red_aptrace_width: 1280
@@ -113,10 +110,8 @@ science_red_rectification_bin_size: 6
 science_red_rectification_n_bin: 15
 science_red_rectification_spline_order: 3
 science_red_rectification_order: 2
-science_red_rectification_coeff_north:
-  [-1.52689504e+02, 1.31426850e-01, -1.25352165e-06]
-science_red_rectification_coeff_south:
-  [-5.75392819e+01, 5.45549668e-02, 6.84072176e-05]
+science_red_rectification_coeff_north: ~
+science_red_rectification_coeff_south: ~
 science_red_rectification_use_arc: True
 science_red_rectification_apply: False
 science_red_rectification_display: False
@@ -187,7 +182,7 @@ science_blue_aptrace_scaling_step: 0.001
 science_blue_aptrace_percentile: 5
 science_blue_aptrace_shift_tol: 10
 science_blue_aptrace_fit_deg: 5
-science_blue_aptrace_ap_faint: 20
+science_blue_aptrace_ap_faint: 15
 science_blue_aptrace_display: False
 science_blue_aptrace_renderer: "default"
 science_blue_aptrace_width: 1280
@@ -204,10 +199,8 @@ science_blue_rectification_bin_size: 6
 science_blue_rectification_n_bin: 15
 science_blue_rectification_spline_order: 3
 science_blue_rectification_order: 2
-science_blue_rectification_coeff_north:
-  [-1.28091530e+02, 1.11427370e-01, 5.19032671e-07]
-science_blue_rectification_coeff_south:
-  [-3.39877863e+01, 1.33333333e-01, -4.71398587e-19]
+science_blue_rectification_coeff_north: ~
+science_blue_rectification_coeff_south: ~
 science_blue_rectification_use_arc: True
 science_blue_rectification_apply: False
 science_blue_rectification_display: False
@@ -278,7 +271,7 @@ standard_red_aptrace_scaling_step: 0.001
 standard_red_aptrace_percentile: 10
 standard_red_aptrace_shift_tol: 35
 standard_red_aptrace_fit_deg: 5
-standard_red_aptrace_ap_faint: 20
+standard_red_aptrace_ap_faint: 15
 standard_red_aptrace_display: False
 standard_red_aptrace_renderer: "default"
 standard_red_aptrace_width: 1280
@@ -295,10 +288,8 @@ standard_red_rectification_bin_size: 6
 standard_red_rectification_n_bin: 15
 standard_red_rectification_spline_order: 3
 standard_red_rectification_order: 2
-standard_red_rectification_coeff_north:
-  [-1.52689504e+02, 1.31426850e-01, -1.25352165e-06]
-standard_red_rectification_coeff_south:
-  [-5.75392819e+01, 5.45549668e-02, 6.84072176e-05]
+standard_red_rectification_coeff_north: ~
+standard_red_rectification_coeff_south: ~
 standard_red_rectification_use_arc: True
 standard_red_rectification_apply: False
 standard_red_rectification_display: False
@@ -319,7 +310,7 @@ standard_red_extract_skydeg: 1
 standard_red_extract_sky_sigma: 3.0
 standard_red_extract_optimal: True
 standard_red_extract_algorithm: "horne86"
-standard_red_extract_model: "lowess"
+standard_red_extract_model: "gauss"
 standard_red_extract_lowess_frac: 0.1
 standard_red_extract_lowess_it: 3
 standard_red_extract_lowess_delta: 0.0
@@ -386,10 +377,8 @@ standard_blue_rectification_bin_size: 6
 standard_blue_rectification_n_bin: 15
 standard_blue_rectification_spline_order: 3
 standard_blue_rectification_order: 2
-standard_blue_rectification_coeff_north:
-  [-1.28091530e+02, 1.11427370e-01, 5.19032671e-07]
-standard_blue_rectification_coeff_south:
-  [-3.39877863e+01, 1.33333333e-01, -4.71398587e-19]
+standard_blue_rectification_coeff_north: ~
+standard_blue_rectification_coeff_south: ~
 standard_blue_rectification_use_arc: True
 standard_blue_rectification_apply: False
 standard_blue_rectification_display: False
@@ -410,7 +399,7 @@ standard_blue_extract_skydeg: 1
 standard_blue_extract_sky_sigma: 2.5
 standard_blue_extract_optimal: True
 standard_blue_extract_algorithm: "horne86"
-standard_blue_extract_model: "lowess"
+standard_blue_extract_model: "gauss"
 standard_blue_extract_lowess_frac: 0.1
 standard_blue_extract_lowess_it: 3
 standard_blue_extract_lowess_delta: 0.0
@@ -741,19 +730,19 @@ blue_inspect_reduced_spectrum_standard_filename: "standard_blue_reduced"
 
 # create_fits: True
 red_create_fits: True
-red_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_create_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_create_fits_recreate: True
 red_create_fits_empty_primary_hdu: True
 
 # create_fits: True
 blue_create_fits: True
-blue_create_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_create_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_create_fits_recreate: True
 blue_create_fits_empty_primary_hdu: True
 
 # save_fits
 red_save_fits: True
-red_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_save_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_save_fits_filename: "red_reduced"
 red_save_fits_recreate: True
 red_save_fits_empty_primary_hdu: True
@@ -761,7 +750,7 @@ red_save_fits_overwrite: True
 
 # save_fits
 blue_save_fits: True
-blue_save_fits_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_save_fits_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_save_fits_filename: "blue_reduced"
 blue_save_fits_recreate: True
 blue_save_fits_empty_primary_hdu: True
@@ -769,14 +758,14 @@ blue_save_fits_overwrite: True
 
 # save_csv
 red_save_csv: True
-red_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+red_save_csv_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 red_save_csv_filename: "red_reduced"
 red_save_csv_recreate: True
 red_save_csv_overwrite: True
 
 # save_csv
 blue_save_csv: True
-blue_save_csv_output: "arc_spec+wavecal+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
+blue_save_csv_output: "arc_spec+wavecal_coefficients+wavelength+wavelength_resampled+count+flux+flux_resampled+flux_resampled_atm_ext_telluric_corrected"
 blue_save_csv_filename: "blue_reduced"
 blue_save_csv_recreate: True
 blue_save_csv_overwrite: True

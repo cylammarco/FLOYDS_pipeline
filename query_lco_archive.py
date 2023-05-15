@@ -73,7 +73,6 @@ def download_frame(frame, base_directory, no_date=False, overwrite=False):
     filename = frame["filename"]
 
     if not os.path.exists(os.path.join(filepath, filename)) or overwrite:
-
         with open(os.path.join(filepath, filename), "wb") as f:
             f.write(requests.get(frame["url"]).content)
 
