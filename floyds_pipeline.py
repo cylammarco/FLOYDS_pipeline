@@ -307,6 +307,7 @@ if not args.local:
             RLEVEL=0,
             covers="POINT({} {})".format(ra, dec),
         )
+
         # There is only one spectrum from a single group of request_id
         for metadata in _science_metadata:
             request_id.append(metadata["request_id"])
@@ -374,28 +375,32 @@ if not args.local:
                 print(meta["DAY_OBS"])
                 if meta["DAY_OBS"] == day_obs:
                     _standard_metadata_day_obs.append(meta)
-            if len(_standard_metadata_day_obs) > 1:
-                # Get all the timestamps
-                for meta in _standard_metadata_day_obs:
+                if len(_standard_metadata_day_obs) > 1:
+                    # Get all the timestamps
+                    for meta in _standard_metadata_day_obs:
+                        _time.append(
+                            datetime.fromisoformat(
+                                meta["observation_date"][:-1]
+                            )
+                        )
+                    _time_diff = [i - _date for i in _time]
+                    min_time_idx = np.argmin(np.abs(np.array(_time_diff)))
+                elif len(_standard_metadata_day_obs) == 1:
+                    min_time_idx = 0
                     _time.append(
                         datetime.fromisoformat(meta["observation_date"][:-1])
                     )
-                _time_diff = [i - _date for i in _time]
-                min_time_idx = np.argmin(np.abs(np.array(_time_diff)))
-            elif len(_standard_metadata_day_obs) == 1:
-                min_time_idx = 0
-                _time.append(
-                    datetime.fromisoformat(meta["observation_date"][:-1])
-                )
-            else:
-                # Get all the timestamps
-                for meta in _standard_metadata:
-                    print(meta["DAY_OBS"])
-                    _time.append(
-                        datetime.fromisoformat(meta["observation_date"][:-1])
-                    )
-                _time_diff = [i - _date for i in _time]
-                min_time_idx = np.argmin(np.abs(np.array(_time_diff)))
+                else:
+                    # Get all the timestamps
+                    for meta in _standard_metadata:
+                        print(meta["DAY_OBS"])
+                        _time.append(
+                            datetime.fromisoformat(
+                                meta["observation_date"][:-1]
+                            )
+                        )
+                    _time_diff = [i - _date for i in _time]
+                    min_time_idx = np.argmin(np.abs(np.array(_time_diff)))
         else:
             min_time_idx = 0
             _time.append(
@@ -403,17 +408,65 @@ if not args.local:
                     _standard_metadata[0]["observation_date"][:-1]
                 )
             )
-        standard_spectrum_metadata = get_metadata(
+
+    standard_spectrum_metadata = get_metadata(
+        authtoken=authtoken,
+        limit=1000,
+        INSTRUME=instrume,
+        start=(_time[min_time_idx] - timedelta(minutes=30)).isoformat(),
+        end=(_time[min_time_idx] + timedelta(minutes=30)).isoformat(),
+        PROPID="FLOYDS standards",
+        OBSTYPE="SPECTRUM",
+        RLEVEL=0,
+    )
+    if len(standard_spectrum_metadata) > 1:
+        standard_spectrum_metadata = [d for d in standard_spectrum_metadata][0]
+
+    # make sure there is an arc...
+    standard_arc_metadata = []
+    day_range = 0.0
+    while standard_arc_metadata == []:
+        standard_arc_metadata = get_metadata(
             authtoken=authtoken,
             limit=1000,
             INSTRUME=instrume,
-            start=(_time[min_time_idx] - timedelta(minutes=30)).isoformat(),
-            end=(_time[min_time_idx] + timedelta(minutes=30)).isoformat(),
+            start=(
+                _time[min_time_idx]
+                - timedelta(minutes=30)
+                - timedelta(days=day_range)
+            ).isoformat(),
+            end=(
+                _time[min_time_idx]
+                + timedelta(minutes=30)
+                + timedelta(days=day_range)
+            ).isoformat(),
+            PROPID="FLOYDS standards",
+            OBSTYPE="ARC",
+            RLEVEL=0,
+        )
+        day_range += 1
+    # make sure there is a flat...
+    standard_flat_metadata = []
+    day_range = 0.0
+    while standard_flat_metadata == []:
+        standard_flat_metadata = get_metadata(
+            authtoken=authtoken,
+            limit=1000,
+            INSTRUME=instrume,
+            start=(
+                _time[min_time_idx]
+                - timedelta(minutes=30)
+                - timedelta(days=day_range)
+            ).isoformat(),
+            end=(
+                _time[min_time_idx]
+                + timedelta(minutes=30)
+                + timedelta(days=day_range)
+            ).isoformat(),
             PROPID="FLOYDS standards",
             OBSTYPE="SPECTRUM",
             RLEVEL=0,
         )
-
         if len(standard_spectrum_metadata) > 1:
             standard_spectrum_metadata = [
                 d for d in standard_spectrum_metadata
