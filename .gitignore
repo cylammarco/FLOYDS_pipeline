@@ -130,3 +130,6 @@ dmypy.json
 
 # log file
 *.log
+
+# example outputs
+lco_data-20220821-3_output

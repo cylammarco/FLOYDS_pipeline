@@ -413,6 +413,12 @@ if not args.local:
             OBSTYPE="SPECTRUM",
             RLEVEL=0,
         )
+
+        if len(standard_spectrum_metadata) > 1:
+            standard_spectrum_metadata = [
+                d for d in standard_spectrum_metadata
+            ][0]
+
         # make sure there is an arc...
         standard_arc_metadata = []
         day_range = 0.0
@@ -478,9 +484,10 @@ if not args.local:
     for science_frame, standard_frame in zip(
         science_metadata, standard_metadata
     ):
-        if (".tar.gz" not in science_frame["filename"]) & (
-            science_frame["request_id"] in request_id_science
-        ):
+        if (
+            (".tar.gz" not in science_frame["filename"])
+            or ("fits.fz" not in science_frame["filename"])
+        ) & (science_frame["request_id"] in request_id_science):
             [
                 x.append(y)
                 for x, y in zip(
@@ -520,7 +527,9 @@ if not args.local:
                 "OBJECT"
             ] = science_frame["OBJECT"]
             # Download the frames
-            if ".tar.gz" not in standard_frame["filename"]:
+            if (".tar.gz" not in standard_frame["filename"]) or (
+                ".fits.fz" not in standard_frame["filename"]
+            ):
                 [
                     x.append(y)
                     for x, y in zip(
@@ -723,9 +732,9 @@ for yaml_filename in yaml_config_list:
     )
     text_file = open(
         os.path.join(
-            input_folder,
-            "_".join(params["output_folder"].split(os.path.sep)[:-1]) + ".txt",
-        ),
+            output_folder_abs_path, os.path.splitext(yaml_output_name)[0]
+        )
+        + ".txt",
         "w+",
         encoding="ascii",
     )
