@@ -85,6 +85,10 @@ science_red_aptrace_smooth: False
 science_red_aptrace_nwindow: 20
 science_red_aptrace_spec_sep: 5
 science_red_aptrace_trace_width: 30
+science_red_aptrace_bounds:
+  amplitude: ~
+  mean: ~
+  stddev: [2.5, 6.0]
 science_red_aptrace_resample_factor: 4
 science_red_aptrace_rescale: False
 science_red_aptrace_scaling_min: 0.995
@@ -92,7 +96,7 @@ science_red_aptrace_scaling_max: 1.005
 science_red_aptrace_scaling_step: 0.001
 science_red_aptrace_percentile: 10
 science_red_aptrace_shift_tol: 35
-science_red_aptrace_fit_deg: 5
+science_red_aptrace_fit_deg: 6
 science_red_aptrace_ap_faint: 15
 science_red_aptrace_display: False
 science_red_aptrace_renderer: "default"
@@ -101,7 +105,7 @@ science_red_aptrace_height: 720
 science_red_aptrace_return_jsonstring: False
 science_red_aptrace_save_fig: True
 science_red_aptrace_fig_type: "png+pdf"
-science_red_aptrace_filename: "red_aptrace"
+science_red_aptrace_filename: "science_red_aptrace"
 science_red_aptrace_open_iframe: False
 
 # Rectification
@@ -121,17 +125,28 @@ science_red_rectification_height: 720
 science_red_rectification_return_jsonstring: False
 science_red_rectification_save_fig: True
 science_red_rectification_fig_type: "png+pdf"
-science_red_rectification_filename: "red_rectification"
+science_red_rectification_filename: "science_red_rectification"
 science_red_rectification_open_iframe: False
+
+# Inspect line spread profile
+science_red_inspect_line_spread_function_display: False
+science_red_inspect_line_spread_function_renderer: "default"
+science_red_inspect_line_spread_function_width: 1280
+science_red_inspect_line_spread_function_height: 720
+science_red_inspect_line_spread_function_return_jsonstring: False
+science_red_inspect_line_spread_function_save_fig: True
+science_red_inspect_line_spread_function_fig_type: "png+pdf"
+science_red_inspect_line_spread_function_filename: "science_red_line_spread_profile"
+science_red_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
 science_red_extract_apwidth: 15
-science_red_extract_skysep: 5
+science_red_extract_skysep: 10
 science_red_extract_skywidth: 7
 science_red_extract_skydeg: 1
-science_red_extract_sky_sigma: 3.0
+science_red_extract_sky_sigma: 4.0
 science_red_extract_optimal: True
-science_red_extract_algorithm: "marsh89"
+science_red_extract_algorithm: "horne86"
 science_red_extract_model: "gauss"
 science_red_extract_lowess_frac: 0.1
 science_red_extract_lowess_it: 3
@@ -153,7 +168,7 @@ science_red_extract_height: 720
 science_red_extract_return_jsonstring: False
 science_red_extract_save_fig: True
 science_red_extract_fig_type: "png+pdf"
-science_red_extract_filename: "red_apextract"
+science_red_extract_filename: "science_red_apextract"
 science_red_extract_open_iframe: False
 
 # Arc spec
@@ -165,7 +180,7 @@ science_red_arc_spec_height: 720
 science_red_arc_spec_return_jsonstring: False
 science_red_arc_spec_save_fig: True
 science_red_arc_spec_fig_type: "png+pdf"
-science_red_arc_spec_filename: "red_arc_spec"
+science_red_arc_spec_filename: "science_red_arc_spec"
 science_red_arc_spec_open_iframe: False
 
 # Aperture Tracing
@@ -174,6 +189,10 @@ science_blue_aptrace_smooth: False
 science_blue_aptrace_nwindow: 20
 science_blue_aptrace_spec_sep: 5
 science_blue_aptrace_trace_width: 30
+science_blue_aptrace_bounds:
+  amplitude: ~
+  mean: ~
+  stddev: [2.5, 6.0]
 science_blue_aptrace_resample_factor: 4
 science_blue_aptrace_rescale: False
 science_blue_aptrace_scaling_min: 0.995
@@ -181,7 +200,7 @@ science_blue_aptrace_scaling_max: 1.005
 science_blue_aptrace_scaling_step: 0.001
 science_blue_aptrace_percentile: 5
 science_blue_aptrace_shift_tol: 10
-science_blue_aptrace_fit_deg: 5
+science_blue_aptrace_fit_deg: 6
 science_blue_aptrace_ap_faint: 15
 science_blue_aptrace_display: False
 science_blue_aptrace_renderer: "default"
@@ -190,7 +209,7 @@ science_blue_aptrace_height: 720
 science_blue_aptrace_return_jsonstring: False
 science_blue_aptrace_save_fig: True
 science_blue_aptrace_fig_type: "png+pdf"
-science_blue_aptrace_filename: "blue_aptrace"
+science_blue_aptrace_filename: "science_blue_aptrace"
 science_blue_aptrace_open_iframe: False
 
 # Rectification
@@ -210,17 +229,28 @@ science_blue_rectification_height: 720
 science_blue_rectification_return_jsonstring: False
 science_blue_rectification_save_fig: True
 science_blue_rectification_fig_type: "png+pdf"
-science_blue_rectification_filename: "blue_rectification"
+science_blue_rectification_filename: "science_blue_rectification"
 science_blue_rectification_open_iframe: False
 
+# Inspect line spread profile
+science_blue_inspect_line_spread_function_display: False
+science_blue_inspect_line_spread_function_renderer: "default"
+science_blue_inspect_line_spread_function_width: 1280
+science_blue_inspect_line_spread_function_height: 720
+science_blue_inspect_line_spread_function_return_jsonstring: False
+science_blue_inspect_line_spread_function_save_fig: True
+science_blue_inspect_line_spread_function_fig_type: "png+pdf"
+science_blue_inspect_line_spread_function_filename: "science_blue_line_spread_profile"
+science_blue_inspect_line_spread_function_open_iframe: False
+
 # Aperture Extraction
-science_blue_extract_apwidth: 11
-science_blue_extract_skysep: 5
+science_blue_extract_apwidth: 15
+science_blue_extract_skysep: 10
 science_blue_extract_skywidth: 7
 science_blue_extract_skydeg: 1
-science_blue_extract_sky_sigma: 2.5
+science_blue_extract_sky_sigma: 4.0
 science_blue_extract_optimal: True
-science_blue_extract_algorithm: "marsh89"
+science_blue_extract_algorithm: "horne86"
 science_blue_extract_model: "gauss"
 science_blue_extract_lowess_frac: 0.1
 science_blue_extract_lowess_it: 3
@@ -242,7 +272,7 @@ science_blue_extract_height: 720
 science_blue_extract_return_jsonstring: False
 science_blue_extract_save_fig: True
 science_blue_extract_fig_type: "png+pdf"
-science_blue_extract_filename: "blue_apextract"
+science_blue_extract_filename: "science_blue_apextract"
 science_blue_extract_open_iframe: False
 
 # Arc spec
@@ -254,7 +284,7 @@ science_blue_arc_spec_height: 720
 science_blue_arc_spec_return_jsonstring: False
 science_blue_arc_spec_save_fig: True
 science_blue_arc_spec_fig_type: "png+pdf"
-science_blue_arc_spec_filename: "blue_arc_spec"
+science_blue_arc_spec_filename: "science_blue_arc_spec"
 science_blue_arc_spec_open_iframe: False
 
 # Aperture Tracing
@@ -263,6 +293,10 @@ standard_red_aptrace_smooth: False
 standard_red_aptrace_nwindow: 25
 standard_red_aptrace_spec_sep: 5
 standard_red_aptrace_trace_width: 30
+standard_red_aptrace_bounds:
+  amplitude: ~
+  mean: ~
+  stddev: [2.5, 6.0]
 standard_red_aptrace_resample_factor: 4
 standard_red_aptrace_rescale: False
 standard_red_aptrace_scaling_min: 0.995
@@ -270,7 +304,7 @@ standard_red_aptrace_scaling_max: 1.005
 standard_red_aptrace_scaling_step: 0.001
 standard_red_aptrace_percentile: 10
 standard_red_aptrace_shift_tol: 35
-standard_red_aptrace_fit_deg: 5
+standard_red_aptrace_fit_deg: 6
 standard_red_aptrace_ap_faint: 15
 standard_red_aptrace_display: False
 standard_red_aptrace_renderer: "default"
@@ -279,7 +313,7 @@ standard_red_aptrace_height: 720
 standard_red_aptrace_return_jsonstring: False
 standard_red_aptrace_save_fig: True
 standard_red_aptrace_fig_type: "png+pdf"
-standard_red_aptrace_filename: "red_aptrace"
+standard_red_aptrace_filename: "standard_red_aptrace"
 standard_red_aptrace_open_iframe: False
 
 # Rectification
@@ -299,15 +333,26 @@ standard_red_rectification_height: 720
 standard_red_rectification_return_jsonstring: False
 standard_red_rectification_save_fig: True
 standard_red_rectification_fig_type: "png+pdf"
-standard_red_rectification_filename: "red_rectification"
+standard_red_rectification_filename: "standard_red_rectification"
 standard_red_rectification_open_iframe: False
+
+# Inspect line spread profile
+standard_red_inspect_line_spread_function_display: False
+standard_red_inspect_line_spread_function_renderer: "default"
+standard_red_inspect_line_spread_function_width: 1280
+standard_red_inspect_line_spread_function_height: 720
+standard_red_inspect_line_spread_function_return_jsonstring: False
+standard_red_inspect_line_spread_function_save_fig: True
+standard_red_inspect_line_spread_function_fig_type: "png+pdf"
+standard_red_inspect_line_spread_function_filename: "standard_red_line_spread_profile"
+standard_red_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
 standard_red_extract_apwidth: 15
-standard_red_extract_skysep: 5
+standard_red_extract_skysep: 10
 standard_red_extract_skywidth: 7
 standard_red_extract_skydeg: 1
-standard_red_extract_sky_sigma: 3.0
+standard_red_extract_sky_sigma: 4.0
 standard_red_extract_optimal: True
 standard_red_extract_algorithm: "horne86"
 standard_red_extract_model: "gauss"
@@ -331,7 +376,7 @@ standard_red_extract_height: 720
 standard_red_extract_return_jsonstring: False
 standard_red_extract_save_fig: True
 standard_red_extract_fig_type: "png+pdf"
-standard_red_extract_filename: "red_apextract"
+standard_red_extract_filename: "standard_red_apextract"
 standard_red_extract_open_iframe: False
 
 # Arc spec
@@ -343,7 +388,7 @@ standard_red_arc_spec_height: 720
 standard_red_arc_spec_return_jsonstring: False
 standard_red_arc_spec_save_fig: True
 standard_red_arc_spec_fig_type: "png+pdf"
-standard_red_arc_spec_filename: "red_arc_spec"
+standard_red_arc_spec_filename: "standard_red_arc_spec"
 standard_red_arc_spec_open_iframe: False
 
 # Aperture Tracing
@@ -352,6 +397,10 @@ standard_blue_aptrace_smooth: False
 standard_blue_aptrace_nwindow: 25
 standard_blue_aptrace_spec_sep: 5
 standard_blue_aptrace_trace_width: 30
+standard_blue_aptrace_bounds:
+  amplitude: ~
+  mean: ~
+  stddev: [2.5, 6.0]
 standard_blue_aptrace_resample_factor: 4
 standard_blue_aptrace_rescale: False
 standard_blue_aptrace_scaling_min: 0.995
@@ -359,7 +408,7 @@ standard_blue_aptrace_scaling_max: 1.005
 standard_blue_aptrace_scaling_step: 0.001
 standard_blue_aptrace_percentile: 10
 standard_blue_aptrace_shift_tol: 50
-standard_blue_aptrace_fit_deg: 5
+standard_blue_aptrace_fit_deg: 6
 standard_blue_aptrace_ap_faint: 10
 standard_blue_aptrace_display: False
 standard_blue_aptrace_renderer: "default"
@@ -368,7 +417,7 @@ standard_blue_aptrace_height: 720
 standard_blue_aptrace_return_jsonstring: False
 standard_blue_aptrace_save_fig: True
 standard_blue_aptrace_fig_type: "png+pdf"
-standard_blue_aptrace_filename: "blue_aptrace"
+standard_blue_aptrace_filename: "standard_blue_aptrace"
 standard_blue_aptrace_open_iframe: False
 
 # Rectification
@@ -388,15 +437,26 @@ standard_blue_rectification_height: 720
 standard_blue_rectification_return_jsonstring: False
 standard_blue_rectification_save_fig: True
 standard_blue_rectification_fig_type: "png+pdf"
-standard_blue_rectification_filename: "blue_rectification"
+standard_blue_rectification_filename: "standard_blue_rectification"
 standard_blue_rectification_open_iframe: False
 
+# Inspect line spread profile
+standard_blue_inspect_line_spread_function_display: False
+standard_blue_inspect_line_spread_function_renderer: "default"
+standard_blue_inspect_line_spread_function_width: 1280
+standard_blue_inspect_line_spread_function_height: 720
+standard_blue_inspect_line_spread_function_return_jsonstring: False
+standard_blue_inspect_line_spread_function_save_fig: True
+standard_blue_inspect_line_spread_function_fig_type: "png+pdf"
+standard_blue_inspect_line_spread_function_filename: "standard_blue_line_spread_profile"
+standard_blue_inspect_line_spread_function_open_iframe: False
+
 # Aperture Extraction
-standard_blue_extract_apwidth: 11
-standard_blue_extract_skysep: 3
+standard_blue_extract_apwidth: 15
+standard_blue_extract_skysep: 10
 standard_blue_extract_skywidth: 7
 standard_blue_extract_skydeg: 1
-standard_blue_extract_sky_sigma: 2.5
+standard_blue_extract_sky_sigma: 4.0
 standard_blue_extract_optimal: True
 standard_blue_extract_algorithm: "horne86"
 standard_blue_extract_model: "gauss"
@@ -420,7 +480,7 @@ standard_blue_extract_height: 720
 standard_blue_extract_return_jsonstring: False
 standard_blue_extract_save_fig: True
 standard_blue_extract_fig_type: "png+pdf"
-standard_blue_extract_filename: "blue_apextract"
+standard_blue_extract_filename: "standard_blue_apextract"
 standard_blue_extract_open_iframe: False
 
 # Arc spec
@@ -432,7 +492,7 @@ standard_blue_arc_spec_height: 720
 standard_blue_arc_spec_return_jsonstring: False
 standard_blue_arc_spec_save_fig: True
 standard_blue_arc_spec_fig_type: "png+pdf"
-standard_blue_arc_spec_filename: "blue_arc_spec"
+standard_blue_arc_spec_filename: "standard_blue_arc_spec"
 standard_blue_arc_spec_open_iframe: False
 
 # find arc lines
@@ -578,27 +638,25 @@ load_standard_cutoff: 0.4
 
 # get_sensitivity
 red_get_sensitivity_k: 3
-red_get_sensitivity_method: "polynomial"
+red_get_sensitivity_method: "interpolate"
 red_get_sensitivity_mask_range: [[6850, 6960], [7580, 7700]]
 red_get_sensitivity_mask_fit_order: 1
 red_get_sensitivity_mask_fit_size: 5
 red_get_sensitivity_smooth: True
-red_get_sensitivity_slength: 11
-red_get_sensitivity_sorder: 3
 red_get_sensitivity_return_function: False
 red_get_sensitivity_sens_deg: 17
+red_get_sensitivity_use_continuum: False
 
 # get_sensitivity
 blue_get_sensitivity_k: 3
-blue_get_sensitivity_method: "polynomial"
+blue_get_sensitivity_method: "interpolate"
 blue_get_sensitivity_mask_range: [[6850, 6960], [7580, 7700]]
 blue_get_sensitivity_mask_fit_order: 1
 blue_get_sensitivity_mask_fit_size: 5
 blue_get_sensitivity_smooth: True
-blue_get_sensitivity_slength: 11
-blue_get_sensitivity_sorder: 3
 blue_get_sensitivity_return_function: False
 blue_get_sensitivity_sens_deg: 17
+blue_get_sensitivity_use_continuum: False
 
 # inspect_sensitivity
 red_inspect_sensitivity_display: False

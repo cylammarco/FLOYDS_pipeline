@@ -633,9 +633,8 @@ else:
     )
     # grab all the southern light frames
     filelist_south = glob.glob(
-        os.path.join(input_folder_abs_path, "coj2m001-en12*")
+        os.path.join(input_folder_abs_path, "coj2m002-en12*")
     )
-    print(os.path.join(input_folder_abs_path, "ogg2m001-en06*"))
     if (len(filelist_north) > 0) and (len(filelist_south) > 0):
         raise ValueError("Cannot handle mixed north-south data.")
     elif len(filelist_north) == 6:

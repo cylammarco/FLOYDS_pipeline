@@ -63,8 +63,8 @@ element_Zn_blue = ["Zn"] * len(atlas_Zn_blue)
 # Set the frame
 red_spatial_mask = np.arange(0, 330)
 blue_spatial_mask = np.arange(335, 512)
-red_spec_mask = np.arange(0, 1800)
-blue_spec_mask = np.arange(500, 2050)
+red_spec_mask = np.arange(0, 1700)
+blue_spec_mask = np.arange(510, 2050)
 
 
 def flux_diff(ratio, a, b):
@@ -103,6 +103,7 @@ print("Reading parameters from " + params_path + ".")
 with open(params_path, "r") as stream:
     params = yaml.safe_load(stream)
 
+
 # Set up the logger
 logger_name = "floyds_reduction_" + params["target_name"]
 logger = logging.getLogger(logger_name)
@@ -140,7 +141,7 @@ if log_file_folder is None:
 
 # configure the logger display format
 formatter = logging.Formatter(
-    "[%(asctime)s] %(levelname)s [%(filename)s:%(lineno)d] " "%(message)s",
+    "[%(asctime)s] %(levelname)s [%(filename)s:%(lineno)d] %(message)s",
     datefmt="%a, %d %b %Y %H:%M:%S",
 )
 
@@ -160,8 +161,9 @@ if output_folder is None:
 if not os.path.exists(output_folder):
     os.mkdir(output_folder)
     logger.info(
-        "The output folder does not exist, a folder is created at: "
-        "{}".format(output_folder)
+        "The output folder does not exist, a folder is created at: {}".format(
+            output_folder
+        )
     )
 
 logger.info("The output folder is at: {}".format(output_folder))
@@ -411,6 +413,7 @@ for frame_type in ["standard", "science"]:
                 trace_width=params[
                     frame_type + "_" + arm + "_aptrace_trace_width"
                 ],
+                bounds=params[frame_type + "_" + arm + "_aptrace_bounds"],
                 resample_factor=params[
                     frame_type + "_" + arm + "_aptrace_resample_factor"
                 ],
@@ -519,6 +522,7 @@ for frame_type in ["standard", "science"]:
             trace_width=params[
                 frame_type + "_" + arm + "_aptrace_trace_width"
             ],
+            bounds=params[frame_type + "_" + arm + "_aptrace_bounds"],
             resample_factor=params[
                 frame_type + "_" + arm + "_aptrace_resample_factor"
             ],
@@ -604,6 +608,59 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_extract_open_iframe"
             ],
         )
+        twodspec.inspect_line_spread_function(
+            display=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_display"
+            ],
+            renderer=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_renderer"
+            ],
+            width=params[
+                frame_type + "_" + arm + "_inspect_line_spread_function_width"
+            ],
+            height=params[
+                frame_type + "_" + arm + "_inspect_line_spread_function_height"
+            ],
+            return_jsonstring=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_return_jsonstring"
+            ],
+            save_fig=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_save_fig"
+            ],
+            fig_type=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_fig_type"
+            ],
+            filename=os.path.join(
+                output_folder,
+                params[
+                    frame_type
+                    + "_"
+                    + arm
+                    + "_inspect_line_spread_function_filename"
+                ],
+            ),
+            open_iframe=params[
+                frame_type
+                + "_"
+                + arm
+                + "_inspect_line_spread_function_open_iframe"
+            ],
+        )
         twodspec.extract_arc_spec(
             spec_width=params[frame_type + "_" + arm + "_arc_spec_spec_width"],
             display=params[frame_type + "_" + arm + "_arc_spec_display"],
@@ -649,7 +706,7 @@ for frame_type in ["standard", "science"]:
             # Add the trace for fringe removal
             flat.add_trace(trace_rectified, trace_sigma_rectified)
             # Force extraction from the flat for fringe correction
-            flat.ap_extract(apwidth=10, skywidth=0, display=False)
+            flat.ap_extract(apwidth=20, skywidth=0, display=False)
             fringe_correction(twodspec, flat)
     target_name[frame_type] = (
         img[frame_type].light_header[0]["OBJECT"].upper().replace(" ", "")
@@ -925,10 +982,9 @@ red_onedspec.get_sensitivity(
     mask_fit_order=params["red_get_sensitivity_mask_fit_order"],
     mask_fit_size=params["red_get_sensitivity_mask_fit_size"],
     smooth=params["red_get_sensitivity_smooth"],
-    slength=params["red_get_sensitivity_slength"],
-    sorder=params["red_get_sensitivity_sorder"],
     return_function=params["red_get_sensitivity_return_function"],
     sens_deg=params["red_get_sensitivity_sens_deg"],
+    use_continuum=params["red_get_sensitivity_use_continuum"],
 )
 
 red_onedspec.inspect_sensitivity(
@@ -959,6 +1015,7 @@ red_onedspec.apply_flux_calibration(
         output_folder, params["red_apply_flux_calibration_filename"]
     ),
 )
+red_onedspec.get_flux_continuum()
 red_onedspec.get_telluric_profile(
     mask_range=params["red_get_telluric_profile_mask_range"]
 )
@@ -1186,10 +1243,9 @@ blue_onedspec.get_sensitivity(
     mask_fit_order=params["blue_get_sensitivity_mask_fit_order"],
     mask_fit_size=params["blue_get_sensitivity_mask_fit_size"],
     smooth=params["blue_get_sensitivity_smooth"],
-    slength=params["blue_get_sensitivity_slength"],
-    sorder=params["blue_get_sensitivity_sorder"],
     return_function=params["blue_get_sensitivity_return_function"],
     sens_deg=params["blue_get_sensitivity_sens_deg"],
+    use_continuum=params["blue_get_sensitivity_use_continuum"],
 )
 
 blue_onedspec.inspect_sensitivity(
