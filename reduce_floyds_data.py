@@ -15,7 +15,7 @@ from aspired import spectral_reduction
 from ccdproc import Combiner
 from matplotlib import pyplot as plt
 from scipy.signal import medfilt
-from spectres import spectres
+from spectresc import spectres
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import numpy as np
 import yaml
