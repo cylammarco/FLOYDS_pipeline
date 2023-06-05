@@ -1,6 +1,15 @@
 # Perform a search on the Transient Name Server
 # https://www.wis-tns.org/
-def tns_search(search_obj):
+
+from collections import OrderedDict
+import json
+import requests
+
+TNS = "www.wis-tns.org"
+url_tns_api = "https://" + TNS + "/api/get"
+
+
+def tns_search(search_obj, TNS_BOT_ID, TNS_BOT_NAME, TNS_API_KEY):
     search_url = url_tns_api + "/search"
     headers = {
         "User-Agent": 'tns_marker{"tns_id": "'
@@ -16,7 +25,7 @@ def tns_search(search_obj):
 
 
 # Download the info of the object of interest from the TNS
-def get_tns(get_obj):
+def get_tns(get_obj, TNS_BOT_ID, TNS_BOT_NAME, TNS_API_KEY):
     get_url = url_tns_api + "/object"
     headers = {
         "User-Agent": 'tns_marker{"tns_id": "'

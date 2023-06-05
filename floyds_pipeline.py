@@ -7,7 +7,6 @@ for reduction
 """
 
 from argparse import ArgumentParser
-from collections import OrderedDict
 from datetime import timedelta, datetime
 import getpass
 import glob
@@ -17,11 +16,51 @@ import sys
 
 from astropy.io import fits
 import numpy as np
-import requests
 import ruamel.yaml
 
 from query_lco_archive import get_metadata, download_frame
 from query_tns import tns_search, get_tns
+
+
+def get_ra_dec_from_targetname(target_name, login_yaml, args):
+    # get the target position if only a name is provided
+    TNS = "www.wis-tns.org"
+    url_tns_api = "https://" + TNS + "/api/get"
+
+    # TNS token: needed for name resolving to (ra, dec)
+    if args.login is not None:
+        TNS_BOT_ID = login_yaml["TNS_BOT_ID"]
+        TNS_BOT_NAME = login_yaml["TNS_BOT_NAME"]
+        TNS_API_KEY = login_yaml["TNS_API_KEY"]
+    else:
+        TNS_BOT_ID = args.tns_bot_id
+        TNS_BOT_NAME = args.tns_bot_name
+        TNS_API_KEY = args.tns_token
+
+    # Prompt to ask for the IDs if some are still None.
+    if TNS_BOT_ID is None:
+        TNS_BOT_ID = getpass.getpass(prompt="Enter TNS_BOT_ID: ")
+    if TNS_BOT_NAME is None:
+        TNS_BOT_NAME = getpass.getpass(prompt="Enter TNS_BOT_NAME: ")
+    if TNS_API_KEY is None:
+        TNS_API_KEY = getpass.getpass(prompt="Enter TNS_API_KEY: ")
+
+    search_obj = [("objname", target_name)]
+    tns_search_response = tns_search(
+        search_obj, TNS_BOT_ID, TNS_BOT_NAME, TNS_API_KEY
+    )
+
+    # assuming only 1 result...
+    get_obj = [
+        ("objid", tns_search_response.json()["data"]["reply"][0]["objid"])
+    ]
+    get_obj_response = get_tns(get_obj, TNS_BOT_ID, TNS_BOT_NAME, TNS_API_KEY)
+
+    ra = get_obj_response.json()["data"]["reply"]["radeg"]
+    dec = get_obj_response.json()["data"]["reply"]["decdeg"]
+
+    return ra, dec
+
 
 # Configure the parser
 parser = ArgumentParser(
@@ -169,6 +208,8 @@ elif input_folder is None:
         dec = None
     else:
         dec = float(args.dec)
+    if ((ra is None) or (dec is None)) and (args.login is not None):
+        ra, dec = get_ra_dec_from_targetname(target_name, login_yaml, args)
 # Case 3: only input_folder is provided
 # - set target_name to input_name
 # - get (ra, dec)
@@ -189,6 +230,8 @@ elif target_name is None:
         dec = None
     else:
         dec = float(args.dec)
+    if ((ra is None) or (dec is None)) and (args.login is not None):
+        ra, dec = get_ra_dec_from_targetname(target_name, login_yaml, args)
 # Case 4 - both are provided
 else:
     if args.local:
@@ -200,42 +243,11 @@ else:
             dec = None
         else:
             dec = float(args.dec)
+        if ((ra is None) or (dec is None)) and (args.login is not None):
+            ra, dec = get_ra_dec_from_targetname(target_name, login_yaml, args)
     else:
         print("target name is provided, input ra and dec are ignored.")
-
-        # get the target position if only a name is provided
-        TNS = "www.wis-tns.org"
-        url_tns_api = "https://" + TNS + "/api/get"
-
-        # TNS token: needed for name resolving to (ra, dec)
-        if args.login is not None:
-            TNS_BOT_ID = login_yaml["TNS_BOT_ID"]
-            TNS_BOT_NAME = login_yaml["TNS_BOT_NAME"]
-            TNS_API_KEY = login_yaml["TNS_API_KEY"]
-        else:
-            TNS_BOT_ID = args.tns_bot_id
-            TNS_BOT_NAME = args.tns_bot_name
-            TNS_API_KEY = args.tns_token
-
-        # Prompt to ask for the IDs if some are still None.
-        if TNS_BOT_ID is None:
-            TNS_BOT_ID = getpass.getpass(prompt="Enter TNS_BOT_ID: ")
-        if TNS_BOT_NAME is None:
-            TNS_BOT_NAME = getpass.getpass(prompt="Enter TNS_BOT_NAME: ")
-        if TNS_API_KEY is None:
-            TNS_API_KEY = getpass.getpass(prompt="Enter TNS_API_KEY: ")
-
-        search_obj = [("objname", target_name)]
-        tns_search_response = tns_search(search_obj)
-
-        # assuming only 1 result...
-        get_obj = [
-            ("objid", tns_search_response.json()["data"]["reply"][0]["objid"])
-        ]
-        get_obj_response = get_tns(get_obj)
-
-        ra = get_obj_response.json()["data"]["reply"]["radeg"]
-        dec = get_obj_response.json()["data"]["reply"]["decdeg"]
+        ra, dec = get_ra_dec_from_targetname(target_name, login_yaml, args)
 
 
 # Get the absolute path to the input folder
@@ -714,8 +726,9 @@ for k, v in target_list.items():
     list_yaml["dec"] = dec
     list_yaml["reducer"] = reducer
     list_yaml["observer"] = observer
-    list_yaml["input_folder"] = input_folder
-    list_yaml["input_folder"] = input_folder_abs_path
+    list_yaml["input_folder"] = os.path.join(
+        input_folder_abs_path, v["science"]["DAY_OBS"].replace("-", "")
+    )
     list_yaml["output_folder"] = output_folder_abs_path
     list_yaml["output_file_name_suffix"] = target_name
     yaml_output_name = "floyds_{}_{}_{}.yaml".format(

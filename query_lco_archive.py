@@ -76,4 +76,4 @@ def download_frame(frame, base_directory, no_date=False, overwrite=False):
         with open(os.path.join(filepath, filename), "wb") as f:
             f.write(requests.get(frame["url"]).content)
 
-    return filepath, filename
+    return filepath, filename, dayobs

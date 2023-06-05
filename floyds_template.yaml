@@ -305,7 +305,7 @@ standard_red_aptrace_scaling_step: 0.001
 standard_red_aptrace_percentile: 10
 standard_red_aptrace_shift_tol: 35
 standard_red_aptrace_fit_deg: 6
-standard_red_aptrace_ap_faint: 15
+standard_red_aptrace_ap_faint: 5
 standard_red_aptrace_display: False
 standard_red_aptrace_renderer: "default"
 standard_red_aptrace_width: 1280
@@ -409,7 +409,7 @@ standard_blue_aptrace_scaling_step: 0.001
 standard_blue_aptrace_percentile: 10
 standard_blue_aptrace_shift_tol: 50
 standard_blue_aptrace_fit_deg: 6
-standard_blue_aptrace_ap_faint: 10
+standard_blue_aptrace_ap_faint: 5
 standard_blue_aptrace_display: False
 standard_blue_aptrace_renderer: "default"
 standard_blue_aptrace_width: 1280

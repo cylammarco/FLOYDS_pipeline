@@ -1539,9 +1539,9 @@ flux_blue_err = blue_onedspec.science_spectrum_list[
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
-red_limit = 4900
+red_limit = 5050
 # This value has to match the
-blue_limit = 5750
+blue_limit = 5350
 
 blue_mask = (wave_blue >= red_limit) & (wave_blue <= blue_limit)
 red_mask = (wave_red >= red_limit) & (wave_red <= blue_limit)
