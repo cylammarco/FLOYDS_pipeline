@@ -163,7 +163,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-HERE = os.path.dirname(os.path.realpath(__file__))
+HERE = os.getcwd()
 
 # Modify the yaml initialisation
 yaml = ruamel.yaml.YAML()
