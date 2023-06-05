@@ -168,7 +168,9 @@ HERE = os.getcwd()
 # Modify the yaml initialisation
 yaml = ruamel.yaml.YAML()
 yaml.preserve_quotes = True
-yaml_template = os.path.join(HERE, "floyds_template.yaml")
+yaml_template = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "floyds_template.yaml"
+)
 
 
 # Load the login information: TNS & SNEx
