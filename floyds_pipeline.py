@@ -752,7 +752,7 @@ for yaml_filename in yaml_config_list:
 # run the reduction the reduce_floyds_data.py
 for yaml_filename in yaml_config_list:
     os.system(
-        f"{sys.executable} {HERE}{os.sep}reduce_floyds_data.py"
+        f"{sys.executable} {os.path.dirname(os.path.realpath(__file__))}{os.sep}reduce_floyds_data.py"
         f" {os.path.join(output_folder_abs_path, yaml_output_name)}"
     )
     with open(
