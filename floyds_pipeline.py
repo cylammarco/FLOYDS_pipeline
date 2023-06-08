@@ -387,7 +387,7 @@ if not args.local:
             # first check for the day_obs
             for meta in _standard_metadata:
                 print(meta["DAY_OBS"])
-                if meta["DAY_OBS"] == day_obs:
+                if np.in1d(meta["DAY_OBS"], day_obs):
                     _standard_metadata_day_obs.append(meta)
                 if len(_standard_metadata_day_obs) > 1:
                     # Get all the timestamps
@@ -593,7 +593,7 @@ if not args.local:
             target_list[science_frame["request_id"]]["science"][
                 "OBJECT"
             ] = science_frame["OBJECT"]
-            # Download the frames
+            # Download the frames to the SCIENCE FOLDER
             if (".tar.gz" not in standard_frame["filename"]) or (
                 ".fits.fz" not in standard_frame["filename"]
             ):
@@ -603,8 +603,11 @@ if not args.local:
                         [standard_filepath_list, standard_filename_list],
                         download_frame(
                             frame=standard_frame,
-                            base_directory=input_folder,
-                            no_date=False,
+                            base_directory=os.path.join(
+                                input_folder,
+                                science_frame["DAY_OBS"].replace("-", ""),
+                            ),
+                            no_date=True,
                         ),
                     )
                 ]
