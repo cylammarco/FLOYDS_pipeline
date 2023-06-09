@@ -62,7 +62,7 @@ element_Zn_blue = ["Zn"] * len(atlas_Zn_blue)
 
 # Set the frame
 red_spatial_mask = np.arange(0, 330)
-blue_spatial_mask = np.arange(335, 512)
+blue_spatial_mask = np.arange(325, 512)
 red_spec_mask = np.arange(0, 1700)
 blue_spec_mask = np.arange(510, 2050)
 

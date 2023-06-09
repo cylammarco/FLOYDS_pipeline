@@ -140,9 +140,9 @@ science_red_inspect_line_spread_function_filename: "science_red_line_spread_prof
 science_red_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
-science_red_extract_apwidth: 15
-science_red_extract_skysep: 10
-science_red_extract_skywidth: 7
+science_red_extract_apwidth: 13
+science_red_extract_skysep: 5
+science_red_extract_skywidth: [7, 7]
 science_red_extract_skydeg: 1
 science_red_extract_sky_sigma: 4.0
 science_red_extract_optimal: True
@@ -244,9 +244,9 @@ science_blue_inspect_line_spread_function_filename: "science_blue_line_spread_pr
 science_blue_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
-science_blue_extract_apwidth: 15
-science_blue_extract_skysep: 10
-science_blue_extract_skywidth: 7
+science_blue_extract_apwidth: 13
+science_blue_extract_skysep: 5
+science_blue_extract_skywidth: [7, 7]
 science_blue_extract_skydeg: 1
 science_blue_extract_sky_sigma: 4.0
 science_blue_extract_optimal: True
@@ -348,9 +348,9 @@ standard_red_inspect_line_spread_function_filename: "standard_red_line_spread_pr
 standard_red_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
-standard_red_extract_apwidth: 15
-standard_red_extract_skysep: 10
-standard_red_extract_skywidth: 7
+standard_red_extract_apwidth: 13
+standard_red_extract_skysep: 5
+standard_red_extract_skywidth:  [7, 7]
 standard_red_extract_skydeg: 1
 standard_red_extract_sky_sigma: 4.0
 standard_red_extract_optimal: True
@@ -452,9 +452,9 @@ standard_blue_inspect_line_spread_function_filename: "standard_blue_line_spread_
 standard_blue_inspect_line_spread_function_open_iframe: False
 
 # Aperture Extraction
-standard_blue_extract_apwidth: 15
-standard_blue_extract_skysep: 10
-standard_blue_extract_skywidth: 7
+standard_blue_extract_apwidth: 13
+standard_blue_extract_skysep: 5
+standard_blue_extract_skywidth: [7, 7]
 standard_blue_extract_skydeg: 1
 standard_blue_extract_sky_sigma: 4.0
 standard_blue_extract_optimal: True
