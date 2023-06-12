@@ -721,7 +721,7 @@ for k, v in target_list.items():
         list_yaml = yaml.load(f)
     # Set the hemisphere north/south
     list_yaml["hemisphere"] = v["science"]["hemisphere"]
-
+    print(v["science"])
     # Modify the names of the frames and output paths
     list_yaml["science_light_frame"] = [v["science"]["SPECTRUM"]]
     list_yaml["science_flat_frame"] = [v["science"]["LAMPFLAT"]]
