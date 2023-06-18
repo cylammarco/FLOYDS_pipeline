@@ -7,10 +7,10 @@ for reduction
 """
 
 from argparse import ArgumentParser
+from collections import Counter
 from datetime import timedelta, datetime
 import getpass
 import glob
-import json
 import os
 import sys
 
@@ -24,8 +24,6 @@ from query_tns import tns_search, get_tns
 
 def get_ra_dec_from_targetname(target_name, login_yaml, args):
     # get the target position if only a name is provided
-    TNS = "www.wis-tns.org"
-    url_tns_api = "https://" + TNS + "/api/get"
 
     # TNS token: needed for name resolving to (ra, dec)
     if args.login is not None:
@@ -264,6 +262,7 @@ else:
 if output_folder is None:
     output_folder = input_folder + "_output"
 
+# note that this is not the final, the request_id will get appended later
 if os.path.isabs(output_folder):
     output_folder_abs_path = output_folder
 else:
@@ -323,12 +322,26 @@ if not args.local:
         )
 
         # There is only one spectrum from a single group of request_id
+        # check that each SPECTRUM is associated with an ARC and a LAMPFLAT
+        # mismatched can happen if acquisition fail or being overrid by TOO
+        _request_id = []
+        for metadata in _science_metadata:
+            _request_id.append(metadata["request_id"])
+
+        c = Counter(_request_id)
+        mask = np.ones_like(_request_id, dtype=bool)
+        for i in set(_request_id):
+            if c[i] != 3:
+                mask[np.argwhere(np.array(_request_id) == i)] = False
+
+        _science_metadata = list(np.array(_science_metadata)[mask])
         for metadata in _science_metadata:
             request_id.append(metadata["request_id"])
             obstype.append(metadata["OBSTYPE"])
             day_obs.append(metadata["DAY_OBS"])
             date_obs.append(metadata["DATE_OBS"][:-1])
             instrume_list.append(instrume)
+
         science_metadata += _science_metadata
 
     request_id = np.array(request_id)
@@ -377,8 +390,6 @@ if not args.local:
                 RLEVEL=0,
             )
             day_range += 1
-        for i in _standard_metadata:
-            print(i["DAY_OBS"])
         # If there are more than 1 frame returned, check for matching day_obs
         # first and then check for the one with the least time difference
         _standard_metadata_day_obs = []
@@ -423,20 +434,25 @@ if not args.local:
                 )
             )
 
-        standard_spectrum_metadata = get_metadata(
-            authtoken=authtoken,
-            limit=1000,
-            INSTRUME=instrume,
-            start=(_time[min_time_idx] - timedelta(minutes=30)).isoformat(),
-            end=(_time[min_time_idx] + timedelta(minutes=30)).isoformat(),
-            PROPID="FLOYDS standards",
-            OBSTYPE="SPECTRUM",
-            RLEVEL=0,
-        )
-        if len(standard_spectrum_metadata) > 1:
-            standard_spectrum_metadata = [
-                d for d in standard_spectrum_metadata
-            ][0]
+        # make sure there is a light frame...
+        standard_spectrum_metadata = []
+        while standard_spectrum_metadata == []:
+            standard_spectrum_metadata = get_metadata(
+                authtoken=authtoken,
+                limit=1000,
+                INSTRUME=instrume,
+                start=(
+                    _time[min_time_idx] - timedelta(minutes=60)
+                ).isoformat(),
+                end=(_time[min_time_idx] + timedelta(minutes=60)).isoformat(),
+                PROPID="FLOYDS standards",
+                OBSTYPE="SPECTRUM",
+                RLEVEL=0,
+            )
+            if len(standard_spectrum_metadata) > 1:
+                standard_spectrum_metadata = [
+                    d for d in standard_spectrum_metadata
+                ][0]
 
         # make sure there is an arc...
         standard_arc_metadata = []
@@ -448,12 +464,12 @@ if not args.local:
                 INSTRUME=instrume,
                 start=(
                     _time[min_time_idx]
-                    - timedelta(minutes=30)
+                    - timedelta(minutes=60)
                     - timedelta(days=day_range)
                 ).isoformat(),
                 end=(
                     _time[min_time_idx]
-                    + timedelta(minutes=30)
+                    + timedelta(minutes=60)
                     + timedelta(days=day_range)
                 ).isoformat(),
                 PROPID="FLOYDS standards",
@@ -461,6 +477,9 @@ if not args.local:
                 RLEVEL=0,
             )
             day_range += 1
+            if len(standard_arc_metadata) > 1:
+                standard_arc_metadata = [d for d in standard_arc_metadata][0]
+
         # make sure there is a flat...
         standard_flat_metadata = []
         day_range = 0.0
@@ -471,74 +490,25 @@ if not args.local:
                 INSTRUME=instrume,
                 start=(
                     _time[min_time_idx]
-                    - timedelta(minutes=30)
+                    - timedelta(minutes=60)
                     - timedelta(days=day_range)
                 ).isoformat(),
                 end=(
                     _time[min_time_idx]
-                    + timedelta(minutes=30)
+                    + timedelta(minutes=60)
                     + timedelta(days=day_range)
                 ).isoformat(),
                 PROPID="FLOYDS standards",
-                OBSTYPE="SPECTRUM",
+                OBSTYPE="LAMPFLAT",
                 RLEVEL=0,
             )
-            if len(standard_spectrum_metadata) > 1:
-                standard_spectrum_metadata = [
-                    d for d in standard_spectrum_metadata
-                ][0]
-
-            # make sure there is an arc...
-            standard_arc_metadata = []
-            day_range = 0.0
-            while standard_arc_metadata == []:
-                standard_arc_metadata = get_metadata(
-                    authtoken=authtoken,
-                    limit=1000,
-                    INSTRUME=instrume,
-                    start=(
-                        _time[min_time_idx]
-                        - timedelta(minutes=30)
-                        - timedelta(days=day_range)
-                    ).isoformat(),
-                    end=(
-                        _time[min_time_idx]
-                        + timedelta(minutes=30)
-                        + timedelta(days=day_range)
-                    ).isoformat(),
-                    PROPID="FLOYDS standards",
-                    OBSTYPE="ARC",
-                    RLEVEL=0,
-                )
-                day_range += 1
-            # make sure there is a flat...
-            standard_flat_metadata = []
-            day_range = 0.0
-            while standard_flat_metadata == []:
-                standard_flat_metadata = get_metadata(
-                    authtoken=authtoken,
-                    limit=1000,
-                    INSTRUME=instrume,
-                    start=(
-                        _time[min_time_idx] - timedelta(minutes=30)
-                    ).isoformat(),
-                    end=(
-                        _time[min_time_idx] + timedelta(minutes=30)
-                    ).isoformat(),
-                    PROPID="FLOYDS standards",
-                    OBSTYPE="LAMPFLAT",
-                    RLEVEL=0,
-                )
-                day_range += 1
-            if len(standard_spectrum_metadata) > 1:
-                standard_spectrum_metadata = standard_spectrum_metadata[0]
+            day_range += 1
             if len(standard_flat_metadata) > 1:
-                standard_flat_metadata = standard_flat_metadata[0]
-            if len(standard_arc_metadata) > 1:
-                standard_arc_metadata = standard_arc_metadata[0]
-            standard_metadata += standard_spectrum_metadata
-            standard_metadata += standard_arc_metadata
-            standard_metadata += standard_flat_metadata
+                standard_flat_metadata = [d for d in standard_flat_metadata][0]
+
+        standard_metadata += standard_spectrum_metadata
+        standard_metadata += standard_arc_metadata
+        standard_metadata += standard_flat_metadata
 
     # Pack the light, flat & arc fro science and standard as a dictionary item
     target_list = {}
@@ -597,7 +567,7 @@ if not args.local:
             target_list[science_frame["request_id"]]["science"][
                 "OBJECT"
             ] = science_frame["OBJECT"]
-            # Download the frames to the SCIENCE FOLDER
+            # Download the standard frames to the SCIENCE FOLDER
             if (".tar.gz" not in standard_frame["filename"]) or (
                 ".fits.fz" not in standard_frame["filename"]
             ):
@@ -643,6 +613,7 @@ if not args.local:
     for x, y in zip(standard_filepath_list, standard_filename_list):
         print("Standard frame: {} is downloaded.".format(x + os.sep + y))
 
+    print(target_list)
 # if working on local files, only works with LCO naming standard for FLOYDS
 # north/south is not konwn at this point
 # mixed north-south data in the same folder is not allowed
@@ -721,7 +692,7 @@ for k, v in target_list.items():
         list_yaml = yaml.load(f)
     # Set the hemisphere north/south
     list_yaml["hemisphere"] = v["science"]["hemisphere"]
-    print(v["science"])
+
     # Modify the names of the frames and output paths
     list_yaml["science_light_frame"] = [v["science"]["SPECTRUM"]]
     list_yaml["science_flat_frame"] = [v["science"]["LAMPFLAT"]]
@@ -739,7 +710,8 @@ for k, v in target_list.items():
         input_folder_abs_path, v["science"]["DAY_OBS"].replace("-", "")
     )
     list_yaml["output_folder"] = os.path.join(
-        output_folder_abs_path, v["science"]["DAY_OBS"].replace("-", "")
+        output_folder_abs_path,
+        v["science"]["DAY_OBS"].replace("-", "") + f"_{k}",
     )
     list_yaml["output_file_name_suffix"] = target_name
     yaml_output_name = "floyds_{}_{}_{}.yaml".format(
@@ -761,11 +733,12 @@ for yaml_filename in yaml_config_list:
 # run the reduction the reduce_floyds_data.py
 for yaml_filename in yaml_config_list:
     os.system(
-        f"{sys.executable} {os.path.dirname(os.path.realpath(__file__))}{os.sep}reduce_floyds_data.py"
-        f" {os.path.join(output_folder_abs_path, yaml_output_name)}"
+        f"{sys.executable} {os.path.dirname(os.path.realpath(__file__))}{os.sep}"
+        "reduce_floyds_data.py "
+        f"{os.path.join(output_folder_abs_path, yaml_filename)}"
     )
     with open(
-        os.path.join(output_folder_abs_path, yaml_output_name), "r"
+        os.path.join(output_folder_abs_path, yaml_filename), "r"
     ) as stream:
         params = yaml.load(stream)
     outtext = ""
@@ -808,7 +781,7 @@ for yaml_filename in yaml_config_list:
     )
     text_file = open(
         os.path.join(
-            output_folder_abs_path, os.path.splitext(yaml_output_name)[0]
+            output_folder_abs_path, os.path.splitext(yaml_filename)[0]
         )
         + ".txt",
         "w+",

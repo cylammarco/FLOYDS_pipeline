@@ -43,10 +43,10 @@ standard_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
 
 # Cosmic ray cleaning only (light frame only)
 cosmicray: True
-sigclip: 4.5
+sigclip: 4.0
 fsmode: "convolve"
 psfmodel: "gaussy"
-psfsize: 11
+psfsize: 13
 
 # ImageReduction set up
 science_light_sigma_clipping: True
@@ -84,7 +84,7 @@ science_red_aptrace_nspec: 1
 science_red_aptrace_smooth: False
 science_red_aptrace_nwindow: 20
 science_red_aptrace_spec_sep: 5
-science_red_aptrace_trace_width: 30
+science_red_aptrace_trace_width: 35
 science_red_aptrace_bounds:
   amplitude: ~
   mean: ~
@@ -97,7 +97,7 @@ science_red_aptrace_scaling_step: 0.001
 science_red_aptrace_percentile: 10
 science_red_aptrace_shift_tol: 35
 science_red_aptrace_fit_deg: 6
-science_red_aptrace_ap_faint: 15
+science_red_aptrace_ap_faint: 5
 science_red_aptrace_display: False
 science_red_aptrace_renderer: "default"
 science_red_aptrace_width: 1280
@@ -188,7 +188,7 @@ science_blue_aptrace_nspec: 1
 science_blue_aptrace_smooth: False
 science_blue_aptrace_nwindow: 20
 science_blue_aptrace_spec_sep: 5
-science_blue_aptrace_trace_width: 30
+science_blue_aptrace_trace_width: 35
 science_blue_aptrace_bounds:
   amplitude: ~
   mean: ~
@@ -201,7 +201,7 @@ science_blue_aptrace_scaling_step: 0.001
 science_blue_aptrace_percentile: 5
 science_blue_aptrace_shift_tol: 10
 science_blue_aptrace_fit_deg: 6
-science_blue_aptrace_ap_faint: 15
+science_blue_aptrace_ap_faint: 5
 science_blue_aptrace_display: False
 science_blue_aptrace_renderer: "default"
 science_blue_aptrace_width: 1280
@@ -292,7 +292,7 @@ standard_red_aptrace_nspec: 1
 standard_red_aptrace_smooth: False
 standard_red_aptrace_nwindow: 25
 standard_red_aptrace_spec_sep: 5
-standard_red_aptrace_trace_width: 30
+standard_red_aptrace_trace_width: 35
 standard_red_aptrace_bounds:
   amplitude: ~
   mean: ~
@@ -396,7 +396,7 @@ standard_blue_aptrace_nspec: 1
 standard_blue_aptrace_smooth: False
 standard_blue_aptrace_nwindow: 25
 standard_blue_aptrace_spec_sep: 5
-standard_blue_aptrace_trace_width: 30
+standard_blue_aptrace_trace_width: 35
 standard_blue_aptrace_bounds:
   amplitude: ~
   mean: ~
@@ -525,6 +525,11 @@ blue_find_arc_lines_save_fig: True
 blue_find_arc_lines_fig_type: "png+pdf"
 blue_find_arc_lines_filename: "blue_arc_lines"
 blue_find_arc_lines_open_iframe: False
+
+# Choose to correlate with template or use rascal for wavelength calibration
+# True is to correlate with template
+red_correlate: True
+blue_correlate: True
 
 # set_hough_properties
 red_set_hough_properties_num_slopes: 5000

@@ -14,7 +14,9 @@ from aspired import image_reduction
 from aspired import spectral_reduction
 from ccdproc import Combiner
 from matplotlib import pyplot as plt
+from scipy.ndimage import zoom
 from scipy.signal import medfilt
+from scipy.signal import correlate
 from spectresc import spectres
 from statsmodels.nonparametric.smoothers_lowess import lowess
 import numpy as np
@@ -67,6 +69,10 @@ red_spec_mask = np.arange(0, 1700)
 blue_spec_mask = np.arange(510, 2050)
 
 
+HERE = os.getcwd()
+SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+
 def flux_diff(ratio, a, b):
     diff = a * ratio - b
     mask = diff < np.nanpercentile(diff, 95)
@@ -85,7 +91,105 @@ def fringe_correction(target, flat):
     target.spectrum_list[0].count /= flat_continuum_divided
 
 
-HERE = os.getcwd()
+def get_wavecal_coefficients(arcspec, mode, hemisphere):
+    if mode == "red":
+        if hemisphere == "north":
+            arcspec_template = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230520ogg",
+                    "red_reduced_science_arc_spec.csv",
+                )
+            )
+            coefficients = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230520ogg",
+                    "red_reduced_science_wavecal_coefficients.csv",
+                )
+            )
+        elif hemisphere == "south":
+            arcspec_template = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230305coj",
+                    "red_reduced_science_arc_spec.csv",
+                )
+            )
+            coefficients = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230305coj",
+                    "red_reduced_science_wavecal_coefficients.csv",
+                )
+            )
+        else:
+            raise ValueError(
+                "Please choose between north and south. You "
+                f"have provided {hemisphere}"
+            )
+    elif mode == "blue":
+        if hemisphere == "north":
+            arcspec_template = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230520ogg",
+                    "blue_reduced_science_arc_spec.csv",
+                )
+            )
+            coefficients = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230520ogg",
+                    "blue_reduced_science_wavecal_coefficients.csv",
+                )
+            )
+        elif hemisphere == "south":
+            arcspec_template = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230305coj",
+                    "blue_reduced_science_arc_spec.csv",
+                )
+            )
+            coefficients = np.loadtxt(
+                os.path.join(
+                    SCRIPT_PATH,
+                    "wavecal_template",
+                    "20230305coj",
+                    "blue_reduced_science_wavecal_coefficients.csv",
+                )
+            )
+        else:
+            raise ValueError(
+                "Please choose between north and south. You "
+                f"have provided {hemisphere}"
+            )
+    else:
+        raise ValueError(
+            f"Unknown mode: {mode}. Please choose from 'red' and 'blue'."
+        )
+    con_min = len(arcspec) // 2 - 300
+    con_max = len(arcspec) // 2 + 300
+    convolved = correlate(
+        zoom(arcspec_template, 10.0), zoom(arcspec, 10.0), mode="same"
+    )
+    shift = (np.argmax(convolved[con_min * 10 : con_max * 10]) - 3000) / 10.0
+    shifted_arcspec = spectres(
+        np.arange(len(arcspec)) - shift,
+        np.arange(len(arcspec)),
+        arcspec,
+    )
+    coefficients[0] += shift
+    return shifted_arcspec, coefficients
+
 
 # Get config file
 try:
@@ -538,7 +642,7 @@ for frame_type in ["standard", "science"]:
             ],
             percentile=params[frame_type + "_" + arm + "_aptrace_percentile"],
             shift_tol=params[frame_type + "_" + arm + "_aptrace_shift_tol"],
-            fit_deg=1,
+            fit_deg=4,
             ap_faint=params[frame_type + "_" + arm + "_aptrace_ap_faint"],
             display=params[frame_type + "_" + arm + "_aptrace_display"],
             renderer=params[frame_type + "_" + arm + "_aptrace_renderer"],
@@ -782,71 +886,75 @@ red_onedspec.find_arc_lines(
 # Configure the wavelength calibrator
 red_onedspec.initialise_calibrator(stype="science+standard")
 
-red_onedspec.add_user_atlas(
-    elements=element_Hg_red, wavelengths=atlas_Hg_red, stype="science+standard"
-)
-red_onedspec.add_user_atlas(
-    elements=element_Ar_red, wavelengths=atlas_Ar_red, stype="science+standard"
-)
-
-red_onedspec.set_hough_properties(
-    num_slopes=params["red_set_hough_properties_num_slopes"],
-    xbins=params["red_set_hough_properties_xbins"],
-    ybins=params["red_set_hough_properties_ybins"],
-    min_wavelength=params["red_set_hough_properties_min_wavelength"],
-    max_wavelength=params["red_set_hough_properties_max_wavelength"],
-    range_tolerance=params["red_set_hough_properties_range_tolerance"],
-    linearity_tolerance=params["red_set_hough_properties_linearity_tolerance"],
-    stype="science+standard",
-)
-red_onedspec.set_ransac_properties(
-    sample_size=params["red_set_ransac_properties_sample_size"],
-    top_n_candidate=params["red_set_ransac_properties_top_n_candidate"],
-    linear=params["red_set_ransac_properties_linear"],
-    filter_close=params["red_set_ransac_properties_filter_close"],
-    ransac_tolerance=params["red_set_ransac_properties_ransac_tolerance"],
-    candidate_weighted=params["red_set_ransac_properties_candidate_weighted"],
-    hough_weight=params["red_set_ransac_properties_hough_weight"],
-    minimum_matches=params["red_set_ransac_properties_minimum_matches"],
-    minimum_peak_utilisation=params[
-        "red_set_ransac_properties_minimum_peak_utilisation"
-    ],
-    minimum_fit_error=params["red_set_ransac_properties_minimum_fit_error"],
-    stype="science+standard",
-)
-red_onedspec.do_hough_transform(
-    brute_force=params["red_do_hough_transform_brute_force"],
-    stype="science+standard",
-)
-
-# Solve for the pixel-to-wavelength solution
-try:
-    red_onedspec.fit(
-        max_tries=params["red_fit_max_tries"],
-        fit_deg=params["red_fit_fit_deg"],
-        fit_coeff=params["red_fit_fit_coeff"],
-        fit_tolerance=params["red_fit_fit_tolerance"],
-        fit_type=params["red_fit_fit_type"],
-        candidate_tolerance=params["red_fit_candidate_tolerance"],
-        brute_force=params["red_fit_brute_force"],
-        progress=params["red_fit_progress"],
-        return_solution=params["red_fit_return_solution"],
-        display=params["red_fit_display"],
-        renderer=params["red_fit_renderer"],
-        save_fig=params["red_fit_save_fig"],
-        fig_type=params["red_fit_fig_type"],
-        filename=os.path.join(
-            output_folder, params["red_fit_filename"] + "_science"
-        ),
-        stype="science",
+if params["red_correlate"]:
+    red_science_arc_spec_shifted, red_science_coeff = get_wavecal_coefficients(
+        red_onedspec.science_spectrum_list[0].arc_spec,
+        mode="red",
+        hemisphere=params["hemisphere"],
     )
-except:
+    (
+        red_standard_arc_spec_shifted,
+        red_standard_coeff,
+    ) = get_wavecal_coefficients(
+        red_onedspec.standard_spectrum_list[0].arc_spec,
+        mode="red",
+        hemisphere=params["hemisphere"],
+    )
+    print(red_science_coeff)
+    print(red_standard_coeff)
+    red_onedspec.add_fit_coeff([red_science_coeff], stype="science")
+    red_onedspec.add_fit_coeff([red_standard_coeff], stype="standard")
+
+else:
+    red_onedspec.add_user_atlas(
+        elements=element_Hg_red,
+        wavelengths=atlas_Hg_red,
+        stype="science+standard",
+    )
+    red_onedspec.add_user_atlas(
+        elements=element_Ar_red,
+        wavelengths=atlas_Ar_red,
+        stype="science+standard",
+    )
+
+    red_onedspec.set_hough_properties(
+        num_slopes=params["red_set_hough_properties_num_slopes"],
+        xbins=params["red_set_hough_properties_xbins"],
+        ybins=params["red_set_hough_properties_ybins"],
+        min_wavelength=params["red_set_hough_properties_min_wavelength"],
+        max_wavelength=params["red_set_hough_properties_max_wavelength"],
+        range_tolerance=params["red_set_hough_properties_range_tolerance"],
+        linearity_tolerance=params[
+            "red_set_hough_properties_linearity_tolerance"
+        ],
+        stype="science+standard",
+    )
+    red_onedspec.set_ransac_properties(
+        sample_size=params["red_set_ransac_properties_sample_size"],
+        top_n_candidate=params["red_set_ransac_properties_top_n_candidate"],
+        linear=params["red_set_ransac_properties_linear"],
+        filter_close=params["red_set_ransac_properties_filter_close"],
+        ransac_tolerance=params["red_set_ransac_properties_ransac_tolerance"],
+        candidate_weighted=params[
+            "red_set_ransac_properties_candidate_weighted"
+        ],
+        hough_weight=params["red_set_ransac_properties_hough_weight"],
+        minimum_matches=params["red_set_ransac_properties_minimum_matches"],
+        minimum_peak_utilisation=params[
+            "red_set_ransac_properties_minimum_peak_utilisation"
+        ],
+        minimum_fit_error=params[
+            "red_set_ransac_properties_minimum_fit_error"
+        ],
+        stype="science+standard",
+    )
+    red_onedspec.do_hough_transform(
+        brute_force=params["red_do_hough_transform_brute_force"],
+        stype="science+standard",
+    )
+
+    # Solve for the pixel-to-wavelength solution
     try:
-        red_onedspec.set_ransac_properties(
-            minimum_matches=params["red_set_ransac_properties_minimum_matches"]
-            - 1,
-            stype="science",
-        )
         red_onedspec.fit(
             max_tries=params["red_fit_max_tries"],
             fit_deg=params["red_fit_fit_deg"],
@@ -867,58 +975,60 @@ except:
             stype="science",
         )
     except:
-        if params["hemisphere"] == "north":
-            red_onedspec.add_fit_coeff(
-                [
-                    4768.18,
-                    3.42711,
-                    3.46385e-6,
-                    1.09948e-7,
-                    -1.04667e-10,
-                    2.96244e-14,
-                ],
+        try:
+            red_onedspec.set_ransac_properties(
+                minimum_matches=params[
+                    "red_set_ransac_properties_minimum_matches"
+                ]
+                - 1,
                 stype="science",
             )
-        else:
-            red_onedspec.add_fit_coeff(
-                [
-                    4307.37,
-                    4.67048,
-                    -0.00308638,
-                    3.66622e-6,
-                    -2.03226e-9,
-                    4.27453e-13,
-                ],
+            red_onedspec.fit(
+                max_tries=params["red_fit_max_tries"],
+                fit_deg=params["red_fit_fit_deg"],
+                fit_coeff=params["red_fit_fit_coeff"],
+                fit_tolerance=params["red_fit_fit_tolerance"],
+                fit_type=params["red_fit_fit_type"],
+                candidate_tolerance=params["red_fit_candidate_tolerance"],
+                brute_force=params["red_fit_brute_force"],
+                progress=params["red_fit_progress"],
+                return_solution=params["red_fit_return_solution"],
+                display=params["red_fit_display"],
+                renderer=params["red_fit_renderer"],
+                save_fig=params["red_fit_save_fig"],
+                fig_type=params["red_fit_fig_type"],
+                filename=os.path.join(
+                    output_folder, params["red_fit_filename"] + "_science"
+                ),
                 stype="science",
             )
+        except:
+            if params["hemisphere"] == "north":
+                red_onedspec.add_fit_coeff(
+                    [
+                        4768.18,
+                        3.42711,
+                        3.46385e-6,
+                        1.09948e-7,
+                        -1.04667e-10,
+                        2.96244e-14,
+                    ],
+                    stype="science",
+                )
+            else:
+                red_onedspec.add_fit_coeff(
+                    [
+                        4307.37,
+                        4.67048,
+                        -0.00308638,
+                        3.66622e-6,
+                        -2.03226e-9,
+                        4.27453e-13,
+                    ],
+                    stype="science",
+                )
 
-try:
-    red_onedspec.fit(
-        max_tries=params["red_fit_max_tries"],
-        fit_deg=params["red_fit_fit_deg"],
-        fit_coeff=params["red_fit_fit_coeff"],
-        fit_tolerance=params["red_fit_fit_tolerance"],
-        fit_type=params["red_fit_fit_type"],
-        candidate_tolerance=params["red_fit_candidate_tolerance"],
-        brute_force=params["red_fit_brute_force"],
-        progress=params["red_fit_progress"],
-        return_solution=params["red_fit_return_solution"],
-        display=params["red_fit_display"],
-        renderer=params["red_fit_renderer"],
-        save_fig=params["red_fit_save_fig"],
-        fig_type=params["red_fit_fig_type"],
-        filename=os.path.join(
-            output_folder, params["red_fit_filename"] + "_standard"
-        ),
-        stype="standard",
-    )
-except:
     try:
-        red_onedspec.set_ransac_properties(
-            minimum_matches=params["red_set_ransac_properties_minimum_matches"]
-            - 1,
-            stype="standard",
-        )
         red_onedspec.fit(
             max_tries=params["red_fit_max_tries"],
             fit_deg=params["red_fit_fit_deg"],
@@ -939,30 +1049,58 @@ except:
             stype="standard",
         )
     except:
-        if params["hemisphere"] == "north":
-            red_onedspec.add_fit_coeff(
-                [
-                    4768.18,
-                    3.42711,
-                    3.46385e-6,
-                    1.09948e-7,
-                    -1.04667e-10,
-                    2.96244e-14,
-                ],
+        try:
+            red_onedspec.set_ransac_properties(
+                minimum_matches=params[
+                    "red_set_ransac_properties_minimum_matches"
+                ]
+                - 1,
                 stype="standard",
             )
-        else:
-            red_onedspec.add_fit_coeff(
-                [
-                    4307.37,
-                    4.67048,
-                    -0.00308638,
-                    3.66622e-6,
-                    -2.03226e-9,
-                    4.27453e-13,
-                ],
+            red_onedspec.fit(
+                max_tries=params["red_fit_max_tries"],
+                fit_deg=params["red_fit_fit_deg"],
+                fit_coeff=params["red_fit_fit_coeff"],
+                fit_tolerance=params["red_fit_fit_tolerance"],
+                fit_type=params["red_fit_fit_type"],
+                candidate_tolerance=params["red_fit_candidate_tolerance"],
+                brute_force=params["red_fit_brute_force"],
+                progress=params["red_fit_progress"],
+                return_solution=params["red_fit_return_solution"],
+                display=params["red_fit_display"],
+                renderer=params["red_fit_renderer"],
+                save_fig=params["red_fit_save_fig"],
+                fig_type=params["red_fit_fig_type"],
+                filename=os.path.join(
+                    output_folder, params["red_fit_filename"] + "_standard"
+                ),
                 stype="standard",
             )
+        except:
+            if params["hemisphere"] == "north":
+                red_onedspec.add_fit_coeff(
+                    [
+                        4768.18,
+                        3.42711,
+                        3.46385e-6,
+                        1.09948e-7,
+                        -1.04667e-10,
+                        2.96244e-14,
+                    ],
+                    stype="standard",
+                )
+            else:
+                red_onedspec.add_fit_coeff(
+                    [
+                        4307.37,
+                        4.67048,
+                        -0.00308638,
+                        3.66622e-6,
+                        -2.03226e-9,
+                        4.27453e-13,
+                    ],
+                    stype="standard",
+                )
 
 # Apply the wavelength calibration and display it
 red_onedspec.apply_wavelength_calibration(
@@ -1112,118 +1250,144 @@ blue_onedspec.find_arc_lines(
 # Configure the wavelength calibrator
 blue_onedspec.initialise_calibrator(stype="science+standard")
 
-blue_onedspec.add_user_atlas(
-    elements=element_Hg_blue,
-    wavelengths=atlas_Hg_blue,
-    stype="science+standard",
-)
-blue_onedspec.add_user_atlas(
-    elements=element_Ar_blue,
-    wavelengths=atlas_Ar_blue,
-    stype="science+standard",
-)
-blue_onedspec.add_user_atlas(
-    elements=element_Zn_blue,
-    wavelengths=atlas_Zn_blue,
-    stype="science+standard",
-)
 
-blue_onedspec.set_hough_properties(
-    num_slopes=params["blue_set_hough_properties_num_slopes"],
-    xbins=params["blue_set_hough_properties_xbins"],
-    ybins=params["blue_set_hough_properties_ybins"],
-    min_wavelength=params["blue_set_hough_properties_min_wavelength"],
-    max_wavelength=params["blue_set_hough_properties_max_wavelength"],
-    range_tolerance=params["blue_set_hough_properties_range_tolerance"],
-    linearity_tolerance=params[
-        "blue_set_hough_properties_linearity_tolerance"
-    ],
-    stype="science+standard",
-)
-blue_onedspec.set_ransac_properties(
-    sample_size=params["blue_set_ransac_properties_sample_size"],
-    top_n_candidate=params["blue_set_ransac_properties_top_n_candidate"],
-    linear=params["blue_set_ransac_properties_linear"],
-    filter_close=params["blue_set_ransac_properties_filter_close"],
-    ransac_tolerance=params["blue_set_ransac_properties_ransac_tolerance"],
-    candidate_weighted=params["blue_set_ransac_properties_candidate_weighted"],
-    hough_weight=params["blue_set_ransac_properties_hough_weight"],
-    minimum_matches=params["blue_set_ransac_properties_minimum_matches"],
-    minimum_peak_utilisation=params[
-        "blue_set_ransac_properties_minimum_peak_utilisation"
-    ],
-    minimum_fit_error=params["blue_set_ransac_properties_minimum_fit_error"],
-    stype="science+standard",
-)
-blue_onedspec.do_hough_transform(
-    brute_force=params["blue_do_hough_transform_brute_force"],
-    stype="science+standard",
-)
-
-# Solve for the pixel-to-wavelength solution
-try:
-    blue_onedspec.fit(
-        max_tries=params["blue_fit_max_tries"],
-        fit_deg=params["blue_fit_fit_deg"],
-        fit_coeff=params["blue_fit_fit_coeff"],
-        fit_tolerance=params["blue_fit_fit_tolerance"],
-        fit_type=params["blue_fit_fit_type"],
-        candidate_tolerance=params["blue_fit_candidate_tolerance"],
-        brute_force=params["blue_fit_brute_force"],
-        progress=params["blue_fit_progress"],
-        return_solution=params["blue_fit_return_solution"],
-        display=params["blue_fit_display"],
-        renderer=params["blue_fit_renderer"],
-        save_fig=params["blue_fit_save_fig"],
-        fig_type=params["blue_fit_fig_type"],
-        filename=os.path.join(
-            output_folder, params["blue_fit_filename"] + "_science"
-        ),
-        stype="science",
+if params["blue_correlate"]:
+    (
+        blue_science_arc_spec_shifted,
+        blue_science_coeff,
+    ) = get_wavecal_coefficients(
+        blue_onedspec.science_spectrum_list[0].arc_spec,
+        mode="blue",
+        hemisphere=params["hemisphere"],
     )
-except:
-    if params["hemisphere"] == "north":
-        blue_onedspec.add_fit_coeff(
-            [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+    (
+        blue_standard_arc_spec_shifted,
+        blue_standard_coeff,
+    ) = get_wavecal_coefficients(
+        blue_onedspec.standard_spectrum_list[0].arc_spec,
+        mode="blue",
+        hemisphere=params["hemisphere"],
+    )
+    blue_onedspec.add_fit_coeff([blue_science_coeff], stype="science")
+    blue_onedspec.add_fit_coeff([blue_standard_coeff], stype="standard")
+
+else:
+    blue_onedspec.add_user_atlas(
+        elements=element_Hg_blue,
+        wavelengths=atlas_Hg_blue,
+        stype="science+standard",
+    )
+    blue_onedspec.add_user_atlas(
+        elements=element_Ar_blue,
+        wavelengths=atlas_Ar_blue,
+        stype="science+standard",
+    )
+    blue_onedspec.add_user_atlas(
+        elements=element_Zn_blue,
+        wavelengths=atlas_Zn_blue,
+        stype="science+standard",
+    )
+
+    blue_onedspec.set_hough_properties(
+        num_slopes=params["blue_set_hough_properties_num_slopes"],
+        xbins=params["blue_set_hough_properties_xbins"],
+        ybins=params["blue_set_hough_properties_ybins"],
+        min_wavelength=params["blue_set_hough_properties_min_wavelength"],
+        max_wavelength=params["blue_set_hough_properties_max_wavelength"],
+        range_tolerance=params["blue_set_hough_properties_range_tolerance"],
+        linearity_tolerance=params[
+            "blue_set_hough_properties_linearity_tolerance"
+        ],
+        stype="science+standard",
+    )
+    blue_onedspec.set_ransac_properties(
+        sample_size=params["blue_set_ransac_properties_sample_size"],
+        top_n_candidate=params["blue_set_ransac_properties_top_n_candidate"],
+        linear=params["blue_set_ransac_properties_linear"],
+        filter_close=params["blue_set_ransac_properties_filter_close"],
+        ransac_tolerance=params["blue_set_ransac_properties_ransac_tolerance"],
+        candidate_weighted=params[
+            "blue_set_ransac_properties_candidate_weighted"
+        ],
+        hough_weight=params["blue_set_ransac_properties_hough_weight"],
+        minimum_matches=params["blue_set_ransac_properties_minimum_matches"],
+        minimum_peak_utilisation=params[
+            "blue_set_ransac_properties_minimum_peak_utilisation"
+        ],
+        minimum_fit_error=params[
+            "blue_set_ransac_properties_minimum_fit_error"
+        ],
+        stype="science+standard",
+    )
+    blue_onedspec.do_hough_transform(
+        brute_force=params["blue_do_hough_transform_brute_force"],
+        stype="science+standard",
+    )
+
+    # Solve for the pixel-to-wavelength solution
+    try:
+        blue_onedspec.fit(
+            max_tries=params["blue_fit_max_tries"],
+            fit_deg=params["blue_fit_fit_deg"],
+            fit_coeff=params["blue_fit_fit_coeff"],
+            fit_tolerance=params["blue_fit_fit_tolerance"],
+            fit_type=params["blue_fit_fit_type"],
+            candidate_tolerance=params["blue_fit_candidate_tolerance"],
+            brute_force=params["blue_fit_brute_force"],
+            progress=params["blue_fit_progress"],
+            return_solution=params["blue_fit_return_solution"],
+            display=params["blue_fit_display"],
+            renderer=params["blue_fit_renderer"],
+            save_fig=params["blue_fit_save_fig"],
+            fig_type=params["blue_fit_fig_type"],
+            filename=os.path.join(
+                output_folder, params["blue_fit_filename"] + "_science"
+            ),
             stype="science",
         )
-    else:
-        blue_onedspec.add_fit_coeff(
-            [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
-            stype="science",
-        )
+    except:
+        if params["hemisphere"] == "north":
+            blue_onedspec.add_fit_coeff(
+                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+                stype="science",
+            )
+        else:
+            blue_onedspec.add_fit_coeff(
+                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
+                stype="science",
+            )
 
-try:
-    blue_onedspec.fit(
-        max_tries=params["blue_fit_max_tries"],
-        fit_deg=params["blue_fit_fit_deg"],
-        fit_coeff=params["blue_fit_fit_coeff"],
-        fit_tolerance=params["blue_fit_fit_tolerance"],
-        fit_type=params["blue_fit_fit_type"],
-        candidate_tolerance=params["blue_fit_candidate_tolerance"],
-        brute_force=params["blue_fit_brute_force"],
-        progress=params["blue_fit_progress"],
-        return_solution=params["blue_fit_return_solution"],
-        display=params["blue_fit_display"],
-        renderer=params["blue_fit_renderer"],
-        save_fig=params["blue_fit_save_fig"],
-        fig_type=params["blue_fit_fig_type"],
-        filename=os.path.join(
-            output_folder, params["blue_fit_filename"] + "_standard"
-        ),
-        stype="standard",
-    )
-except:
-    if params["hemisphere"] == "north":
-        blue_onedspec.add_fit_coeff(
-            [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+    try:
+        blue_onedspec.fit(
+            max_tries=params["blue_fit_max_tries"],
+            fit_deg=params["blue_fit_fit_deg"],
+            fit_coeff=params["blue_fit_fit_coeff"],
+            fit_tolerance=params["blue_fit_fit_tolerance"],
+            fit_type=params["blue_fit_fit_type"],
+            candidate_tolerance=params["blue_fit_candidate_tolerance"],
+            brute_force=params["blue_fit_brute_force"],
+            progress=params["blue_fit_progress"],
+            return_solution=params["blue_fit_return_solution"],
+            display=params["blue_fit_display"],
+            renderer=params["blue_fit_renderer"],
+            save_fig=params["blue_fit_save_fig"],
+            fig_type=params["blue_fit_fig_type"],
+            filename=os.path.join(
+                output_folder, params["blue_fit_filename"] + "_standard"
+            ),
             stype="standard",
         )
-    else:
-        blue_onedspec.add_fit_coeff(
-            [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
-            stype="standard",
-        )
+    except:
+        if params["hemisphere"] == "north":
+            blue_onedspec.add_fit_coeff(
+                [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
+                stype="standard",
+            )
+        else:
+            blue_onedspec.add_fit_coeff(
+                [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
+                stype="standard",
+            )
 
 # Apply the wavelength calibration and display it
 blue_onedspec.apply_wavelength_calibration(
