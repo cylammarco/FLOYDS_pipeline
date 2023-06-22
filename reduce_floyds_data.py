@@ -711,6 +711,7 @@ for frame_type in ["standard", "science"]:
             open_iframe=params[
                 frame_type + "_" + arm + "_extract_open_iframe"
             ],
+            spec_id=params[frame_type + "_" + arm + "_spec_id"],
         )
         twodspec.inspect_line_spread_function(
             display=params[
@@ -764,6 +765,7 @@ for frame_type in ["standard", "science"]:
                 + arm
                 + "_inspect_line_spread_function_open_iframe"
             ],
+            spec_id=params[frame_type + "_" + arm + "_spec_id"],
         )
         twodspec.extract_arc_spec(
             spec_width=params[frame_type + "_" + arm + "_arc_spec_spec_width"],
@@ -785,6 +787,7 @@ for frame_type in ["standard", "science"]:
             open_iframe=params[
                 frame_type + "_" + arm + "_arc_spec_open_iframe"
             ],
+            spec_id=params[frame_type + "_" + arm + "_spec_id"],
         )
         # Get the traces for fringe removal
         trace_rectified = copy.deepcopy(twodspec.spectrum_list[0].trace)
@@ -862,6 +865,7 @@ red_onedspec.find_arc_lines(
     ),
     open_iframe=params["red_find_arc_lines_open_iframe"],
     stype="science",
+    spec_id=params["science_red_spec_id"],
 )
 red_onedspec.find_arc_lines(
     prominence=params["red_find_arc_lines_prominence"],
@@ -884,11 +888,17 @@ red_onedspec.find_arc_lines(
 )
 
 # Configure the wavelength calibrator
-red_onedspec.initialise_calibrator(stype="science+standard")
+red_onedspec.initialise_calibrator(
+    stype="science",
+    spec_id=params["science_red_spec_id"],
+)
+red_onedspec.initialise_calibrator(stype="standard")
 
 if params["red_correlate"]:
     red_science_arc_spec_shifted, red_science_coeff = get_wavecal_coefficients(
-        red_onedspec.science_spectrum_list[0].arc_spec,
+        red_onedspec.science_spectrum_list[
+            params["science_red_spec_id"]
+        ].arc_spec,
         mode="red",
         hemisphere=params["hemisphere"],
     )
@@ -900,21 +910,36 @@ if params["red_correlate"]:
         mode="red",
         hemisphere=params["hemisphere"],
     )
-    print(red_science_coeff)
-    print(red_standard_coeff)
-    red_onedspec.add_fit_coeff([red_science_coeff], stype="science")
+
+    red_onedspec.add_fit_coeff(
+        [red_science_coeff],
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
     red_onedspec.add_fit_coeff([red_standard_coeff], stype="standard")
 
 else:
     red_onedspec.add_user_atlas(
         elements=element_Hg_red,
         wavelengths=atlas_Hg_red,
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
+    red_onedspec.add_user_atlas(
+        elements=element_Hg_red,
+        wavelengths=atlas_Hg_red,
+        stype="standard",
     )
     red_onedspec.add_user_atlas(
         elements=element_Ar_red,
         wavelengths=atlas_Ar_red,
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
+    red_onedspec.add_user_atlas(
+        elements=element_Ar_red,
+        wavelengths=atlas_Ar_red,
+        stype="standard",
     )
 
     red_onedspec.set_hough_properties(
@@ -927,7 +952,20 @@ else:
         linearity_tolerance=params[
             "red_set_hough_properties_linearity_tolerance"
         ],
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
+    red_onedspec.set_hough_properties(
+        num_slopes=params["red_set_hough_properties_num_slopes"],
+        xbins=params["red_set_hough_properties_xbins"],
+        ybins=params["red_set_hough_properties_ybins"],
+        min_wavelength=params["red_set_hough_properties_min_wavelength"],
+        max_wavelength=params["red_set_hough_properties_max_wavelength"],
+        range_tolerance=params["red_set_hough_properties_range_tolerance"],
+        linearity_tolerance=params[
+            "red_set_hough_properties_linearity_tolerance"
+        ],
+        stype="standard",
     )
     red_onedspec.set_ransac_properties(
         sample_size=params["red_set_ransac_properties_sample_size"],
@@ -946,11 +984,36 @@ else:
         minimum_fit_error=params[
             "red_set_ransac_properties_minimum_fit_error"
         ],
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
+    red_onedspec.set_ransac_properties(
+        sample_size=params["red_set_ransac_properties_sample_size"],
+        top_n_candidate=params["red_set_ransac_properties_top_n_candidate"],
+        linear=params["red_set_ransac_properties_linear"],
+        filter_close=params["red_set_ransac_properties_filter_close"],
+        ransac_tolerance=params["red_set_ransac_properties_ransac_tolerance"],
+        candidate_weighted=params[
+            "red_set_ransac_properties_candidate_weighted"
+        ],
+        hough_weight=params["red_set_ransac_properties_hough_weight"],
+        minimum_matches=params["red_set_ransac_properties_minimum_matches"],
+        minimum_peak_utilisation=params[
+            "red_set_ransac_properties_minimum_peak_utilisation"
+        ],
+        minimum_fit_error=params[
+            "red_set_ransac_properties_minimum_fit_error"
+        ],
+        stype="standard",
     )
     red_onedspec.do_hough_transform(
         brute_force=params["red_do_hough_transform_brute_force"],
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_red_spec_id"],
+    )
+    red_onedspec.do_hough_transform(
+        brute_force=params["red_do_hough_transform_brute_force"],
+        stype="standard",
     )
 
     # Solve for the pixel-to-wavelength solution
@@ -973,6 +1036,7 @@ else:
                 output_folder, params["red_fit_filename"] + "_science"
             ),
             stype="science",
+            spec_id=params["science_red_spec_id"],
         )
     except:
         try:
@@ -982,6 +1046,7 @@ else:
                 ]
                 - 1,
                 stype="science",
+                spec_id=params["science_red_spec_id"],
             )
             red_onedspec.fit(
                 max_tries=params["red_fit_max_tries"],
@@ -1001,6 +1066,7 @@ else:
                     output_folder, params["red_fit_filename"] + "_science"
                 ),
                 stype="science",
+                spec_id=params["science_red_spec_id"],
             )
         except:
             if params["hemisphere"] == "north":
@@ -1014,6 +1080,7 @@ else:
                         2.96244e-14,
                     ],
                     stype="science",
+                    spec_id=params["science_red_spec_id"],
                 )
             else:
                 red_onedspec.add_fit_coeff(
@@ -1026,6 +1093,7 @@ else:
                         4.27453e-13,
                     ],
                     stype="science",
+                    spec_id=params["science_red_spec_id"],
                 )
 
     try:
@@ -1104,7 +1172,11 @@ else:
 
 # Apply the wavelength calibration and display it
 red_onedspec.apply_wavelength_calibration(
-    stype="science+standard",
+    stype="science",
+    spec_id=params["science_red_spec_id"],
+)
+red_onedspec.apply_wavelength_calibration(
+    stype="standard",
 )
 
 red_onedspec.load_standard(
@@ -1152,14 +1224,41 @@ red_onedspec.apply_flux_calibration(
     filename=os.path.join(
         output_folder, params["red_apply_flux_calibration_filename"]
     ),
+    stype="science",
+    spec_id=params["science_red_spec_id"],
 )
-red_onedspec.get_flux_continuum()
+red_onedspec.apply_flux_calibration(
+    inspect=params["red_apply_flux_calibration_inspect"],
+    wave_min=params["red_apply_flux_calibration_wave_min"],
+    wave_max=params["red_apply_flux_calibration_wave_max"],
+    display=params["red_apply_flux_calibration_display"],
+    renderer=params["red_apply_flux_calibration_renderer"],
+    width=params["red_apply_flux_calibration_width"],
+    height=params["red_apply_flux_calibration_height"],
+    return_jsonstring=params["red_apply_flux_calibration_return_jsonstring"],
+    save_fig=params["red_apply_flux_calibration_save_fig"],
+    fig_type=params["red_apply_flux_calibration_fig_type"],
+    filename=os.path.join(
+        output_folder, params["red_apply_flux_calibration_filename"]
+    ),
+    stype="standard",
+)
+red_onedspec.get_flux_continuum(
+    stype="science",
+    spec_id=params["science_red_spec_id"],
+)
+red_onedspec.get_flux_continuum(
+    stype="standard",
+)
+
 red_onedspec.get_telluric_profile(
-    mask_range=params["red_get_telluric_profile_mask_range"]
+    mask_range=params["red_get_telluric_profile_mask_range"],
+    spec_id=params["science_red_spec_id"],
 )
 
 red_onedspec.get_telluric_strength(
-    factor=params["red_get_telluric_correction_factor"]
+    factor=params["red_get_telluric_correction_factor"],
+    spec_id=params["science_red_spec_id"],
 )
 
 red_onedspec.inspect_telluric_profile(
@@ -1189,11 +1288,17 @@ red_onedspec.inspect_telluric_correction(
     filename=os.path.join(
         output_folder, params["red_inspect_telluric_correction_filename"]
     ),
+    spec_id=params["science_red_spec_id"],
 )
 
-
 red_onedspec.apply_telluric_correction(
-    factor=params["red_apply_telluric_correction_factor"]
+    factor=params["red_apply_telluric_correction_factor"],
+    stype="science",
+    spec_id=params["science_red_spec_id"],
+)
+red_onedspec.apply_telluric_correction(
+    factor=params["red_apply_telluric_correction_factor"],
+    stype="standard",
 )
 
 # Blue spectrum here
@@ -1224,6 +1329,7 @@ blue_onedspec.find_arc_lines(
     ),
     open_iframe=params["blue_find_arc_lines_open_iframe"],
     stype="science",
+    spec_id=params["science_blue_spec_id"],
 )
 blue_onedspec.find_arc_lines(
     prominence=params["blue_find_arc_lines_prominence"],
@@ -1248,7 +1354,13 @@ blue_onedspec.find_arc_lines(
 
 
 # Configure the wavelength calibrator
-blue_onedspec.initialise_calibrator(stype="science+standard")
+blue_onedspec.initialise_calibrator(
+    stype="science",
+    spec_id=params["science_blue_spec_id"],
+)
+blue_onedspec.initialise_calibrator(
+    stype="standard",
+)
 
 
 if params["blue_correlate"]:
@@ -1256,7 +1368,9 @@ if params["blue_correlate"]:
         blue_science_arc_spec_shifted,
         blue_science_coeff,
     ) = get_wavecal_coefficients(
-        blue_onedspec.science_spectrum_list[0].arc_spec,
+        blue_onedspec.science_spectrum_list[
+            params["science_blue_spec_id"]
+        ].arc_spec,
         mode="blue",
         hemisphere=params["hemisphere"],
     )
@@ -1268,24 +1382,46 @@ if params["blue_correlate"]:
         mode="blue",
         hemisphere=params["hemisphere"],
     )
-    blue_onedspec.add_fit_coeff([blue_science_coeff], stype="science")
+    blue_onedspec.add_fit_coeff(
+        [blue_science_coeff],
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
+    )
     blue_onedspec.add_fit_coeff([blue_standard_coeff], stype="standard")
 
 else:
     blue_onedspec.add_user_atlas(
         elements=element_Hg_blue,
         wavelengths=atlas_Hg_blue,
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
     )
     blue_onedspec.add_user_atlas(
         elements=element_Ar_blue,
         wavelengths=atlas_Ar_blue,
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
     )
     blue_onedspec.add_user_atlas(
         elements=element_Zn_blue,
         wavelengths=atlas_Zn_blue,
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
+    )
+    blue_onedspec.add_user_atlas(
+        elements=element_Hg_blue,
+        wavelengths=atlas_Hg_blue,
+        stype="standard",
+    )
+    blue_onedspec.add_user_atlas(
+        elements=element_Ar_blue,
+        wavelengths=atlas_Ar_blue,
+        stype="standard",
+    )
+    blue_onedspec.add_user_atlas(
+        elements=element_Zn_blue,
+        wavelengths=atlas_Zn_blue,
+        stype="standard",
     )
 
     blue_onedspec.set_hough_properties(
@@ -1298,7 +1434,41 @@ else:
         linearity_tolerance=params[
             "blue_set_hough_properties_linearity_tolerance"
         ],
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
+    )
+    blue_onedspec.set_hough_properties(
+        num_slopes=params["blue_set_hough_properties_num_slopes"],
+        xbins=params["blue_set_hough_properties_xbins"],
+        ybins=params["blue_set_hough_properties_ybins"],
+        min_wavelength=params["blue_set_hough_properties_min_wavelength"],
+        max_wavelength=params["blue_set_hough_properties_max_wavelength"],
+        range_tolerance=params["blue_set_hough_properties_range_tolerance"],
+        linearity_tolerance=params[
+            "blue_set_hough_properties_linearity_tolerance"
+        ],
+        stype="standard",
+    )
+
+    blue_onedspec.set_ransac_properties(
+        sample_size=params["blue_set_ransac_properties_sample_size"],
+        top_n_candidate=params["blue_set_ransac_properties_top_n_candidate"],
+        linear=params["blue_set_ransac_properties_linear"],
+        filter_close=params["blue_set_ransac_properties_filter_close"],
+        ransac_tolerance=params["blue_set_ransac_properties_ransac_tolerance"],
+        candidate_weighted=params[
+            "blue_set_ransac_properties_candidate_weighted"
+        ],
+        hough_weight=params["blue_set_ransac_properties_hough_weight"],
+        minimum_matches=params["blue_set_ransac_properties_minimum_matches"],
+        minimum_peak_utilisation=params[
+            "blue_set_ransac_properties_minimum_peak_utilisation"
+        ],
+        minimum_fit_error=params[
+            "blue_set_ransac_properties_minimum_fit_error"
+        ],
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
     )
     blue_onedspec.set_ransac_properties(
         sample_size=params["blue_set_ransac_properties_sample_size"],
@@ -1317,11 +1487,16 @@ else:
         minimum_fit_error=params[
             "blue_set_ransac_properties_minimum_fit_error"
         ],
-        stype="science+standard",
+        stype="standard",
     )
     blue_onedspec.do_hough_transform(
         brute_force=params["blue_do_hough_transform_brute_force"],
-        stype="science+standard",
+        stype="science",
+        spec_id=params["science_blue_spec_id"],
+    )
+    blue_onedspec.do_hough_transform(
+        brute_force=params["blue_do_hough_transform_brute_force"],
+        stype="standard",
     )
 
     # Solve for the pixel-to-wavelength solution
@@ -1344,17 +1519,20 @@ else:
                 output_folder, params["blue_fit_filename"] + "_science"
             ),
             stype="science",
+            spec_id=params["science_blue_spec_id"],
         )
     except:
         if params["hemisphere"] == "north":
             blue_onedspec.add_fit_coeff(
                 [3323.6, 1.71555, -5.14076e-5, 7.39966e18, -2.24418e-11],
                 stype="science",
+                spec_id=params["science_blue_spec_id"],
             )
         else:
             blue_onedspec.add_fit_coeff(
                 [3176.54, 1.76596, -0.000130639, 1.21175e-7, -3.33912e-11],
                 stype="science",
+                spec_id=params["science_blue_spec_id"],
             )
 
     try:
@@ -1391,7 +1569,11 @@ else:
 
 # Apply the wavelength calibration and display it
 blue_onedspec.apply_wavelength_calibration(
-    stype="science+standard",
+    stype="science",
+    spec_id=params["science_blue_spec_id"],
+)
+blue_onedspec.apply_wavelength_calibration(
+    stype="standard",
 )
 
 blue_onedspec.load_standard(
@@ -1439,6 +1621,24 @@ blue_onedspec.apply_flux_calibration(
     filename=os.path.join(
         output_folder, params["blue_apply_flux_calibration_filename"]
     ),
+    stype="science",
+    spec_id=params["science_blue_spec_id"],
+)
+blue_onedspec.apply_flux_calibration(
+    inspect=params["blue_apply_flux_calibration_inspect"],
+    wave_min=params["blue_apply_flux_calibration_wave_min"],
+    wave_max=params["blue_apply_flux_calibration_wave_max"],
+    display=params["blue_apply_flux_calibration_display"],
+    renderer=params["blue_apply_flux_calibration_renderer"],
+    width=params["blue_apply_flux_calibration_width"],
+    height=params["blue_apply_flux_calibration_height"],
+    return_jsonstring=params["blue_apply_flux_calibration_return_jsonstring"],
+    save_fig=params["blue_apply_flux_calibration_save_fig"],
+    fig_type=params["blue_apply_flux_calibration_fig_type"],
+    filename=os.path.join(
+        output_folder, params["blue_apply_flux_calibration_filename"]
+    ),
+    stype="standard",
 )
 
 
@@ -1450,7 +1650,9 @@ blue_onedspec.apply_flux_calibration(
 #
 #
 red_std_spec = red_onedspec.standard_spectrum_list[0]
-red_sci_spec = red_onedspec.science_spectrum_list[0]
+red_sci_spec = red_onedspec.science_spectrum_list[
+    params["science_red_spec_id"]
+]
 
 red_literature_flux = spectres(
     red_std_spec.wave,
@@ -1470,7 +1672,9 @@ red_sci_spec.flux_err /= red_second_pass_correction
 red_sci_spec.flux_sky /= red_second_pass_correction
 
 blue_std_spec = blue_onedspec.standard_spectrum_list[0]
-blue_sci_spec = blue_onedspec.science_spectrum_list[0]
+blue_sci_spec = blue_onedspec.science_spectrum_list[
+    params["science_blue_spec_id"]
+]
 
 blue_literature_flux = spectres(
     blue_std_spec.wave,
@@ -1511,11 +1715,13 @@ blue_onedspec.set_atmospheric_extinction(
 red_onedspec.apply_atmospheric_extinction_correction(
     science_airmass=img["science"].light_header[0]["AIRMASS"],
     standard_airmass=img["standard"].light_header[0]["AIRMASS"],
+    spec_id=params["science_red_spec_id"],
 )
 
 blue_onedspec.apply_atmospheric_extinction_correction(
     science_airmass=img["science"].light_header[0]["AIRMASS"],
     standard_airmass=img["standard"].light_header[0]["AIRMASS"],
+    spec_id=params["science_blue_spec_id"],
 )
 
 #
@@ -1541,6 +1747,7 @@ blue_onedspec.inspect_reduced_spectrum(
     fig_type=params["blue_inspect_reduced_spectrum_fig_type"],
     filename=os.path.join(output_folder, blue_science_filename),
     stype="science",
+    spec_id=params["science_blue_spec_id"],
 )
 
 red_science_filename = params["red_inspect_reduced_spectrum_science_filename"]
@@ -1557,6 +1764,7 @@ red_onedspec.inspect_reduced_spectrum(
     fig_type=params["red_inspect_reduced_spectrum_fig_type"],
     filename=os.path.join(output_folder, red_science_filename),
     stype="science",
+    spec_id=params["science_red_spec_id"],
 )
 
 blue_standard_filename = params[
@@ -1611,11 +1819,13 @@ red_onedspec.resample(
     wave_start=params["red_apply_wavelength_calibration_wave_start"],
     wave_end=params["red_apply_wavelength_calibration_wave_end"],
     wave_bin=params["red_apply_wavelength_calibration_wave_bin"],
+    spec_id=params["science_red_spec_id"],
 )
 blue_onedspec.resample(
     wave_start=params["blue_apply_wavelength_calibration_wave_start"],
     wave_end=params["blue_apply_wavelength_calibration_wave_end"],
     wave_bin=params["blue_apply_wavelength_calibration_wave_bin"],
+    spec_id=params["science_blue_spec_id"],
 )
 
 
@@ -1631,6 +1841,7 @@ if params["red_create_fits"]:
         output=params["red_create_fits_output"],
         recreate=params["red_create_fits_recreate"],
         empty_primary_hdu=params["red_create_fits_empty_primary_hdu"],
+        spec_id=params["science_red_spec_id"],
     )
 
 if params["blue_create_fits"]:
@@ -1638,6 +1849,7 @@ if params["blue_create_fits"]:
         output=params["blue_create_fits_output"],
         recreate=params["blue_create_fits_recreate"],
         empty_primary_hdu=params["blue_create_fits_empty_primary_hdu"],
+        spec_id=params["science_blue_spec_id"],
     )
 
 if params["red_save_fits"]:
@@ -1647,6 +1859,7 @@ if params["red_save_fits"]:
         recreate=params["red_save_fits_recreate"],
         empty_primary_hdu=params["red_save_fits_empty_primary_hdu"],
         overwrite=params["red_save_fits_overwrite"],
+        spec_id=params["science_red_spec_id"],
     )
 
 if params["blue_save_fits"]:
@@ -1658,6 +1871,7 @@ if params["blue_save_fits"]:
         recreate=params["blue_save_fits_recreate"],
         empty_primary_hdu=params["blue_save_fits_empty_primary_hdu"],
         overwrite=params["blue_save_fits_overwrite"],
+        spec_id=params["science_blue_spec_id"],
     )
 
 if params["red_save_csv"]:
@@ -1666,6 +1880,7 @@ if params["red_save_csv"]:
         filename=os.path.join(output_folder, params["red_save_csv_filename"]),
         recreate=params["red_save_csv_recreate"],
         overwrite=params["red_save_csv_overwrite"],
+        spec_id=params["science_red_spec_id"],
     )
 
 if params["blue_save_csv"]:
@@ -1674,6 +1889,7 @@ if params["blue_save_csv"]:
         filename=os.path.join(output_folder, params["blue_save_csv_filename"]),
         recreate=params["blue_save_csv_recreate"],
         overwrite=params["blue_save_csv_overwrite"],
+        spec_id=params["science_blue_spec_id"],
     )
 
 #
@@ -1683,22 +1899,26 @@ if params["blue_save_csv"]:
 #
 #
 #
-wave_red = red_onedspec.science_spectrum_list[0].wave_resampled
+wave_red = red_onedspec.science_spectrum_list[
+    params["science_red_spec_id"]
+].wave_resampled
 
 flux_red = red_onedspec.science_spectrum_list[
-    0
+    params["science_red_spec_id"]
 ].flux_resampled_atm_ext_telluric_corrected
 flux_red_err = red_onedspec.science_spectrum_list[
-    0
+    params["science_red_spec_id"]
 ].flux_err_resampled_atm_ext_telluric_corrected
 
 # blue is NOT telluric corrected as it is not needed
-wave_blue = blue_onedspec.science_spectrum_list[0].wave_resampled
+wave_blue = blue_onedspec.science_spectrum_list[
+    params["science_blue_spec_id"]
+].wave_resampled
 flux_blue = blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected
 flux_blue_err = blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected
 
 # trim the last few hundred A from the blue and the first few hundred A from
@@ -1818,25 +2038,29 @@ blue_onedspec.create_fits(output="flux_resampled_atm_ext_corrected")
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].data = flux_out
+].flux_resampled_atm_ext_corrected_hdulist[
+    params["science_blue_spec_id"]
+].data = flux_out
 
 blue_onedspec.science_spectrum_list[
     0
-].flux_resampled_atm_ext_corrected_hdulist[0].header = img[
+].flux_resampled_atm_ext_corrected_hdulist[
+    params["science_blue_spec_id"]
+].header = img[
     "science"
 ].light_header[
     0
 ]
 
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["nstack"] = len(
     light_path
 )
 
 for i in range(len(light_path)):
     blue_onedspec.science_spectrum_list[
-        0
+        params["science_blue_spec_id"]
     ].flux_resampled_atm_ext_corrected_hdulist[0].header[
         "frame{}".format(i + 1)
     ] = light_path[
@@ -1848,65 +2072,65 @@ for i in range(len(light_path)):
     ]
 
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header[
     "SLIT"
 ] = light_temp.header[
     "APERWID"
 ]
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header[
     "EXPTIME"
 ] = total_exposure_time
 
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE1"] = "Wavelength"
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT1"] = "Angstroms"
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CRVAL1"] = 3.300e03
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CDELT1"] = 1.74e00
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CD1_1"] = 1.74e00
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CRPIX1"] = 1.00e00
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CTYPE2"] = "LINEAR"
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CUNIT2"] = "Pixels  "
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["CD2_2"] = 0.00e00
 
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["OBSERVER"] = params[
     "observer"
 ]
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["REDUCER"] = params[
     "reducer"
 ]
 blue_onedspec.science_spectrum_list[
-    0
+    params["science_blue_spec_id"]
 ].flux_resampled_atm_ext_corrected_hdulist[0].header["REDUCET"] = utc_time
 
 output = fits.PrimaryHDU(
-    blue_onedspec.science_spectrum_list[0]
+    blue_onedspec.science_spectrum_list[params["science_blue_spec_id"]]
     .flux_resampled_atm_ext_corrected_hdulist[0]
     .data,
-    blue_onedspec.science_spectrum_list[0]
+    blue_onedspec.science_spectrum_list[params["science_blue_spec_id"]]
     .flux_resampled_atm_ext_corrected_hdulist[0]
     .header,
 )

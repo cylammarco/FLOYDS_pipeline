@@ -41,6 +41,11 @@ standard_light_extension: ["fits", "fit", "bz2", "gz", "fz"]
 standard_flat_extension: ["fits", "fit", "bz2", "gz", "fz"]
 standard_arc_extension: ["fits", "fit", "bz2", "gz", "fz"]
 
+science_red_spec_id: 0
+science_blue_spec_id: 0
+standard_red_spec_id: 0 # This should always be 0
+standard_blue_spec_id: 0 # This should always be 0
+
 # Cosmic ray cleaning only (light frame only)
 cosmicray: True
 sigclip: 4.0
