@@ -109,7 +109,7 @@ science_red_aptrace_width: 1280
 science_red_aptrace_height: 720
 science_red_aptrace_return_jsonstring: False
 science_red_aptrace_save_fig: True
-science_red_aptrace_fig_type: "png+pdf"
+science_red_aptrace_fig_type: "png"
 science_red_aptrace_filename: "science_red_aptrace"
 science_red_aptrace_open_iframe: False
 
@@ -129,7 +129,7 @@ science_red_rectification_width: 1280
 science_red_rectification_height: 720
 science_red_rectification_return_jsonstring: False
 science_red_rectification_save_fig: True
-science_red_rectification_fig_type: "png+pdf"
+science_red_rectification_fig_type: "png"
 science_red_rectification_filename: "science_red_rectification"
 science_red_rectification_open_iframe: False
 
@@ -140,7 +140,7 @@ science_red_inspect_line_spread_function_width: 1280
 science_red_inspect_line_spread_function_height: 720
 science_red_inspect_line_spread_function_return_jsonstring: False
 science_red_inspect_line_spread_function_save_fig: True
-science_red_inspect_line_spread_function_fig_type: "png+pdf"
+science_red_inspect_line_spread_function_fig_type: "png"
 science_red_inspect_line_spread_function_filename: "science_red_line_spread_profile"
 science_red_inspect_line_spread_function_open_iframe: False
 
@@ -172,7 +172,7 @@ science_red_extract_width: 1280
 science_red_extract_height: 720
 science_red_extract_return_jsonstring: False
 science_red_extract_save_fig: True
-science_red_extract_fig_type: "png+pdf"
+science_red_extract_fig_type: "png"
 science_red_extract_filename: "science_red_apextract"
 science_red_extract_open_iframe: False
 
@@ -184,7 +184,7 @@ science_red_arc_spec_width: 1280
 science_red_arc_spec_height: 720
 science_red_arc_spec_return_jsonstring: False
 science_red_arc_spec_save_fig: True
-science_red_arc_spec_fig_type: "png+pdf"
+science_red_arc_spec_fig_type: "png"
 science_red_arc_spec_filename: "science_red_arc_spec"
 science_red_arc_spec_open_iframe: False
 
@@ -213,7 +213,7 @@ science_blue_aptrace_width: 1280
 science_blue_aptrace_height: 720
 science_blue_aptrace_return_jsonstring: False
 science_blue_aptrace_save_fig: True
-science_blue_aptrace_fig_type: "png+pdf"
+science_blue_aptrace_fig_type: "png"
 science_blue_aptrace_filename: "science_blue_aptrace"
 science_blue_aptrace_open_iframe: False
 
@@ -233,7 +233,7 @@ science_blue_rectification_width: 1280
 science_blue_rectification_height: 720
 science_blue_rectification_return_jsonstring: False
 science_blue_rectification_save_fig: True
-science_blue_rectification_fig_type: "png+pdf"
+science_blue_rectification_fig_type: "png"
 science_blue_rectification_filename: "science_blue_rectification"
 science_blue_rectification_open_iframe: False
 
@@ -244,7 +244,7 @@ science_blue_inspect_line_spread_function_width: 1280
 science_blue_inspect_line_spread_function_height: 720
 science_blue_inspect_line_spread_function_return_jsonstring: False
 science_blue_inspect_line_spread_function_save_fig: True
-science_blue_inspect_line_spread_function_fig_type: "png+pdf"
+science_blue_inspect_line_spread_function_fig_type: "png"
 science_blue_inspect_line_spread_function_filename: "science_blue_line_spread_profile"
 science_blue_inspect_line_spread_function_open_iframe: False
 
@@ -276,7 +276,7 @@ science_blue_extract_width: 1280
 science_blue_extract_height: 720
 science_blue_extract_return_jsonstring: False
 science_blue_extract_save_fig: True
-science_blue_extract_fig_type: "png+pdf"
+science_blue_extract_fig_type: "png"
 science_blue_extract_filename: "science_blue_apextract"
 science_blue_extract_open_iframe: False
 
@@ -288,7 +288,7 @@ science_blue_arc_spec_width: 1280
 science_blue_arc_spec_height: 720
 science_blue_arc_spec_return_jsonstring: False
 science_blue_arc_spec_save_fig: True
-science_blue_arc_spec_fig_type: "png+pdf"
+science_blue_arc_spec_fig_type: "png"
 science_blue_arc_spec_filename: "science_blue_arc_spec"
 science_blue_arc_spec_open_iframe: False
 
@@ -317,7 +317,7 @@ standard_red_aptrace_width: 1280
 standard_red_aptrace_height: 720
 standard_red_aptrace_return_jsonstring: False
 standard_red_aptrace_save_fig: True
-standard_red_aptrace_fig_type: "png+pdf"
+standard_red_aptrace_fig_type: "png"
 standard_red_aptrace_filename: "standard_red_aptrace"
 standard_red_aptrace_open_iframe: False
 
@@ -337,7 +337,7 @@ standard_red_rectification_width: 1280
 standard_red_rectification_height: 720
 standard_red_rectification_return_jsonstring: False
 standard_red_rectification_save_fig: True
-standard_red_rectification_fig_type: "png+pdf"
+standard_red_rectification_fig_type: "png"
 standard_red_rectification_filename: "standard_red_rectification"
 standard_red_rectification_open_iframe: False
 
@@ -348,7 +348,7 @@ standard_red_inspect_line_spread_function_width: 1280
 standard_red_inspect_line_spread_function_height: 720
 standard_red_inspect_line_spread_function_return_jsonstring: False
 standard_red_inspect_line_spread_function_save_fig: True
-standard_red_inspect_line_spread_function_fig_type: "png+pdf"
+standard_red_inspect_line_spread_function_fig_type: "png"
 standard_red_inspect_line_spread_function_filename: "standard_red_line_spread_profile"
 standard_red_inspect_line_spread_function_open_iframe: False
 
@@ -380,7 +380,7 @@ standard_red_extract_width: 1280
 standard_red_extract_height: 720
 standard_red_extract_return_jsonstring: False
 standard_red_extract_save_fig: True
-standard_red_extract_fig_type: "png+pdf"
+standard_red_extract_fig_type: "png"
 standard_red_extract_filename: "standard_red_apextract"
 standard_red_extract_open_iframe: False
 
@@ -392,7 +392,7 @@ standard_red_arc_spec_width: 1280
 standard_red_arc_spec_height: 720
 standard_red_arc_spec_return_jsonstring: False
 standard_red_arc_spec_save_fig: True
-standard_red_arc_spec_fig_type: "png+pdf"
+standard_red_arc_spec_fig_type: "png"
 standard_red_arc_spec_filename: "standard_red_arc_spec"
 standard_red_arc_spec_open_iframe: False
 
@@ -421,7 +421,7 @@ standard_blue_aptrace_width: 1280
 standard_blue_aptrace_height: 720
 standard_blue_aptrace_return_jsonstring: False
 standard_blue_aptrace_save_fig: True
-standard_blue_aptrace_fig_type: "png+pdf"
+standard_blue_aptrace_fig_type: "png"
 standard_blue_aptrace_filename: "standard_blue_aptrace"
 standard_blue_aptrace_open_iframe: False
 
@@ -441,7 +441,7 @@ standard_blue_rectification_width: 1280
 standard_blue_rectification_height: 720
 standard_blue_rectification_return_jsonstring: False
 standard_blue_rectification_save_fig: True
-standard_blue_rectification_fig_type: "png+pdf"
+standard_blue_rectification_fig_type: "png"
 standard_blue_rectification_filename: "standard_blue_rectification"
 standard_blue_rectification_open_iframe: False
 
@@ -452,7 +452,7 @@ standard_blue_inspect_line_spread_function_width: 1280
 standard_blue_inspect_line_spread_function_height: 720
 standard_blue_inspect_line_spread_function_return_jsonstring: False
 standard_blue_inspect_line_spread_function_save_fig: True
-standard_blue_inspect_line_spread_function_fig_type: "png+pdf"
+standard_blue_inspect_line_spread_function_fig_type: "png"
 standard_blue_inspect_line_spread_function_filename: "standard_blue_line_spread_profile"
 standard_blue_inspect_line_spread_function_open_iframe: False
 
@@ -484,7 +484,7 @@ standard_blue_extract_width: 1280
 standard_blue_extract_height: 720
 standard_blue_extract_return_jsonstring: False
 standard_blue_extract_save_fig: True
-standard_blue_extract_fig_type: "png+pdf"
+standard_blue_extract_fig_type: "png"
 standard_blue_extract_filename: "standard_blue_apextract"
 standard_blue_extract_open_iframe: False
 
@@ -496,7 +496,7 @@ standard_blue_arc_spec_width: 1280
 standard_blue_arc_spec_height: 720
 standard_blue_arc_spec_return_jsonstring: False
 standard_blue_arc_spec_save_fig: True
-standard_blue_arc_spec_fig_type: "png+pdf"
+standard_blue_arc_spec_fig_type: "png"
 standard_blue_arc_spec_filename: "standard_blue_arc_spec"
 standard_blue_arc_spec_open_iframe: False
 
@@ -512,7 +512,7 @@ red_find_arc_lines_height: 720
 red_find_arc_lines_return_jsonstring: False
 red_find_arc_lines_renderer: "default"
 red_find_arc_lines_save_fig: True
-red_find_arc_lines_fig_type: "png+pdf"
+red_find_arc_lines_fig_type: "png"
 red_find_arc_lines_filename: "red_arc_lines"
 red_find_arc_lines_open_iframe: False
 
@@ -527,7 +527,7 @@ blue_find_arc_lines_height: 720
 blue_find_arc_lines_return_jsonstring: False
 blue_find_arc_lines_renderer: "default"
 blue_find_arc_lines_save_fig: True
-blue_find_arc_lines_fig_type: "png+pdf"
+blue_find_arc_lines_fig_type: "png"
 blue_find_arc_lines_filename: "blue_arc_lines"
 blue_find_arc_lines_open_iframe: False
 
@@ -590,7 +590,7 @@ red_plot_search_space_fit_coeff: ~
 red_plot_search_space_top_n_candidate: 3
 red_plot_search_space_weighted: True
 red_plot_search_space_save_fig: True
-red_plot_search_space_fig_type: "png+pdf"
+red_plot_search_space_fig_type: "png"
 red_plot_search_space_filename: ~
 red_plot_search_space_return_jsonstring: False
 red_plot_search_space_renderer: "default"
@@ -602,7 +602,7 @@ blue_plot_search_space_fit_coeff: ~
 blue_plot_search_space_top_n_candidate: 3
 blue_plot_search_space_weighted: True
 blue_plot_search_space_save_fig: True
-blue_plot_search_space_fig_type: "png+pdf"
+blue_plot_search_space_fig_type: "png"
 blue_plot_search_space_filename: ~
 blue_plot_search_space_return_jsonstring: False
 blue_plot_search_space_renderer: "default"
@@ -621,7 +621,7 @@ red_fit_return_solution: False
 red_fit_display: False
 red_fit_renderer: "default"
 red_fit_save_fig: True
-red_fit_fig_type: "png+pdf"
+red_fit_fig_type: "png"
 red_fit_filename: "red_wavelength_solution"
 
 # fit the wavelength
@@ -637,7 +637,7 @@ blue_fit_return_solution: False
 blue_fit_display: False
 blue_fit_renderer: "default"
 blue_fit_save_fig: True
-blue_fit_fig_type: "png+pdf"
+blue_fit_fig_type: "png"
 blue_fit_filename: "blue_wavelength_solution"
 
 # load_standard
@@ -675,7 +675,7 @@ red_inspect_sensitivity_width: 1280
 red_inspect_sensitivity_height: 720
 red_inspect_sensitivity_return_jsonstring: False
 red_inspect_sensitivity_save_fig: True
-red_inspect_sensitivity_fig_type: "png+pdf"
+red_inspect_sensitivity_fig_type: "png"
 red_inspect_sensitivity_filename: "red_sensitivity"
 
 # inspect_sensitivity
@@ -685,7 +685,7 @@ blue_inspect_sensitivity_width: 1280
 blue_inspect_sensitivity_height: 720
 blue_inspect_sensitivity_return_jsonstring: False
 blue_inspect_sensitivity_save_fig: True
-blue_inspect_sensitivity_fig_type: "png+pdf"
+blue_inspect_sensitivity_fig_type: "png"
 blue_inspect_sensitivity_filename: "blue_sensitivity"
 
 # apply_flux_calibration
@@ -698,7 +698,7 @@ red_apply_flux_calibration_width: 1280
 red_apply_flux_calibration_height: 720
 red_apply_flux_calibration_return_jsonstring: False
 red_apply_flux_calibration_save_fig: True
-red_apply_flux_calibration_fig_type: "png+pdf"
+red_apply_flux_calibration_fig_type: "png"
 red_apply_flux_calibration_filename: "red_flux_calibration"
 
 # apply_flux_calibration
@@ -711,7 +711,7 @@ blue_apply_flux_calibration_width: 1280
 blue_apply_flux_calibration_height: 720
 blue_apply_flux_calibration_return_jsonstring: False
 blue_apply_flux_calibration_save_fig: True
-blue_apply_flux_calibration_fig_type: "png+pdf"
+blue_apply_flux_calibration_fig_type: "png"
 blue_apply_flux_calibration_filename: "blue_flux_calibration"
 
 # get_telluric_profile
@@ -727,7 +727,7 @@ red_inspect_telluric_profile_width: 1280
 red_inspect_telluric_profile_height: 720
 red_inspect_telluric_profile_return_jsonstring: False
 red_inspect_telluric_profile_save_fig: True
-red_inspect_telluric_profile_fig_type: "png+pdf"
+red_inspect_telluric_profile_fig_type: "png"
 red_inspect_telluric_profile_filename: "telluric_profile"
 
 # inspect_telluric_correction
@@ -738,7 +738,7 @@ red_inspect_telluric_correction_width: 1280
 red_inspect_telluric_correction_height: 720
 red_inspect_telluric_correction_return_jsonstring: False
 red_inspect_telluric_correction_save_fig: True
-red_inspect_telluric_correction_fig_type: "png+pdf"
+red_inspect_telluric_correction_fig_type: "png"
 red_inspect_telluric_correction_filename: "telluric_correction"
 
 # apply_telluric_correction
@@ -780,7 +780,7 @@ red_inspect_reduced_spectrum_renderer: "default"
 red_inspect_reduced_spectrum_width: 1280
 red_inspect_reduced_spectrum_height: 720
 red_inspect_reduced_spectrum_save_fig: True
-red_inspect_reduced_spectrum_fig_type: "png+pdf"
+red_inspect_reduced_spectrum_fig_type: "png"
 red_inspect_reduced_spectrum_science_filename: "science_red_reduced"
 red_inspect_reduced_spectrum_standard_filename: "standard_red_reduced"
 
@@ -792,7 +792,7 @@ blue_inspect_reduced_spectrum_renderer: "default"
 blue_inspect_reduced_spectrum_width: 1280
 blue_inspect_reduced_spectrum_height: 720
 blue_inspect_reduced_spectrum_save_fig: True
-blue_inspect_reduced_spectrum_fig_type: "png+pdf"
+blue_inspect_reduced_spectrum_fig_type: "png"
 blue_inspect_reduced_spectrum_science_filename: "science_blue_reduced"
 blue_inspect_reduced_spectrum_standard_filename: "standard_blue_reduced"
 

@@ -80,15 +80,15 @@ def flux_diff(ratio, a, b):
 
 
 # Apply frindg correction onto a target_onedspec
-def fringe_correction(target, flat):
-    flat_count = flat.spectrum_list[0].count
+def fringe_correction(target_twodspec, flat_twodspec, spec_id):
+    flat_count = flat_twodspec.spectrum_list[0].count
     flat_continuum = lowess(
         flat_count, np.arange(len(flat_count)), frac=0.04, return_sorted=False
     )
     flat_continuum_divided = flat_count / flat_continuum
     flat_continuum_divided[:500] = 1.0
     # Apply the flat correction
-    target.spectrum_list[0].count /= flat_continuum_divided
+    target_twodspec.spectrum_list[spec_id].count /= flat_continuum_divided
 
 
 def get_wavecal_coefficients(arcspec, mode, hemisphere):
@@ -320,9 +320,15 @@ extracted_twodspec = {
     },
 }
 img = {
-    "science": None,
-    "standard": None,
+    "science": image_reduction.ImageReducer(
+        log_file_name=os.path.join(log_file_folder, log_file_name),
+    ),
+    "standard": image_reduction.ImageReducer(
+        log_file_name=os.path.join(log_file_folder, log_file_name),
+    ),
 }
+logger.info("ImageReducer objects created.")
+
 ap_trace_position = {}
 ap_trace_sigma = {}
 
@@ -416,10 +422,6 @@ for frame_type in ["standard", "science"]:
     logger.info(
         "These are the arc frames found, in full path: {}".format(arc_path)
     )
-    img[frame_type] = image_reduction.ImageReduction(
-        log_file_name=os.path.join(log_file_folder, log_file_name),
-    )
-    logger.info("ImageReduction object created.")
     # Add the light frames
     for i, path_i in enumerate(light_path):
         try:
@@ -492,6 +494,7 @@ for frame_type in ["standard", "science"]:
                 coeff = rec_coeff_blue_science
             if frame_type == "standard":
                 coeff = rec_coeff_blue_standard
+        twodspec = None
         twodspec = extracted_twodspec[frame_type][arm]
         twodspec.add_data(img[frame_type])
         twodspec.set_properties(
@@ -663,6 +666,18 @@ for frame_type in ["standard", "science"]:
                 frame_type + "_" + arm + "_aptrace_open_iframe"
             ],
         )
+        # Get the traces for fringe removal
+        trace_rectified = copy.deepcopy(
+            twodspec.spectrum_list[
+                params[frame_type + "_" + arm + "_spec_id"]
+            ].trace
+        )
+        trace_sigma_rectified = copy.deepcopy(
+            twodspec.spectrum_list[
+                params[frame_type + "_" + arm + "_spec_id"]
+            ].trace_sigma
+        )
+        # Continue the extraction
         twodspec.ap_extract(
             apwidth=params[frame_type + "_" + arm + "_extract_apwidth"],
             skysep=params[frame_type + "_" + arm + "_extract_skysep"],
@@ -789,32 +804,46 @@ for frame_type in ["standard", "science"]:
             ],
             spec_id=params[frame_type + "_" + arm + "_spec_id"],
         )
-        # Get the traces for fringe removal
-        trace_rectified = copy.deepcopy(twodspec.spectrum_list[0].trace)
-        trace_sigma_rectified = copy.deepcopy(
-            twodspec.spectrum_list[0].trace_sigma
-        )
+        # Perform fringe correction in the red arm
         if arm == "red":
-            # Extract the red flat
-            flat = spectral_reduction.TwoDSpec(
+            # Extract the flat
+            _flat = spectral_reduction.TwoDSpec(
                 flat_combined_CCDdata.data,
                 header=flat_header[0],
-                spatial_mask=red_spatial_mask,
-                spec_mask=red_spec_mask,
+                spatial_mask=spatial_mask,
+                spec_mask=spec_mask,
                 cosmicray=True,
                 readnoise=float(light_temp.header["RDNOISE"]),
                 gain=float(light_temp.header["GAIN"]),
                 log_file_name=os.path.join(log_file_folder, log_file_name),
             )
             # Add the trace for rectification
-            flat.add_trace(trace, trace_sigma)
-            flat.get_rectification(coeff=twodspec.rec_coeff)
-            flat.apply_rectification()
+            _flat.add_trace(trace, trace_sigma)
+            _flat.get_rectification(coeff=twodspec.rec_coeff)
+            _flat.apply_rectification()
+            # _norm = np.nanmean(_flat.img)
+            # _flat_rectified_img = _flat.img / _norm
+            # twodspec.img_1_percentile /= _norm
+            # twodspec.img_mean /= _norm
+            # twodspec.img_median /= _norm
+            # twodspec.img /= _flat_rectified_img
+            # twodspec._get_image_zminmax()
             # Add the trace for fringe removal
-            flat.add_trace(trace_rectified, trace_sigma_rectified)
+            _flat.add_trace(trace_rectified, trace_sigma_rectified)
+            # Add the line spread profile
+            _flat.spectrum_list[0].profile_func = twodspec.spectrum_list[
+                params[frame_type + "_red_spec_id"]
+            ].profile_func
             # Force extraction from the flat for fringe correction
-            flat.ap_extract(apwidth=20, skywidth=0, display=False)
-            fringe_correction(twodspec, flat)
+            _flat.ap_extract(
+                apwidth=params[frame_type + "_red_extract_apwidth"],
+                skywidth=0,
+                forced=True,
+                display=False,
+            )
+            fringe_correction(
+                twodspec, _flat, params[frame_type + "_red_spec_id"]
+            )
     target_name[frame_type] = (
         img[frame_type].light_header[0]["OBJECT"].upper().replace(" ", "")
     )
@@ -1919,7 +1948,7 @@ flux_blue = blue_onedspec.science_spectrum_list[
 ].flux_resampled_atm_ext_corrected
 flux_blue_err = blue_onedspec.science_spectrum_list[
     params["science_blue_spec_id"]
-].flux_resampled_atm_ext_corrected
+].flux_err_resampled_atm_ext_corrected
 
 # trim the last few hundred A from the blue and the first few hundred A from
 # the red in the combined spectrum
@@ -1938,6 +1967,11 @@ flux_red_resampled, flux_red_resampled_err = spectres(
     flux_red_err[red_mask],
 )
 
+
+# get where values are usable
+red_good_mask = np.isfinite(flux_red_resampled)
+blue_good_mask = np.isfinite(flux_blue[blue_mask])
+
 flux_weighted_combine = (
     flux_red_resampled / flux_red_resampled_err**2.0
     + flux_blue[blue_mask] / flux_blue_err[blue_mask] ** 2.0
@@ -1945,9 +1979,21 @@ flux_weighted_combine = (
     1.0 / flux_red_resampled_err**2.0 + 1.0 / flux_blue_err[blue_mask] ** 2.0
 )
 
+# replace the values where bad fluxes were used
+flux_weighted_combine[~red_good_mask] = flux_blue[blue_mask][~red_good_mask]
+flux_weighted_combine[~blue_good_mask] = flux_red_resampled[~blue_good_mask]
+
 flux_error_weighted_combine = 1.0 / np.sqrt(
     1.0 / flux_red_resampled_err**2.0 + 1.0 / flux_blue_err[blue_mask] ** 2.0
 )
+# replace the values where bad fluxes were used
+flux_error_weighted_combine[~red_good_mask] = flux_blue_err[blue_mask][
+    ~red_good_mask
+]
+flux_error_weighted_combine[~blue_good_mask] = flux_red_resampled_err[
+    ~blue_good_mask
+]
+
 
 flux_combined = np.concatenate(
     (

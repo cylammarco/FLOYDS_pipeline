@@ -713,7 +713,9 @@ for k, v in target_list.items():
         output_folder_abs_path,
         v["science"]["DAY_OBS"].replace("-", "") + f"_{k}",
     )
-    list_yaml["output_file_name_suffix"] = target_name
+    list_yaml["output_file_name_suffix"] = "{}_{}_{}.yaml".format(
+        target_name, v["science"]["DAY_OBS"].replace("-", ""), k
+    )
     yaml_output_name = "floyds_{}_{}_{}.yaml".format(
         target_name, v["science"]["DAY_OBS"].replace("-", ""), k
     )
