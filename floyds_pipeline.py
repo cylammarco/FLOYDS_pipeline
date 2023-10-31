@@ -376,6 +376,15 @@ if not args.local:
     ]:
         _date = datetime.fromisoformat(date)
         day_range = 0.5
+
+        if _date > datetime.fromisoformat("2021-09-01T00:00:00.000"):
+            prop_id = "FLOYDS standards"
+        else:
+            if instrume == "en06":
+                prop_id = "OGG_calib"
+            else:
+                prop_id = "COJ_calib"
+
         _standard_metadata = []
         while _standard_metadata == []:
             # Get the standard star
@@ -385,7 +394,7 @@ if not args.local:
                 INSTRUME=instrume,
                 start=(_date - timedelta(days=day_range)).isoformat(),
                 end=(_date + timedelta(days=day_range)).isoformat(),
-                PROPID="FLOYDS standards",
+                PROPID=prop_id,
                 OBSTYPE="SPECTRUM",
                 RLEVEL=0,
             )
@@ -445,7 +454,7 @@ if not args.local:
                     _time[min_time_idx] - timedelta(minutes=60)
                 ).isoformat(),
                 end=(_time[min_time_idx] + timedelta(minutes=60)).isoformat(),
-                PROPID="FLOYDS standards",
+                PROPID=prop_id,
                 OBSTYPE="SPECTRUM",
                 RLEVEL=0,
             )
@@ -472,7 +481,7 @@ if not args.local:
                     + timedelta(minutes=60)
                     + timedelta(days=day_range)
                 ).isoformat(),
-                PROPID="FLOYDS standards",
+                PROPID=prop_id,
                 OBSTYPE="ARC",
                 RLEVEL=0,
             )
@@ -498,7 +507,7 @@ if not args.local:
                     + timedelta(minutes=60)
                     + timedelta(days=day_range)
                 ).isoformat(),
-                PROPID="FLOYDS standards",
+                PROPID=prop_id,
                 OBSTYPE="LAMPFLAT",
                 RLEVEL=0,
             )
@@ -735,9 +744,8 @@ for yaml_filename in yaml_config_list:
 # run the reduction the reduce_floyds_data.py
 for yaml_filename in yaml_config_list:
     os.system(
-        f"{sys.executable} {os.path.dirname(os.path.realpath(__file__))}{os.sep}"
-        "reduce_floyds_data.py "
-        f"{os.path.join(output_folder_abs_path, yaml_filename)}"
+        f"{sys.executable} {os.path.dirname(os.path.realpath(__file__))}{os.sep}reduce_floyds_data.py"
+        f" {os.path.join(output_folder_abs_path, yaml_filename)}"
     )
     with open(
         os.path.join(output_folder_abs_path, yaml_filename), "r"
